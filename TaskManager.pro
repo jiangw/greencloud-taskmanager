@@ -20,3 +20,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     cworkspace.h \
     ctask.h
+
+RESOURCES += \
+    res.qrc

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/sys">
+        <file alias="sys_rect.png">images/sys_rect.png</file>
+        <file alias="sys_elps.png">images/sys_ellipse.png</file>
+    </qresource>
+</RCC>
