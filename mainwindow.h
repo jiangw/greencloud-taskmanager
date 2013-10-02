@@ -5,12 +5,13 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
-#include <QGraphicsView>
 #include <QStatusBar>
 #include <QDockWidget>
 #include <QToolBar>
+#include <QList>
 
 #include "cworkspace.h"
+#include "cworkspaceview.h"
 
 class MainWindow : public QMainWindow
 {
@@ -33,11 +34,17 @@ public:
     QToolBar* m_pSystemLabel;
     QAction* m_pSysRect;
     QAction* m_pSysElps;
+    QList<QAction *> m_pSysLabelGroup;
 
     CWorkSpace* m_pWorkSpace;
-    QGraphicsView* m_pWorkSpaceView;
+    CWorkSpaceView* m_pWorkSpaceView;
 
     QDockWidget* m_pCustomLabel;
+
+public slots:
+    void Slot_SysRectChecked(bool a_pStatus);
+    void Slot_SysElpsChecked(bool a_pStatus);
+    void Slot_SysLabelDrawn();
 };
 
 #endif // MAINWINDOW_H

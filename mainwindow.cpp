@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->ToolBarCreate();
 
     m_pStatusBar = new QStatusBar(this);
-    m_pStatusBar->setStatusTip("I'm status bar.");
+    m_pStatusBar->setStatusTip("Task Manager");
     this->setStatusBar(m_pStatusBar);
 
     this->move(300, 150);
@@ -43,11 +43,14 @@ void MainWindow::MenusCreate()
 void MainWindow::GVFCreate()
 {
     m_pWorkSpace = new CWorkSpace(this);
-    m_pWorkSpaceView = new QGraphicsView(m_pWorkSpace);
+    m_pWorkSpaceView = new CWorkSpaceView(m_pWorkSpace, this);
 
     //initiate work space
-    m_pWorkSpace->setBackgroundBrush(QBrush(Qt::blue));
-    m_pWorkSpace->addText(tr("Hello world"));
+    m_pWorkSpace->setBackgroundBrush(QBrush(Qt::gray));
+    m_pWorkSpace->addText(tr("Welcome to use Task Manager"));
+
+    //connect signals and slots
+    connect(m_pWorkSpace, SIGNAL(Signal_SysLabelDrawn()), this, SLOT(Slot_SysLabelDrawn()));
 
     this->setCentralWidget(m_pWorkSpaceView);
 }
@@ -72,13 +75,65 @@ void MainWindow::ToolBarCreate()
     m_pSysRect->setIcon(QIcon(tr(":/sys/sys_rect.png")));
     m_pSysRect->setStatusTip(tr("Add a rectangle to work space."));
     m_pSysRect->setCheckable(true);
+    connect(m_pSysRect, SIGNAL(toggled(bool)), this, SLOT(Slot_SysRectChecked(bool)));
     m_pSystemLabel->addAction(m_pSysRect);
+    m_pSysLabelGroup << m_pSysRect; //append the action to action group
 
     m_pSysElps = new QAction(this);
     m_pSysElps->setIcon(QIcon(tr(":/sys/sys_elps.png")));
-    m_pSysElps->setStatusTip(tr("Add a ellipse to work space."));
+    m_pSysElps->setStatusTip(tr("Add an ellipse to work space."));
     m_pSysElps->setCheckable(true);
+    connect(m_pSysElps, SIGNAL(toggled(bool)), this, SLOT(Slot_SysElpsChecked(bool)));
     m_pSystemLabel->addAction(m_pSysElps);
+    m_pSysLabelGroup << m_pSysElps; //append the action to action group
 
     this->addToolBar(m_pSystemLabel);
+}
+
+void MainWindow::Slot_SysRectChecked(bool a_pStatus)
+{
+    if(a_pStatus) //if the action is cheched
+    {
+        foreach(QAction* l_pAction, m_pSysLabelGroup)
+        {
+            if(l_pAction != m_pSysRect)
+            {
+                l_pAction->setChecked(false);
+            }
+        }
+        m_pWorkSpace->m_eStatus = GLOBALCONST::DRAWSYSLABEL;
+        m_pWorkSpace->m_eSysLabel = GLOBALCONST::SYSRECT;
+    }
+}
+
+void MainWindow::Slot_SysElpsChecked(bool a_pStatus)
+{
+    if(a_pStatus) //if the action is checked
+    {
+        foreach(QAction* l_pAction, m_pSysLabelGroup)
+        {
+            if(l_pAction != m_pSysElps)
+            {
+                l_pAction->setChecked(false);
+            }
+        }
+        m_pWorkSpace->m_eStatus = GLOBALCONST::DRAWSYSLABEL;
+        m_pWorkSpace->m_eSysLabel = GLOBALCONST::SYSELPS;
+    }
+}
+
+void MainWindow::Slot_SysLabelDrawn()
+{
+    switch(m_pWorkSpace->m_eSysLabel)
+    {
+    case GLOBALCONST::SYSRECT:
+        m_pSysRect->setChecked(false);
+        break;
+    case GLOBALCONST::SYSELPS:
+        m_pSysElps->setChecked(false);
+        break;
+    default:
+        break;
+    }
+    m_pWorkSpace->m_eSysLabel = GLOBALCONST::NONE;
 }
