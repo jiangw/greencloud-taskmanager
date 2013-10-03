@@ -18,6 +18,7 @@ public:
 signals:
     
 public slots:
+    void Slot_DragModeSwitched(bool a_blFlag);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -26,6 +27,7 @@ protected:
 private:
     CWorkSpace* m_pWorkSpace;
     QPoint m_cLastMousePos;
+    GLOBALCONST::SWorkSpaceFlag m_sLastFlag;
 };
 
 #endif // CWORKSPACEVIEW_H

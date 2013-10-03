@@ -26,9 +26,11 @@ public:
     void DockWgtCreate();
     void ToolBarCreate();
 
-    QMenu* m_pTestMenu;
+    QMenu* m_pFileMenu;
     QAction* m_pTestAction;
     QAction* m_pExitAction;
+    QMenu* m_pViewMenu;
+    QAction* m_pDragModeAction;
     QStatusBar* m_pStatusBar;
 
     QToolBar* m_pSystemLabel;

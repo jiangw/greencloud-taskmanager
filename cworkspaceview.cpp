@@ -26,10 +26,31 @@ void CWorkSpaceView::mouseReleaseEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton && \
             m_cLastMousePos == event->pos()) //left button clicked
     {
-        m_pWorkSpace->SysLabelDraw(mapToScene(m_cLastMousePos));
+        m_pWorkSpace->SysLabelDraw(mapToScene(event->pos()));
     }
     else
     {
         QGraphicsView::mouseReleaseEvent(event);
+    }
+}
+
+void CWorkSpaceView::Slot_DragModeSwitched(bool a_blFlag)
+{
+    if(a_blFlag)
+    {
+        this->setDragMode(QGraphicsView::ScrollHandDrag);
+        //save last flag of workspace
+        m_sLastFlag.m_eStatus = m_pWorkSpace->m_eStatus;
+        m_sLastFlag.m_eSysLabel = m_pWorkSpace->m_eSysLabel;
+        //set new flag of workspace
+        m_pWorkSpace->m_eStatus = GLOBALCONST::IDLE;
+        m_pWorkSpace->m_eSysLabel = GLOBALCONST::NONE;
+    }
+    else
+    {
+        this->setDragMode(QGraphicsView::NoDrag);
+        //restore the flag of workspace
+        m_pWorkSpace->m_eStatus = m_sLastFlag.m_eStatus;
+        m_pWorkSpace->m_eSysLabel = m_sLastFlag.m_eSysLabel;
     }
 }

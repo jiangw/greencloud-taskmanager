@@ -5,13 +5,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     this->resize(600, 400);
     this->setWindowTitle(tr("Task Manager"));
-    this->MenusCreate();
     this->GVFCreate();
+    this->MenusCreate();
     this->DockWgtCreate();
     this->ToolBarCreate();
 
     m_pStatusBar = new QStatusBar(this);
-    m_pStatusBar->setStatusTip("Task Manager");
+    m_pStatusBar->setStatusTip("Welcome to use Task Manager.");
     this->setStatusBar(m_pStatusBar);
 
     this->move(300, 150);
@@ -24,20 +24,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::MenusCreate()
 {
-    m_pTestMenu = menuBar()->addMenu(tr("File"));
+    //'File' Menu
+    m_pFileMenu = menuBar()->addMenu(tr("File"));
 
     m_pTestAction = new QAction(this);
     m_pTestAction->setText(tr("For New Actions..."));
     m_pTestAction->setStatusTip(tr("this is saved for creating new action."));
-    m_pTestMenu->addAction(m_pTestAction);
+    m_pFileMenu->addAction(m_pTestAction);
 
-    m_pTestMenu->addSeparator();
+    m_pFileMenu->addSeparator();
 
     m_pExitAction = new QAction(this);
     m_pExitAction->setText(tr("E&xit"));
     m_pExitAction->setShortcut(QKeySequence::Quit); //Ctrl + Q
-    m_pTestMenu->addAction(m_pExitAction);
+    m_pFileMenu->addAction(m_pExitAction);
     connect(m_pExitAction, SIGNAL(triggered()), this, SLOT(close()));
+
+    //'View' Menu
+    m_pViewMenu = menuBar()->addMenu(tr("View"));
+    m_pDragModeAction = new QAction(this);
+    m_pDragModeAction->setText(tr("Hand Tool"));
+    m_pDragModeAction->setStatusTip(tr("Activate drag mode in workspace."));
+    m_pDragModeAction->setCheckable(true);
+    m_pViewMenu->addAction(m_pDragModeAction);
+    connect(m_pDragModeAction, SIGNAL(toggled(bool)), \
+            m_pWorkSpaceView, SLOT(Slot_DragModeSwitched(bool)));
 }
 
 void MainWindow::GVFCreate()
@@ -45,9 +56,9 @@ void MainWindow::GVFCreate()
     m_pWorkSpace = new CWorkSpace(this);
     m_pWorkSpaceView = new CWorkSpaceView(m_pWorkSpace, this);
 
-    //initiate work space
+    //initiate workspace
     m_pWorkSpace->setBackgroundBrush(QBrush(Qt::gray));
-    m_pWorkSpace->addText(tr("Welcome to use Task Manager"));
+    m_pWorkSpace->setSceneRect(0, 0, 3000, 3000);
 
     //connect signals and slots
     connect(m_pWorkSpace, SIGNAL(Signal_SysLabelDrawn()), this, SLOT(Slot_SysLabelDrawn()));
