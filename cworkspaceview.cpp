@@ -40,17 +40,17 @@ void CWorkSpaceView::Slot_DragModeSwitched(bool a_blFlag)
     {
         this->setDragMode(QGraphicsView::ScrollHandDrag);
         //save last flag of workspace
-        m_sLastFlag.m_eStatus = m_pWorkSpace->m_eStatus;
+        m_sLastFlag.m_eWorkSpaceStatus = m_pWorkSpace->m_eStatus;
         m_sLastFlag.m_eSysLabel = m_pWorkSpace->m_eSysLabel;
         //set new flag of workspace
-        m_pWorkSpace->m_eStatus = GLOBALCONST::IDLE;
-        m_pWorkSpace->m_eSysLabel = GLOBALCONST::NONE;
+        m_pWorkSpace->m_eStatus = TASKMANAGER::IDLE;
+        m_pWorkSpace->m_eSysLabel = TASKMANAGER::NONE;
     }
     else
     {
         this->setDragMode(QGraphicsView::NoDrag);
         //restore the flag of workspace
-        m_pWorkSpace->m_eStatus = m_sLastFlag.m_eStatus;
+        m_pWorkSpace->m_eStatus = m_sLastFlag.m_eWorkSpaceStatus;
         m_pWorkSpace->m_eSysLabel = m_sLastFlag.m_eSysLabel;
     }
 }

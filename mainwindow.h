@@ -9,9 +9,16 @@
 #include <QDockWidget>
 #include <QToolBar>
 #include <QList>
+#include <QScrollBar>
 
 #include "cworkspace.h"
 #include "cworkspaceview.h"
+
+#ifdef PF_TEST
+
+#include "ctestbox.h"
+
+#endif
 
 class MainWindow : public QMainWindow
 {

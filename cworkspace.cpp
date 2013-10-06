@@ -3,8 +3,8 @@
 CWorkSpace::CWorkSpace(QObject *parent) :
     QGraphicsScene(parent)
 {
-    m_eStatus = GLOBALCONST::IDLE;
-    m_eSysLabel = GLOBALCONST::NONE;
+    m_eStatus = TASKMANAGER::IDLE;
+    m_eSysLabel = TASKMANAGER::NONE;
 }
 
 CWorkSpace::~CWorkSpace()
@@ -15,10 +15,10 @@ void CWorkSpace::SysLabelDraw(QPointF a_cPos)
 {
     switch(m_eSysLabel)
     {
-    case GLOBALCONST::SYSRECT:
+    case TASKMANAGER::SYSRECT:
         this->addRect(a_cPos.rx(), a_cPos.ry(), 20, 20);
         break;
-    case GLOBALCONST::SYSELPS:
+    case TASKMANAGER::SYSELPS:
         break;
     default:
         break;

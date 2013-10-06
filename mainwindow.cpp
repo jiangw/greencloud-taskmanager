@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle(tr("Task Manager"));
     this->GVFCreate();
     this->MenusCreate();
-    this->DockWgtCreate();
+//    this->DockWgtCreate();
     this->ToolBarCreate();
 
     m_pStatusBar = new QStatusBar(this);
@@ -58,12 +58,16 @@ void MainWindow::GVFCreate()
 
     //initiate workspace
     m_pWorkSpace->setBackgroundBrush(QBrush(Qt::gray));
-    m_pWorkSpace->setSceneRect(0, 0, 3000, 3000);
+    m_pWorkSpace->setSceneRect(-1500, -1500, 3000, 3000);
 
     //connect signals and slots
     connect(m_pWorkSpace, SIGNAL(Signal_SysLabelDrawn()), this, SLOT(Slot_SysLabelDrawn()));
 
     this->setCentralWidget(m_pWorkSpaceView);
+
+#ifdef PF_TEST
+    CTestBox::AddTextItemToScene(m_pWorkSpace);
+#endif
 }
 
 void MainWindow::DockWgtCreate()
@@ -112,8 +116,13 @@ void MainWindow::Slot_SysRectChecked(bool a_pStatus)
                 l_pAction->setChecked(false);
             }
         }
-        m_pWorkSpace->m_eStatus = GLOBALCONST::DRAWSYSLABEL;
-        m_pWorkSpace->m_eSysLabel = GLOBALCONST::SYSRECT;
+        if(m_pDragModeAction->isChecked())
+        {
+            m_pDragModeAction->setChecked(false);
+        }
+
+        m_pWorkSpace->m_eStatus = TASKMANAGER::DRAWSYSLABEL;
+        m_pWorkSpace->m_eSysLabel = TASKMANAGER::SYSRECT;
     }
 }
 
@@ -128,8 +137,13 @@ void MainWindow::Slot_SysElpsChecked(bool a_pStatus)
                 l_pAction->setChecked(false);
             }
         }
-        m_pWorkSpace->m_eStatus = GLOBALCONST::DRAWSYSLABEL;
-        m_pWorkSpace->m_eSysLabel = GLOBALCONST::SYSELPS;
+        if(m_pDragModeAction->isChecked())
+        {
+            m_pDragModeAction->setChecked(false);
+        }
+
+        m_pWorkSpace->m_eStatus = TASKMANAGER::DRAWSYSLABEL;
+        m_pWorkSpace->m_eSysLabel = TASKMANAGER::SYSELPS;
     }
 }
 
@@ -137,14 +151,14 @@ void MainWindow::Slot_SysLabelDrawn()
 {
     switch(m_pWorkSpace->m_eSysLabel)
     {
-    case GLOBALCONST::SYSRECT:
+    case TASKMANAGER::SYSRECT:
         m_pSysRect->setChecked(false);
         break;
-    case GLOBALCONST::SYSELPS:
+    case TASKMANAGER::SYSELPS:
         m_pSysElps->setChecked(false);
         break;
     default:
         break;
     }
-    m_pWorkSpace->m_eSysLabel = GLOBALCONST::NONE;
+    m_pWorkSpace->m_eSysLabel = TASKMANAGER::NONE;
 }

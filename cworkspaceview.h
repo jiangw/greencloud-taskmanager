@@ -27,7 +27,7 @@ protected:
 private:
     CWorkSpace* m_pWorkSpace;
     QPoint m_cLastMousePos;
-    GLOBALCONST::SWorkSpaceFlag m_sLastFlag;
+    TASKMANAGER::SWorkSpaceFlag m_sLastFlag;
 };
 
 #endif // CWORKSPACEVIEW_H

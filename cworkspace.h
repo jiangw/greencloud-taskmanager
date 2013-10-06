@@ -2,9 +2,8 @@
 #define CWORKSPACE_H
 
 #include <QGraphicsScene>
-#include <QGraphicsSceneMouseEvent>
 
-#include "globalconst.h"
+#include "gconfig.h"
 
 class CWorkSpace : public QGraphicsScene
 {
@@ -15,8 +14,8 @@ public:
 
     void SysLabelDraw(QPointF a_cPos);
 
-    GLOBALCONST::EStatus m_eStatus;
-    GLOBALCONST::ESysLabel m_eSysLabel;
+    TASKMANAGER::EWorkSpaceStatus m_eStatus;
+    TASKMANAGER::ESysLabel m_eSysLabel;
     
 signals:
     void Signal_SysLabelDrawn();

@@ -15,14 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     cworkspace.cpp \
-    ctask.cpp \
-    cworkspaceview.cpp
+    cworkspaceview.cpp \
+    ctestbox.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
-    ctask.h \
-    globalconst.h \
-    cworkspaceview.h
+    cworkspaceview.h \
+    ctestbox.h \
+    gconfig.h
 
 RESOURCES += \
     res.qrc
