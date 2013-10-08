@@ -11,6 +11,7 @@
 #include <QList>
 #include <QScrollBar>
 
+#include "gconfig.h"
 #include "cworkspace.h"
 #include "cworkspaceview.h"
 
@@ -34,7 +35,7 @@ public:
     void ToolBarCreate();
 
     QMenu* m_pFileMenu;
-    QAction* m_pTestAction;
+    QAction* m_pAddGoalAction;
     QAction* m_pExitAction;
     QMenu* m_pViewMenu;
     QAction* m_pDragModeAction;

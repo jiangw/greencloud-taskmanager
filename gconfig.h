@@ -1,6 +1,8 @@
 #ifndef GCONFIG_H
 #define GCONFIG_H
 
+#include <iostream>
+
 //set programming flag
 #define PF_TEST
 //#define PF_RUN

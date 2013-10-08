@@ -25,12 +25,14 @@ MainWindow::~MainWindow()
 void MainWindow::MenusCreate()
 {
     //'File' Menu
-    m_pFileMenu = menuBar()->addMenu(tr("File"));
+    m_pFileMenu = menuBar()->addMenu(tr("&File"));
 
-    m_pTestAction = new QAction(this);
-    m_pTestAction->setText(tr("For New Actions..."));
-    m_pTestAction->setStatusTip(tr("this is saved for creating new action."));
-    m_pFileMenu->addAction(m_pTestAction);
+    m_pAddGoalAction = new QAction(this);
+    m_pAddGoalAction->setText(tr("Add &Goal"));
+    m_pAddGoalAction->setStatusTip(tr("Add a new goal in the work space."));
+    m_pAddGoalAction->setIcon(QIcon(":/sys/sys_elps.png"));
+    m_pFileMenu->addAction(m_pAddGoalAction);
+    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(Slot_AddGoalAction()));
 
     m_pFileMenu->addSeparator();
 
@@ -64,10 +66,6 @@ void MainWindow::GVFCreate()
     connect(m_pWorkSpace, SIGNAL(Signal_SysLabelDrawn()), this, SLOT(Slot_SysLabelDrawn()));
 
     this->setCentralWidget(m_pWorkSpaceView);
-
-#ifdef PF_TEST
-    CTestBox::AddTextItemToScene(m_pWorkSpace);
-#endif
 }
 
 void MainWindow::DockWgtCreate()
@@ -85,6 +83,7 @@ void MainWindow::ToolBarCreate()
 {
     m_pSystemLabel = this->addToolBar(tr("System Labels"));
     m_pSystemLabel->setMovable(false);
+    m_pSystemLabel->setVisible(false);
 
     m_pSysRect = new QAction(this);
     m_pSysRect->setIcon(QIcon(tr(":/sys/sys_rect.png")));
