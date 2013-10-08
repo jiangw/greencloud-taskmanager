@@ -13,11 +13,11 @@
 
 #include "gconfig.h"
 
-class CGoalView :public QObject, public QGraphicsItem
+class CGoalItem :public QObject, public QGraphicsItem
 {
     Q_OBJECT
 public:
-    explicit CGoalView(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene);
+    explicit CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

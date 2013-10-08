@@ -8,7 +8,7 @@
 
 #include "gconfig.h"
 #include "cworkspace.h"
-#include "cgoalview.h"
+#include "cgoalitem.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -31,7 +31,7 @@ private:
     CWorkSpace* m_pWorkSpace;
     QPoint m_cLastMousePos;
     TASKMANAGER::SWorkSpaceFlag m_sLastFlag;
-    CGoalView* m_pGoalView;
+    CGoalItem* m_pGoalView;
 };
 
 #endif // CWORKSPACEVIEW_H

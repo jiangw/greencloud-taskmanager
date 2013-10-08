@@ -5,7 +5,7 @@
 #include <QTransform>
 #include <iostream>
 
-#include "cgoalview.h"
+#include "cgoalitem.h"
 
 class CTestBox
 {

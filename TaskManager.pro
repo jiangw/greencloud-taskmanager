@@ -17,14 +17,14 @@ SOURCES += main.cpp\
     cworkspace.cpp \
     cworkspaceview.cpp \
     ctestbox.cpp \
-    cgoalview.cpp
+    cgoalItem.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
     cworkspaceview.h \
     ctestbox.h \
     gconfig.h \
-    cgoalview.h
+    cgoalitem.h
 
 RESOURCES += \
     res.qrc

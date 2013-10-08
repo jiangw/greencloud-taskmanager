@@ -2,7 +2,7 @@
 
 void CTestBox::AddTextItemToScene(QGraphicsScene *a_pScene)
 {
-    CGoalView* l_pGoal = new CGoalView(NULL, a_pScene);
+    CGoalItem* l_pGoal = new CGoalItem(NULL, a_pScene);
 }
 
 void CTestBox::PrintTransformMtx(QTransform *a_pMtx)

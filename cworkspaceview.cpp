@@ -62,6 +62,6 @@ void CWorkSpaceView::Slot_AddGoalAction()
 {
     if(NULL == m_pGoalView)
     {
-        m_pGoalView = new CGoalView(NULL, m_pWorkSpace);
+        m_pGoalView = new CGoalItem(NULL, m_pWorkSpace);
     }
 }

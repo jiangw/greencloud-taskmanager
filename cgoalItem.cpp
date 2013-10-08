@@ -1,6 +1,6 @@
-#include "cgoalview.h"
+#include "cgoalitem.h"
 
-CGoalView::CGoalView(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
+CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
     QGraphicsItem(a_pParent, a_pScene)
 {
     m_iBorderPenWidth = 4;
@@ -29,12 +29,12 @@ CGoalView::CGoalView(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
     this->setAcceptHoverEvents(true);
 }
 
-QRectF CGoalView::boundingRect() const
+QRectF CGoalItem::boundingRect() const
 {
     return m_cBR;
 }
 
-void CGoalView::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void CGoalItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->save();
 
@@ -61,14 +61,14 @@ void CGoalView::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->restore();
 }
 
-void CGoalView::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void CGoalItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     m_iBorderPenWidth = 8;
     m_blFontBold = true;
     this->update(m_cBR);
 }
 
-void CGoalView::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void CGoalItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     m_iBorderPenWidth = 4;
     m_blFontBold = false;
