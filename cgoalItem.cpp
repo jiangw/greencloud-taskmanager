@@ -3,8 +3,8 @@
 CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
     QGraphicsItem(a_pParent, a_pScene)
 {
-    m_iBorderPenWidth = 4;
-    m_iFontSize = 20;
+    m_iBorderPenWidth = TASKMANAGER::ItemBorderWidth;
+    m_iFontSize = TASKMANAGER::ItemFontSize;
     m_cMinBR.setCoords(-150, -50, 150, 50);
     m_blFontBold = false;
 
@@ -63,14 +63,14 @@ void CGoalItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
 void CGoalItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
-    m_iBorderPenWidth = 8;
-    m_blFontBold = true;
+    m_iBorderPenWidth = TASKMANAGER::ItemBorderWidth * 2;
+    m_blFontBold = !m_blFontBold;
     this->update(m_cBR);
 }
 
 void CGoalItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    m_iBorderPenWidth = 4;
-    m_blFontBold = false;
+    m_iBorderPenWidth = TASKMANAGER::ItemBorderWidth;
+    m_blFontBold = !m_blFontBold;
     this->update(m_cBR);
 }

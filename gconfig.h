@@ -19,6 +19,9 @@ namespace TASKMANAGER
         EWorkSpaceStatus m_eWorkSpaceStatus;
         ESysLabel m_eSysLabel;
     };
+    //properties of graphic items
+    const int ItemBorderWidth = 4;
+    const int ItemFontSize = 25;
 }
 
 #endif // GCONFIG_H
