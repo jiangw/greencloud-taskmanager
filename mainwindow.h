@@ -15,12 +15,6 @@
 #include "cworkspace.h"
 #include "cworkspaceview.h"
 
-#ifdef PF_TEST
-
-#include "ctestbox.h"
-
-#endif
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -42,9 +36,6 @@ public:
     QStatusBar* m_pStatusBar;
 
     QToolBar* m_pSystemLabel;
-    QAction* m_pSysRect;
-    QAction* m_pSysElps;
-    QList<QAction *> m_pSysLabelGroup;
 
     CWorkSpace* m_pWorkSpace;
     CWorkSpaceView* m_pWorkSpaceView;
@@ -52,9 +43,6 @@ public:
     QDockWidget* m_pCustomLabel;
 
 public slots:
-    void Slot_SysRectChecked(bool a_pStatus);
-    void Slot_SysElpsChecked(bool a_pStatus);
-    void Slot_SysLabelDrawn();
 };
 
 #endif // MAINWINDOW_H

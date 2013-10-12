@@ -15,7 +15,6 @@ public:
     void SysLabelDraw(QPointF a_cPos);
 
     TASKMANAGER::EWorkSpaceStatus m_eStatus;
-    TASKMANAGER::ESysLabel m_eSysLabel;
     
 signals:
     void Signal_SysLabelDrawn();

@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->resize(600, 400);
+    this->resize(800, 600);
     this->setWindowTitle(tr("Task Manager"));
     this->GVFCreate();
     this->MenusCreate();
@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_pStatusBar->setStatusTip("Welcome to use Task Manager.");
     this->setStatusBar(m_pStatusBar);
 
-    this->move(300, 150);
+    this->move(200, 50);
 }
 
 MainWindow::~MainWindow()
@@ -32,7 +32,7 @@ void MainWindow::MenusCreate()
     m_pAddGoalAction->setStatusTip(tr("Add a new goal in the work space."));
     m_pAddGoalAction->setIcon(QIcon(":/sys/sys_elps.png"));
     m_pFileMenu->addAction(m_pAddGoalAction);
-    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(Slot_AddGoalAction()));
+    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(SLOT_AddGoalAction()));
 
     m_pFileMenu->addSeparator();
 
@@ -50,7 +50,7 @@ void MainWindow::MenusCreate()
     m_pDragModeAction->setCheckable(true);
     m_pViewMenu->addAction(m_pDragModeAction);
     connect(m_pDragModeAction, SIGNAL(toggled(bool)), \
-            m_pWorkSpaceView, SLOT(Slot_DragModeSwitched(bool)));
+            m_pWorkSpaceView, SLOT(SLOT_DragModeSwitched(bool)));
 }
 
 void MainWindow::GVFCreate()
@@ -61,9 +61,6 @@ void MainWindow::GVFCreate()
     //initiate workspace
     m_pWorkSpace->setBackgroundBrush(QBrush(Qt::gray));
     m_pWorkSpace->setSceneRect(-1500, -1500, 3000, 3000);
-
-    //connect signals and slots
-    connect(m_pWorkSpace, SIGNAL(Signal_SysLabelDrawn()), this, SLOT(Slot_SysLabelDrawn()));
 
     this->setCentralWidget(m_pWorkSpaceView);
 }
@@ -84,80 +81,4 @@ void MainWindow::ToolBarCreate()
     m_pSystemLabel = this->addToolBar(tr("System Labels"));
     m_pSystemLabel->setMovable(false);
     m_pSystemLabel->setVisible(false);
-
-    m_pSysRect = new QAction(this);
-    m_pSysRect->setIcon(QIcon(tr(":/sys/sys_rect.png")));
-    m_pSysRect->setStatusTip(tr("Add a rectangle to work space."));
-    m_pSysRect->setCheckable(true);
-    connect(m_pSysRect, SIGNAL(toggled(bool)), this, SLOT(Slot_SysRectChecked(bool)));
-    m_pSystemLabel->addAction(m_pSysRect);
-    m_pSysLabelGroup << m_pSysRect; //append the action to action group
-
-    m_pSysElps = new QAction(this);
-    m_pSysElps->setIcon(QIcon(tr(":/sys/sys_elps.png")));
-    m_pSysElps->setStatusTip(tr("Add an ellipse to work space."));
-    m_pSysElps->setCheckable(true);
-    connect(m_pSysElps, SIGNAL(toggled(bool)), this, SLOT(Slot_SysElpsChecked(bool)));
-    m_pSystemLabel->addAction(m_pSysElps);
-    m_pSysLabelGroup << m_pSysElps; //append the action to action group
-
-    this->addToolBar(m_pSystemLabel);
-}
-
-void MainWindow::Slot_SysRectChecked(bool a_pStatus)
-{
-    if(a_pStatus) //if the action is cheched
-    {
-        foreach(QAction* l_pAction, m_pSysLabelGroup)
-        {
-            if(l_pAction != m_pSysRect)
-            {
-                l_pAction->setChecked(false);
-            }
-        }
-        if(m_pDragModeAction->isChecked())
-        {
-            m_pDragModeAction->setChecked(false);
-        }
-
-        m_pWorkSpace->m_eStatus = TASKMANAGER::DRAWSYSLABEL;
-        m_pWorkSpace->m_eSysLabel = TASKMANAGER::SYSRECT;
-    }
-}
-
-void MainWindow::Slot_SysElpsChecked(bool a_pStatus)
-{
-    if(a_pStatus) //if the action is checked
-    {
-        foreach(QAction* l_pAction, m_pSysLabelGroup)
-        {
-            if(l_pAction != m_pSysElps)
-            {
-                l_pAction->setChecked(false);
-            }
-        }
-        if(m_pDragModeAction->isChecked())
-        {
-            m_pDragModeAction->setChecked(false);
-        }
-
-        m_pWorkSpace->m_eStatus = TASKMANAGER::DRAWSYSLABEL;
-        m_pWorkSpace->m_eSysLabel = TASKMANAGER::SYSELPS;
-    }
-}
-
-void MainWindow::Slot_SysLabelDrawn()
-{
-    switch(m_pWorkSpace->m_eSysLabel)
-    {
-    case TASKMANAGER::SYSRECT:
-        m_pSysRect->setChecked(false);
-        break;
-    case TASKMANAGER::SYSELPS:
-        m_pSysElps->setChecked(false);
-        break;
-    default:
-        break;
-    }
-    m_pWorkSpace->m_eSysLabel = TASKMANAGER::NONE;
 }

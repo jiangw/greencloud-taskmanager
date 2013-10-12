@@ -26,7 +26,16 @@ CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
     //initialize bounding rect
     m_cBR = m_cMinBR;
 
+    //initialize frame id for animation
+    m_iFrameId = 0;
+
     this->setAcceptHoverEvents(true);
+
+    //临时成员
+    m_blTitle = false;
+    m_blIntro = false;
+    m_blBkgrnd = false;
+    m_blSteps = false;
 }
 
 QRectF CGoalItem::boundingRect() const
@@ -68,9 +77,79 @@ void CGoalItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
     this->update(m_cBR);
 }
 
+void CGoalItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+#ifdef PF_TEST
+    std::cout << "[CGoalItem] Mouse is pressed." << std::endl;
+    Q_UNUSED(event);
+#endif
+    m_cLastPos = event->pos();
+    QGraphicsItem::mousePressEvent(event);
+    event->setAccepted(true);
+}
+
+void CGoalItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton && \
+            QLineF(m_cLastPos, event->pos()).length() < 3) //left button clicked
+    {
+        if(!m_blTitle)
+        {
+            emit this->SIGNAL_AddGoalTitle(this);
+        }
+        else if(!m_blIntro)
+        {
+            emit this->SIGNAL_AddGoalIntro(this);
+        }
+        else if(!m_blBkgrnd)
+        {
+            emit this->SIGNAL_AddGoalBkgrnd(this);
+        }
+        else if(!m_blSteps)
+        {
+            emit this->SIGNAL_AddGoalSteps(this);
+        }
+        else
+        {
+            emit this->SIGNAL_ShowGoal(this);
+        }
+    }
+}
+
 void CGoalItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     m_iBorderPenWidth = TASKMANAGER::ItemBorderWidth;
     m_blFontBold = !m_blFontBold;
     this->update(m_cBR);
+}
+
+void CGoalItem::SLOT_Animation()
+{
+    if(!this->isVisible())
+    {
+        this->setVisible(true);
+    }
+    qreal l_pScale[5] = {0.2, 0.4, 0.6, 0.8, 1.0};
+    this->setScale(l_pScale[m_iFrameId]);
+    if(++m_iFrameId > 4)
+    {
+        m_iFrameId = 0;
+        emit this->SIGNAL_AnimationOver();
+    }
+}
+
+void CGoalItem::SLOT_SetGoalTitle(QTextDocument *a_pDoc)
+{
+#ifdef PF_TEST
+    Q_UNUSED(a_pDoc);
+    std::cout << "Set goal title as " << a_pDoc->toPlainText().toStdString() << std::endl;
+#endif
+    m_blTitle = true;
+
+    emit this->SIGNAL_ShowGoal(this);
+}
+
+void CGoalItem::SLOT_ShowGoal()
+{
+    emit this->SIGNAL_ShowGoal(this);
 }
