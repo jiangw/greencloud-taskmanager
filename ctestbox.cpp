@@ -1,11 +1,5 @@
 #include "ctestbox.h"
 
-void CTestBox::AddTextItemToScene(QGraphicsScene *a_pScene)
-{
-    CGoalItem* l_pGoal = new CGoalItem(NULL, a_pScene);
-    Q_UNUSED(l_pGoal);
-}
-
 void CTestBox::PrintTransformMtx(QTransform *a_pMtx)
 {
     std::cout << "Transformation Matrix:" << std::endl;
@@ -27,4 +21,9 @@ void CTestBox::PrintGraphicsItemLocation(QGraphicsItem *a_pItem)
     QRectF l_cRect = a_pItem->boundingRect();
     std::cout << "center (" << l_cRect.x() + l_cRect.width() / 2 << ", " << \
                  l_cRect.y() + l_cRect.height() / 2 << ")" << std::endl;
+}
+
+void CTestBox::PrintMsg(std::string a_strMsg)
+{
+    std::cout << a_strMsg << std::endl;
 }

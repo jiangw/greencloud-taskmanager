@@ -19,7 +19,12 @@ SOURCES += main.cpp\
     ctestbox.cpp \
     cgoalItem.cpp \
     ctextinputitem.cpp \
-    cbuttonitem.cpp
+    cbuttonitem.cpp \
+    citemanimation.cpp \
+    clabelitem.cpp \
+    clineitem.cpp \
+    cselectitem.cpp \
+    cmemberitem.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -28,7 +33,12 @@ HEADERS  += mainwindow.h \
     gconfig.h \
     cgoalitem.h \
     ctextinputitem.h \
-    cbuttonitem.h
+    cbuttonitem.h \
+    citemanimation.h \
+    clabelitem.h \
+    clineitem.h \
+    cselectitem.h \
+    cmemberitem.h
 
 RESOURCES += \
     res.qrc

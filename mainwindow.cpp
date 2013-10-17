@@ -32,7 +32,7 @@ void MainWindow::MenusCreate()
     m_pAddGoalAction->setStatusTip(tr("Add a new goal in the work space."));
     m_pAddGoalAction->setIcon(QIcon(":/sys/sys_elps.png"));
     m_pFileMenu->addAction(m_pAddGoalAction);
-    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(SLOT_AddGoalAction()));
+    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(SLOT_AddGoalActionProc()));
 
     m_pFileMenu->addSeparator();
 

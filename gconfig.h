@@ -15,15 +15,22 @@
 namespace TASKMANAGER
 {
     //workspace status
-    enum EWorkSpaceStatus{IDLE, DRAWSYSLABEL};
+    enum EWorkSpaceStatus{IDLE, ADDGOALTITLE, ADDGOALMEMBERS, ADDGOALINTRO, \
+                         ADDGOALBKGRND, ADDGOALSTEPS, SHOWGOAL};
     //workspace flag struct
     struct SWorkSpaceFlag
     {
         EWorkSpaceStatus m_eWorkSpaceStatus;
     };
     //properties of graphic items
-    const int ItemBorderWidth = 4;
-    const int ItemFontSize = 25;
+    const int g_iMouseClickDistThreshold = 3;
+    const int g_iItemBorderWidth = 4;
+    const int g_iItemFontSizeLarge = 25;
+    const int g_iItemFontSizeSmall = 10;
+    const int g_iItemDisappearFrames = 10;
+    const int g_iItemAppearFrames = 5;
+    const int g_iItemIntervalX = 8; //standard distance between two items in X direction
+    const int g_iItemIntervalY = 10; //standard distance between two items in Y direction
 }
 
 #endif // GCONFIG_H

@@ -11,10 +11,13 @@
 #include <QBrush>
 #include <QFont>
 #include <QGraphicsSceneMouseEvent>
+#include <QList>
 
 #include "gconfig.h"
+#include "citemanimation.h"
+#include "cmemberitem.h"
 
-class CGoalItem :public QObject, public QGraphicsItem
+class CGoalItem : public CItemAnimation, public QGraphicsItem
 {
     Q_OBJECT
 public:
@@ -32,17 +35,25 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 signals:
-    void SIGNAL_AnimationOver();
     void SIGNAL_AddGoalTitle(CGoalItem* a_pGoalItem);
+    void SIGNAL_AddGoalMembers(CGoalItem* a_pGoalItem);
+    void SIGNAL_RequestMembers(CGoalItem* a_pGoalItem);
+    void SIGNAL_RemoveMemberItemsEmit();
     void SIGNAL_AddGoalIntro(CGoalItem* a_pGoalItem);
     void SIGNAL_AddGoalBkgrnd(CGoalItem* a_pGoalItem);
     void SIGNAL_AddGoalSteps(CGoalItem* a_pGoalItem);
     void SIGNAL_ShowGoal(CGoalItem* a_pGoalItem);
     
 public slots:
-    void SLOT_Animation();
-    void SLOT_SetGoalTitle(QTextDocument* a_pDoc);
-    void SLOT_ShowGoal();
+    void SLOT_SetGoalTitleProc(QTextDocument* a_pDoc);
+    void SLOT_SetGoalMembersProc(QList<CMemberItem *>* a_ppMembers);
+    void SLOT_SetGoalIntroProc(QTextDocument* a_pDoc);
+    void SLOT_ShowGoalEmit();
+    void SLOT_RequestMembersEmit();
+
+    void SLOT_AppearItemProc();
+    void SLOT_RemoveItemEmit();
+    void SLOT_DeleteItemEmit();
 
 private:
     //View
@@ -55,10 +66,9 @@ private:
     QPen m_cBorderPen;
     QBrush m_cBgBrush;
     QPointF m_cLastPos;
-    //Animation
-    int m_iFrameId;
     //Model properties (临时使用，Model类完成后这些变量将移到其中)
     bool m_blTitle;
+    bool m_blMembers;
     bool m_blIntro;
     bool m_blBkgrnd;
     bool m_blSteps;

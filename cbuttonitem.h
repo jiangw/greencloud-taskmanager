@@ -1,24 +1,35 @@
 #ifndef CBUTTONITEM_H
 #define CBUTTONITEM_H
 
-#include <QGraphicsTextItem>
+#include <QGraphicsItem>
 #include <QRectF>
 #include <QPointF>
+#include <QString>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
 
 #include "gconfig.h"
+#include "citemanimation.h"
 
-class CButtonItem : public QGraphicsTextItem
+class CButtonItem : public CItemAnimation, public QGraphicsItem
 {
     Q_OBJECT
 public:
-    explicit CButtonItem(QGraphicsItem* a_pParent, QGraphicsScene* a_pScene = NULL);
+    explicit CButtonItem(QString a_strText, QGraphicsItem* a_pParent);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
 
+    void SetButtonText(QString a_strText);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+public slots:
+    void SLOT_DeleteItemEmit();
+    void SLOT_DisappearItemProc();
+    void SLOT_RemoveItemEmit();
 
 signals:
     void SIGNAL_LeftButtonClicked();
@@ -26,6 +37,7 @@ signals:
 private:
     QRectF m_cBR; //bounding rect
     QPointF m_cLastPos;
+    QString m_strText;
 };
 
 #endif // CBUTTONITEM_H

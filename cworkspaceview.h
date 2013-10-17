@@ -3,15 +3,20 @@
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QGraphicsItem>
 #include <QPoint>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QList>
 
 #include "gconfig.h"
 #include "cworkspace.h"
 #include "cgoalitem.h"
 #include "ctextinputitem.h"
 #include "cbuttonitem.h"
+#include "clabelitem.h"
+#include "clineitem.h"
+#include "cmemberitem.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -19,23 +24,36 @@ class CWorkSpaceView : public QGraphicsView
 public:
     CWorkSpaceView(CWorkSpace* a_pWorkSpace, QWidget* a_pParent);
     virtual ~CWorkSpaceView();
+
+    void ConnDelItemToCommonBtns(QList<CButtonItem *>* a_pCommonBtns, CItemAnimation* a_pDelItem);
     
 signals:
     
 public slots:
     void SLOT_DragModeSwitched(bool a_blFlag);
-    void SLOT_AddGoalAction();
-    void SLOT_AddGoalTitle(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalIntro(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalBkgrnd(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalSteps(CGoalItem* a_pGoalItem);
-    void SLOT_ShowGoal(CGoalItem* a_pGoalItem);
+    void SLOT_AddGoalActionProc();
+    void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
+    void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
+    void SLOT_RequestMembersProc(CGoalItem* a_pGoalItem);
+    void SLOT_AddMemberItemProc();
+    void SLOT_RemoveMemberItemProc();
+    void SLOT_RemoveMemberItemGroupProc();
+    void SLOT_AddGoalIntroProc(CGoalItem* a_pGoalItem);
+    void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
+    void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
+    void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
+
+    void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \
+                         CItemAnimation* a_pItemAnim);
+    void SLOT_DeleteItemProc(QGraphicsItem* a_pItem);
 
 private:
     CWorkSpace* m_pWorkSpace;
     QPoint m_cLastMousePos;
     TASKMANAGER::SWorkSpaceFlag m_sLastFlag;
     CGoalItem* m_pGoalItem;
+    QList<CMemberItem *> m_pMemberGroup;
+
 };
 
 #endif // CWORKSPACEVIEW_H
