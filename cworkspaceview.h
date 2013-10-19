@@ -41,6 +41,7 @@ public slots:
     void SLOT_AddGoalIntroProc(CGoalItem* a_pGoalItem);
     void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
     void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
+    void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
     void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
 
     void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \

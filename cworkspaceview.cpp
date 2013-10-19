@@ -60,6 +60,8 @@ void CWorkSpaceView::SLOT_AddGoalActionProc()
                 this, SLOT(SLOT_AddGoalBkgrndProc(CGoalItem*)));
         connect(m_pGoalItem, SIGNAL(SIGNAL_AddGoalSteps(CGoalItem*)), \
                 this, SLOT(SLOT_AddGoalStepsProc(CGoalItem*)));
+        connect(m_pGoalItem, SIGNAL(SIGNAL_AddGoalRes(CGoalItem*)), \
+                this, SLOT(SLOT_AddGoalResProc(CGoalItem*)));
         connect(m_pGoalItem, SIGNAL(SIGNAL_ShowGoal(CGoalItem*)), \
                 this, SLOT(SLOT_ShowGoalProc(CGoalItem*)));
         //animate item shape
@@ -138,7 +140,7 @@ void CWorkSpaceView::SLOT_AddGoalTitleProc(CGoalItem *a_pGoalItem)
 void CWorkSpaceView::SLOT_AddGoalMembersProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg("[CWorkSpaceView] Add goal members.");
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal members.");
 #endif
     if(TASKMANAGER::ADDGOALMEMBERS != m_pWorkSpace->m_eStatus)
     {
@@ -220,7 +222,7 @@ void CWorkSpaceView::SLOT_AddGoalMembersProc(CGoalItem *a_pGoalItem)
 void CWorkSpaceView::SLOT_AddGoalIntroProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg("[CWorkSpaceView] Add goal introduction.");
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal introduction.");
 #endif
     if(TASKMANAGER::ADDGOALINTRO != m_pWorkSpace->m_eStatus)
     {
@@ -287,7 +289,7 @@ void CWorkSpaceView::SLOT_AddGoalIntroProc(CGoalItem *a_pGoalItem)
 void CWorkSpaceView::SLOT_AddGoalBkgrndProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg("[CWorkSpaceView] Add goal background.");
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal background.");
 #endif
     if(TASKMANAGER::ADDGOALBKGRND != m_pWorkSpace->m_eStatus)
     {
@@ -295,12 +297,66 @@ void CWorkSpaceView::SLOT_AddGoalBkgrndProc(CGoalItem *a_pGoalItem)
     }
     else
         return;
+
+    QList<CButtonItem*> l_pCommonBtns;
+
+    //draw the tip
+    CLabelItem* l_pTip = new CLabelItem("Why do you have the goal?", NULL);
+    m_pWorkSpace->addItem(l_pTip);
+    l_pTip->setPos(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + 4, \
+                   -l_pTip->boundingRect().height() * 1.1);
+    //draw line
+    CLineItem* l_pLine = new CLineItem(QLineF(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2, \
+                                              a_pGoalItem->pos().y(), \
+                                              a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                                              a_pGoalItem->pos().y()), 4, NULL);
+    m_pWorkSpace->addItem(l_pLine);
+    //draw textinput
+    CTextInputItem* l_pTextInput = new CTextInputItem(NULL);
+    l_pTextInput->SetInputTip("Click to enter goal background.");
+    l_pTextInput->setPos(\
+                a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                -l_pTextInput->boundingRect().height() / 2);
+    m_pWorkSpace->addItem(l_pTextInput);
+    //draw button
+    CButtonItem* l_pOK = new CButtonItem("OK", NULL);
+    CButtonItem* l_pCancel = new CButtonItem("Cancel", NULL);
+    l_pOK->setPos(l_pTextInput->pos().x(), \
+                  l_pTextInput->pos().y() - l_pOK->boundingRect().height() * 1.2);
+    l_pCancel->setPos(l_pOK->pos().x() + l_pOK->boundingRect().width() * 1.3, \
+                      l_pOK->pos().y());
+    m_pWorkSpace->addItem(l_pOK);
+    m_pWorkSpace->addItem(l_pCancel);
+    l_pCommonBtns.append(l_pOK);
+    l_pCommonBtns.append(l_pCancel);
+
+    /*connect signals and slots for setting goal background*/
+    connect(l_pOK, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            l_pTextInput, SLOT(SLOT_SubmitTextEmit()));
+    connect(l_pTextInput, SIGNAL(SIGNAL_SubmitText(QTextDocument*)), \
+            a_pGoalItem, SLOT(SLOT_SetGoalBkgrndProc(QTextDocument*)));
+    /*connect signals and slots for cancellation*/
+    connect(l_pCancel, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            a_pGoalItem, SLOT(SLOT_ShowGoalEmit()));
+    /*connect signals and slots for removing items*/
+    //delete OK button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pOK);
+    //delete Cancel button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pCancel);
+    //delete Tip item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTip);
+    //delete Line item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pLine);
+    //delete Text Input item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTextInput);
+
+    this->centerOn(l_pTextInput);
 }
 
 void CWorkSpaceView::SLOT_AddGoalStepsProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg("[CWorkSpaceView] Add goal steps.");
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal steps.");
 #endif
     if(TASKMANAGER::ADDGOALSTEPS != m_pWorkSpace->m_eStatus)
     {
@@ -308,12 +364,133 @@ void CWorkSpaceView::SLOT_AddGoalStepsProc(CGoalItem *a_pGoalItem)
     }
     else
         return;
+
+    QList<CButtonItem*> l_pCommonBtns;
+
+    //draw the tip
+    CLabelItem* l_pTip = new CLabelItem("List steps to achieve the goal?", NULL);
+    m_pWorkSpace->addItem(l_pTip);
+    l_pTip->setPos(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + 4, \
+                   -l_pTip->boundingRect().height() * 1.1);
+    //draw line
+    CLineItem* l_pLine = new CLineItem(QLineF(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2, \
+                                              a_pGoalItem->pos().y(), \
+                                              a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                                              a_pGoalItem->pos().y()), 4, NULL);
+    m_pWorkSpace->addItem(l_pLine);
+    //draw textinput
+    CTextInputItem* l_pTextInput = new CTextInputItem(NULL);
+    l_pTextInput->SetInputTip("Click to enter goal steps.");
+    l_pTextInput->setPos(\
+                a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                -l_pTextInput->boundingRect().height() / 2);
+    m_pWorkSpace->addItem(l_pTextInput);
+    //draw button
+    CButtonItem* l_pOK = new CButtonItem("OK", NULL);
+    CButtonItem* l_pCancel = new CButtonItem("Cancel", NULL);
+    l_pOK->setPos(l_pTextInput->pos().x(), \
+                  l_pTextInput->pos().y() - l_pOK->boundingRect().height() * 1.2);
+    l_pCancel->setPos(l_pOK->pos().x() + l_pOK->boundingRect().width() * 1.3, \
+                      l_pOK->pos().y());
+    m_pWorkSpace->addItem(l_pOK);
+    m_pWorkSpace->addItem(l_pCancel);
+    l_pCommonBtns.append(l_pOK);
+    l_pCommonBtns.append(l_pCancel);
+
+    /*connect signals and slots for setting goal steps*/
+    connect(l_pOK, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            l_pTextInput, SLOT(SLOT_SubmitTextEmit()));
+    connect(l_pTextInput, SIGNAL(SIGNAL_SubmitText(QTextDocument*)), \
+            a_pGoalItem, SLOT(SLOT_SetGoalStepsProc(QTextDocument*)));
+    /*connect signals and slots for cancellation*/
+    connect(l_pCancel, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            a_pGoalItem, SLOT(SLOT_ShowGoalEmit()));
+    /*connect signals and slots for removing items*/
+    //delete OK button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pOK);
+    //delete Cancel button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pCancel);
+    //delete Tip item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTip);
+    //delete Line item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pLine);
+    //delete Text Input item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTextInput);
+
+    this->centerOn(l_pTextInput);
+}
+
+void CWorkSpaceView::SLOT_AddGoalResProc(CGoalItem *a_pGoalItem)
+{
+#ifdef PF_TEST
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal resources.");
+#endif
+    if(TASKMANAGER::ADDGOALRES != m_pWorkSpace->m_eStatus)
+    {
+        m_pWorkSpace->m_eStatus = TASKMANAGER::ADDGOALRES;
+    }
+    else
+        return;
+
+    QList<CButtonItem*> l_pCommonBtns;
+
+    //draw the tip
+    CLabelItem* l_pTip = new CLabelItem("What resources will you use?", NULL);
+    m_pWorkSpace->addItem(l_pTip);
+    l_pTip->setPos(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + 4, \
+                   -l_pTip->boundingRect().height() * 1.1);
+    //draw line
+    CLineItem* l_pLine = new CLineItem(QLineF(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2, \
+                                              a_pGoalItem->pos().y(), \
+                                              a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                                              a_pGoalItem->pos().y()), 4, NULL);
+    m_pWorkSpace->addItem(l_pLine);
+    //draw textinput
+    CTextInputItem* l_pTextInput = new CTextInputItem(NULL);
+    l_pTextInput->SetInputTip("Click to enter goal resources.");
+    l_pTextInput->setPos(\
+                a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+                -l_pTextInput->boundingRect().height() / 2);
+    m_pWorkSpace->addItem(l_pTextInput);
+    //draw button
+    CButtonItem* l_pOK = new CButtonItem("OK", NULL);
+    CButtonItem* l_pCancel = new CButtonItem("Cancel", NULL);
+    l_pOK->setPos(l_pTextInput->pos().x(), \
+                  l_pTextInput->pos().y() - l_pOK->boundingRect().height() * 1.2);
+    l_pCancel->setPos(l_pOK->pos().x() + l_pOK->boundingRect().width() * 1.3, \
+                      l_pOK->pos().y());
+    m_pWorkSpace->addItem(l_pOK);
+    m_pWorkSpace->addItem(l_pCancel);
+    l_pCommonBtns.append(l_pOK);
+    l_pCommonBtns.append(l_pCancel);
+
+    /*connect signals and slots for setting goal steps*/
+    connect(l_pOK, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            l_pTextInput, SLOT(SLOT_SubmitTextEmit()));
+    connect(l_pTextInput, SIGNAL(SIGNAL_SubmitText(QTextDocument*)), \
+            a_pGoalItem, SLOT(SLOT_SetGoalResProc(QTextDocument*)));
+    /*connect signals and slots for cancellation*/
+    connect(l_pCancel, SIGNAL(SIGNAL_LeftButtonClicked()), \
+            a_pGoalItem, SLOT(SLOT_ShowGoalEmit()));
+    /*connect signals and slots for removing items*/
+    //delete OK button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pOK);
+    //delete Cancel button
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pCancel);
+    //delete Tip item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTip);
+    //delete Line item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pLine);
+    //delete Text Input item
+    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTextInput);
+
+    this->centerOn(l_pTextInput);
 }
 
 void CWorkSpaceView::SLOT_ShowGoalProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg("[CWorkSpaceView] Show goal.");
+    CTestBox::PrintMsg(L"[CWorkSpaceView] Show goal.");
 #endif
     this->centerOn(a_pGoalItem);
     m_pWorkSpace->m_eStatus = TASKMANAGER::SHOWGOAL;

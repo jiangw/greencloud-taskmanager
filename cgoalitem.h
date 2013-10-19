@@ -16,6 +16,7 @@
 #include "gconfig.h"
 #include "citemanimation.h"
 #include "cmemberitem.h"
+#include "cgoal.h"
 
 class CGoalItem : public CItemAnimation, public QGraphicsItem
 {
@@ -42,12 +43,16 @@ signals:
     void SIGNAL_AddGoalIntro(CGoalItem* a_pGoalItem);
     void SIGNAL_AddGoalBkgrnd(CGoalItem* a_pGoalItem);
     void SIGNAL_AddGoalSteps(CGoalItem* a_pGoalItem);
+    void SIGNAL_AddGoalRes(CGoalItem* a_pGoalItem);
     void SIGNAL_ShowGoal(CGoalItem* a_pGoalItem);
     
 public slots:
     void SLOT_SetGoalTitleProc(QTextDocument* a_pDoc);
     void SLOT_SetGoalMembersProc(QList<CMemberItem *>* a_ppMembers);
     void SLOT_SetGoalIntroProc(QTextDocument* a_pDoc);
+    void SLOT_SetGoalBkgrndProc(QTextDocument* a_pDoc);
+    void SLOT_SetGoalStepsProc(QTextDocument* a_pDoc);
+    void SLOT_SetGoalResProc(QTextDocument* a_pDoc);
     void SLOT_ShowGoalEmit();
     void SLOT_RequestMembersEmit();
 
@@ -66,12 +71,14 @@ private:
     QPen m_cBorderPen;
     QBrush m_cBgBrush;
     QPointF m_cLastPos;
-    //Model properties (临时使用，Model类完成后这些变量将移到其中)
-    bool m_blTitle;
+
+    //Models
+    CGoal m_cGoal;
     bool m_blMembers;
     bool m_blIntro;
     bool m_blBkgrnd;
     bool m_blSteps;
+    bool m_blRes;
 };
 
 #endif // CGOALVIEW_H

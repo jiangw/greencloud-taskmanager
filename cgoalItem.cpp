@@ -31,10 +31,11 @@ CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
 
     this->setAcceptHoverEvents(true);
 
-    //临时成员
-    m_blTitle = false;
+    //model properties
     m_blIntro = false;
+    m_blMembers = false;
     m_blBkgrnd = false;
+    m_blRes = false;
     m_blSteps = false;
 }
 
@@ -65,7 +66,12 @@ void CGoalItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     m_cTextFont.setBold(m_blFontBold);
     painter->setFont(m_cTextFont);
     painter->setPen(m_cTextPen);
-    painter->drawText(m_cBR, Qt::AlignCenter, "Goal");
+    QString l_strTitle = QString::fromStdWString(m_cGoal.GetTitle());
+    if(l_strTitle.isEmpty())
+    {
+        l_strTitle = "Goal";
+    }
+    painter->drawText(m_cBR, Qt::AlignCenter, l_strTitle);
 
     painter->restore();
 }
@@ -89,7 +95,7 @@ void CGoalItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if(event->button() == Qt::LeftButton && \
             QLineF(m_cLastPos, event->pos()).length() < 3) //left button clicked
     {
-        if(!m_blTitle)
+        if(!m_cGoal.TitleStatus())
         {
             emit this->SIGNAL_AddGoalTitle(this);
         }
@@ -108,6 +114,10 @@ void CGoalItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         else if(!m_blSteps)
         {
             emit this->SIGNAL_AddGoalSteps(this);
+        }
+        else if(!m_blRes)
+        {
+            emit this->SIGNAL_AddGoalRes(this);
         }
         else
         {
@@ -151,9 +161,10 @@ void CGoalItem::SLOT_SetGoalTitleProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
     Q_UNUSED(a_pDoc);
-    std::cout << "Set goal title as \"" << a_pDoc->toPlainText().toStdString() << "\"" << std::endl;
+    TB_cout << "[CGoalItem] Set goal title as \"" << a_pDoc->toPlainText().toStdWString() \
+               << "\"" << std::endl;
 #endif
-    m_blTitle = true;
+    m_cGoal.SetTitle(a_pDoc->toPlainText().toStdWString());
 
     emit this->SIGNAL_ShowGoal(this);
 }
@@ -174,8 +185,8 @@ void CGoalItem::SLOT_SetGoalMembersProc(QList<CMemberItem *> *a_ppMembers)
     foreach(l_pMember, *a_ppMembers)
     {
 #ifdef PF_TEST
-        std::cout << "[CGoalItem] Add member: " << \
-                     l_pMember->GetMemberName().toStdString() << std::endl;
+        TB_cout << L"[CGoalItem] Add member: " << \
+                     l_pMember->GetMemberName().toStdWString() << std::endl;
 #endif
     }
     m_blMembers = true;
@@ -186,9 +197,39 @@ void CGoalItem::SLOT_SetGoalMembersProc(QList<CMemberItem *> *a_ppMembers)
 void CGoalItem::SLOT_SetGoalIntroProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
-    std::cout << "[CGoalItem] Set goal introduction as \"" << \
-                 a_pDoc->toPlainText().toStdString() << "\"" << std::endl;
+    TB_cout << L"[CGoalItem] Set goal introduction as \"" << \
+                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
 #endif
     m_blIntro = true;
+    emit this->SIGNAL_ShowGoal(this);
+}
+
+void CGoalItem::SLOT_SetGoalBkgrndProc(QTextDocument *a_pDoc)
+{
+#ifdef PF_TEST
+    TB_cout << L"[CGoalItem] Set goal background as \"" << \
+                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+#endif
+    m_blBkgrnd = true;
+    emit this->SIGNAL_ShowGoal(this);
+}
+
+void CGoalItem::SLOT_SetGoalStepsProc(QTextDocument *a_pDoc)
+{
+#ifdef PF_TEST
+    TB_cout << L"[CGoalItem] Set goal steps as \"" << \
+                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+#endif
+    m_blSteps = true;
+    emit this->SIGNAL_ShowGoal(this);
+}
+
+void CGoalItem::SLOT_SetGoalResProc(QTextDocument *a_pDoc)
+{
+#ifdef PF_TEST
+    TB_cout << L"[CGoalItem] Set goal resources as \"" << \
+                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+#endif
+    m_blRes = true;
     emit this->SIGNAL_ShowGoal(this);
 }

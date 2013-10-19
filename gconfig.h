@@ -16,7 +16,7 @@ namespace TASKMANAGER
 {
     //workspace status
     enum EWorkSpaceStatus{IDLE, ADDGOALTITLE, ADDGOALMEMBERS, ADDGOALINTRO, \
-                         ADDGOALBKGRND, ADDGOALSTEPS, SHOWGOAL};
+                         ADDGOALBKGRND, ADDGOALSTEPS, ADDGOALRES, SHOWGOAL};
     //workspace flag struct
     struct SWorkSpaceFlag
     {

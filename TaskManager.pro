@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     clabelitem.cpp \
     clineitem.cpp \
     cselectitem.cpp \
-    cmemberitem.cpp
+    cmemberitem.cpp \
+    cgoal.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     clabelitem.h \
     clineitem.h \
     cselectitem.h \
-    cmemberitem.h
+    cmemberitem.h \
+    cgoal.h
 
 RESOURCES += \
     res.qrc
