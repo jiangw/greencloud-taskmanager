@@ -52,7 +52,8 @@ private:
     CWorkSpace* m_pWorkSpace;
     QPoint m_cLastMousePos;
     TASKMANAGER::SWorkSpaceFlag m_sLastFlag;
-    CGoalItem* m_pGoalItem;
+    QList<CGoalItem *> m_pGoalItemList;
+    CGoalItem* m_pGoalItem; //will be removed
     QList<CMemberItem *> m_pMemberGroup;
 
 };

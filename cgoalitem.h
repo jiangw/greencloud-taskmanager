@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 #include <QTextDocument>
+#include <QTextBlock>
+#include <QTextLayout>
 #include <QRectF>
 #include <QLineF>
 #include <QPainter>
@@ -16,18 +18,23 @@
 #include "gconfig.h"
 #include "citemanimation.h"
 #include "cmemberitem.h"
+#include "ctextinputitem.h"
+#include "cbuttonitem.h"
 #include "cgoal.h"
 
 class CGoalItem : public CItemAnimation, public QGraphicsItem
 {
     Q_OBJECT
 public:
-    CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene);
+    CGoalItem(QGraphicsItem *a_pParent);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     QRectF m_cMinBR; //minimum bounding rect
+
+    //Goal operations
+    void AddGoalTitleUI(); //create UI to add goal title
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -74,7 +81,6 @@ private:
 
     //Models
     CGoal m_cGoal;
-    bool m_blMembers;
     bool m_blIntro;
     bool m_blBkgrnd;
     bool m_blSteps;

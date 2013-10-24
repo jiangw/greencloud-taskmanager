@@ -1,11 +1,11 @@
 #include "cgoalitem.h"
 
-CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
-    QGraphicsItem(a_pParent, a_pScene)
+CGoalItem::CGoalItem(QGraphicsItem *a_pParent) :
+    QGraphicsItem(a_pParent)
 {
     m_iBorderPenWidth = TASKMANAGER::g_iItemBorderWidth;
     m_iFontSize = TASKMANAGER::g_iItemFontSizeLarge;
-    m_cMinBR.setCoords(-150, -50, 150, 50);
+    m_cMinBR.setRect(0, 0, 300, 100);
     m_blFontBold = false;
 
     //config border pen
@@ -33,7 +33,6 @@ CGoalItem::CGoalItem(QGraphicsItem *a_pParent, QGraphicsScene *a_pScene) :
 
     //model properties
     m_blIntro = false;
-    m_blMembers = false;
     m_blBkgrnd = false;
     m_blRes = false;
     m_blSteps = false;
@@ -76,6 +75,64 @@ void CGoalItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->restore();
 }
 
+void CGoalItem::AddGoalTitleUI()
+{
+//    QList<CButtonItem*> l_pCommonBtns;
+
+//    //draw the tip
+//    CLabelItem* l_pTip = new CLabelItem("What's your goal?", NULL);
+//    m_pWorkSpace->addItem(l_pTip);
+//    l_pTip->setPos(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + 4, \
+//                   -l_pTip->boundingRect().height() * 1.1);
+//    //draw line
+//    CLineItem* l_pLine = new CLineItem(QLineF(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2, \
+//                                              a_pGoalItem->pos().y(), \
+//                                              a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+//                                              a_pGoalItem->pos().y()), 4, NULL);
+//    m_pWorkSpace->addItem(l_pLine);
+//    //draw textinput
+//    CTextInputItem* l_pTextInput = new CTextInputItem(NULL);
+//    l_pTextInput->SetInputTip("Click to enter goal title.");
+//    m_pWorkSpace->addItem(l_pTextInput);
+//    l_pTextInput->setPos(\
+//                a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
+//                -l_pTextInput->boundingRect().height() / 2);
+//    this->centerOn(l_pTextInput);
+//    //draw button
+//    CButtonItem* l_pOK = new CButtonItem("OK", NULL);
+//    CButtonItem* l_pCancel = new CButtonItem("Cancel", NULL);
+//    l_pOK->setPos(l_pTextInput->pos().x(), \
+//                  l_pTextInput->pos().y() - l_pOK->boundingRect().height() * 1.2);
+//    l_pCancel->setPos(l_pOK->pos().x() + l_pOK->boundingRect().width() * 1.3, \
+//                      l_pOK->pos().y());
+//    m_pWorkSpace->addItem(l_pOK);
+//    m_pWorkSpace->addItem(l_pCancel);
+//    l_pCommonBtns.append(l_pOK);
+//    l_pCommonBtns.append(l_pCancel);
+
+//    //connect signals to slots for setting new goal title
+//    connect(l_pOK, SIGNAL(SIGNAL_LeftButtonClicked()), \
+//            l_pTextInput, SLOT(SLOT_SubmitTextEmit()));
+//    connect(l_pTextInput, SIGNAL(SIGNAL_SubmitText(QTextDocument*)), \
+//            a_pGoalItem, SLOT(SLOT_SetGoalTitleProc(QTextDocument*)));
+
+//    //connect signals to slots for cancellation
+//    connect(l_pCancel, SIGNAL(SIGNAL_LeftButtonClicked()), \
+//            a_pGoalItem, SLOT(SLOT_ShowGoalEmit()));
+
+//    /*connect signals to slots for removing items*/
+//    //delete OK button
+//    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pOK);
+//    //delete Cancel button
+//    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pCancel);
+//    //delete TextInput item
+//    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTextInput);
+//    //delete Label item
+//    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTip);
+//    //delete Line item
+//    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pLine);
+}
+
 void CGoalItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     m_iBorderPenWidth = TASKMANAGER::g_iItemBorderWidth * 2;
@@ -98,8 +155,9 @@ void CGoalItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         if(!m_cGoal.TitleStatus())
         {
             emit this->SIGNAL_AddGoalTitle(this);
+            this->AddGoalTitleUI();
         }
-        else if(!m_blMembers)
+        else if(!m_cGoal.MembersStatus())
         {
             emit this->SIGNAL_AddGoalMembers(this);
         }
@@ -166,6 +224,31 @@ void CGoalItem::SLOT_SetGoalTitleProc(QTextDocument *a_pDoc)
 #endif
     m_cGoal.SetTitle(a_pDoc->toPlainText().toStdWString());
 
+    //Update size of goal view accroding to the goal title
+    QFontMetrics l_cFM(m_cTextFont);
+    int l_iDocWidth = 0, l_iDocHeight = 0;
+    QTextBlock l_cTxtBlock;
+    for(l_cTxtBlock = a_pDoc->begin(); l_cTxtBlock != a_pDoc->end(); \
+        l_cTxtBlock = l_cTxtBlock.next())
+    {
+        int l_iDocWidthTmp = l_cFM.width(l_cTxtBlock.text());
+        if(l_iDocWidthTmp > l_iDocWidth)
+        {
+            l_iDocWidth = l_iDocWidthTmp;
+        }
+        l_iDocHeight += l_cFM.height();
+    }
+    if(l_iDocWidth > m_cMinBR.width())
+    {
+        this->prepareGeometryChange();
+        m_cBR.setWidth(l_iDocWidth * 1.1);
+    }
+    if(l_iDocHeight > m_cMinBR.height())
+    {
+        this->prepareGeometryChange();
+        m_cBR.setHeight(l_iDocHeight * 1.1);
+    }
+
     emit this->SIGNAL_ShowGoal(this);
 }
 
@@ -181,15 +264,18 @@ void CGoalItem::SLOT_RequestMembersEmit()
 
 void CGoalItem::SLOT_SetGoalMembersProc(QList<CMemberItem *> *a_ppMembers)
 {
-    CMemberItem* l_pMember;
-    foreach(l_pMember, *a_ppMembers)
+    CMemberItem* l_pMemberItem;
+    foreach(l_pMemberItem, *a_ppMembers)
     {
-#ifdef PF_TEST
-        TB_cout << L"[CGoalItem] Add member: " << \
-                     l_pMember->GetMemberName().toStdWString() << std::endl;
-#endif
+        if(l_pMemberItem->GetMemberName().isEmpty() || \
+                l_pMemberItem->GetMemberName() == "")
+        {
+            continue;
+        }
+        CMember l_cNewMember;
+        l_cNewMember.SetName(l_pMemberItem->GetMemberName().toStdWString());
+        m_cGoal.AddMember(&l_cNewMember);
     }
-    m_blMembers = true;
     emit this->SIGNAL_ShowGoal(this);
     emit this->SIGNAL_RemoveMemberItemsEmit();
 }

@@ -11,6 +11,7 @@ CWorkSpaceView::CWorkSpaceView(CWorkSpace *a_pWorkSpace, QWidget *a_pParent) :
 
 CWorkSpaceView::~CWorkSpaceView()
 {
+    m_pGoalItemList.clear();
     m_pWorkSpace = NULL;
 }
 
@@ -46,10 +47,29 @@ void CWorkSpaceView::SLOT_DragModeSwitched(bool a_blFlag)
 
 void CWorkSpaceView::SLOT_AddGoalActionProc()
 {
-    if(NULL == m_pGoalItem)
+    if(NULL != m_pWorkSpace)
     {
-        m_pGoalItem = new CGoalItem(NULL, m_pWorkSpace);
-        m_pGoalItem->setVisible(false);
+        //find an empty space to locate the new goal item
+
+        //because the function above is not implemented currently,
+        //now the application can only add one goal.
+        if(1 <= m_pGoalItemList.length())
+        {
+#ifdef PF_TEST
+            CTestBox::GetTestBox()->ShowMsg(\
+                        L"[CWorkSpaceView] Now you can only add one goal.", CTestBox::ERRORMSG);
+#endif
+            return;
+        }
+        CGoalItem* l_pNewGoalItem = new CGoalItem(NULL);
+        l_pNewGoalItem->setVisible(false);
+        m_pWorkSpace->addItem(l_pNewGoalItem);
+        m_pGoalItemList.append(l_pNewGoalItem);
+
+        this->centerOn(l_pNewGoalItem);
+
+        /*
+        //----------move goal operaions into CGoalItem class----------
         connect(m_pGoalItem, SIGNAL(SIGNAL_AddGoalTitle(CGoalItem*)), \
                 this, SLOT(SLOT_AddGoalTitleProc(CGoalItem*)));
         connect(m_pGoalItem, SIGNAL(SIGNAL_AddGoalMembers(CGoalItem*)),
@@ -64,10 +84,12 @@ void CWorkSpaceView::SLOT_AddGoalActionProc()
                 this, SLOT(SLOT_AddGoalResProc(CGoalItem*)));
         connect(m_pGoalItem, SIGNAL(SIGNAL_ShowGoal(CGoalItem*)), \
                 this, SLOT(SLOT_ShowGoalProc(CGoalItem*)));
+        */
+
         //animate item shape
         QTimer* l_pTimer = new QTimer(this);
-        connect(l_pTimer, SIGNAL(timeout()), m_pGoalItem, SLOT(SLOT_AppearItemProc()));
-        connect(m_pGoalItem, SIGNAL(SIGNAL_AnimEnd()), l_pTimer, SLOT(stop()));
+        connect(l_pTimer, SIGNAL(timeout()), l_pNewGoalItem, SLOT(SLOT_AppearItemProc()));
+        connect(l_pNewGoalItem, SIGNAL(SIGNAL_AnimEnd()), l_pTimer, SLOT(stop()));
         l_pTimer->start(30);
     }
 }
@@ -78,69 +100,15 @@ void CWorkSpaceView::SLOT_AddGoalTitleProc(CGoalItem *a_pGoalItem)
     {
         m_pWorkSpace->m_eStatus = TASKMANAGER::ADDGOALTITLE;
     }
-    else
-        return;
-
-    QList<CButtonItem*> l_pCommonBtns;
-
-    //draw the tip
-    CLabelItem* l_pTip = new CLabelItem("What's your goal?", NULL);
-    m_pWorkSpace->addItem(l_pTip);
-    l_pTip->setPos(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + 4, \
-                   -l_pTip->boundingRect().height() * 1.1);
-    //draw line
-    CLineItem* l_pLine = new CLineItem(QLineF(a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2, \
-                                              a_pGoalItem->pos().y(), \
-                                              a_pGoalItem->pos().x() + a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
-                                              a_pGoalItem->pos().y()), 4, NULL);
-    m_pWorkSpace->addItem(l_pLine);
-    //draw textinput
-    CTextInputItem* l_pTextInput = new CTextInputItem(NULL);
-    l_pTextInput->SetInputTip("Click to enter goal title.");
-    m_pWorkSpace->addItem(l_pTextInput);
-    l_pTextInput->setPos(\
-                a_pGoalItem->boundingRect().width() / 2 + l_pTip->boundingRect().width() + 10, \
-                -l_pTextInput->boundingRect().height() / 2);
-    this->centerOn(l_pTextInput);
-    //draw button
-    CButtonItem* l_pOK = new CButtonItem("OK", NULL);
-    CButtonItem* l_pCancel = new CButtonItem("Cancel", NULL);
-    l_pOK->setPos(l_pTextInput->pos().x(), \
-                  l_pTextInput->pos().y() - l_pOK->boundingRect().height() * 1.2);
-    l_pCancel->setPos(l_pOK->pos().x() + l_pOK->boundingRect().width() * 1.3, \
-                      l_pOK->pos().y());
-    m_pWorkSpace->addItem(l_pOK);
-    m_pWorkSpace->addItem(l_pCancel);
-    l_pCommonBtns.append(l_pOK);
-    l_pCommonBtns.append(l_pCancel);
-
-    //connect signals to slots for setting new goal title
-    connect(l_pOK, SIGNAL(SIGNAL_LeftButtonClicked()), \
-            l_pTextInput, SLOT(SLOT_SubmitTextEmit()));
-    connect(l_pTextInput, SIGNAL(SIGNAL_SubmitText(QTextDocument*)), \
-            a_pGoalItem, SLOT(SLOT_SetGoalTitleProc(QTextDocument*)));
-
-    //connect signals to slots for cancellation
-    connect(l_pCancel, SIGNAL(SIGNAL_LeftButtonClicked()), \
-            a_pGoalItem, SLOT(SLOT_ShowGoalEmit()));
-
-    /*connect signals to slots for removing items*/
-    //delete OK button
-    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pOK);
-    //delete Cancel button
-    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pCancel);
-    //delete TextInput item
-    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTextInput);
-    //delete Label item
-    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pTip);
-    //delete Line item
-    this->ConnDelItemToCommonBtns(&l_pCommonBtns, l_pLine);
+    this->centerOn(a_pGoalItem);
+    //maybe shrink other goal items
 }
 
 void CWorkSpaceView::SLOT_AddGoalMembersProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
     CTestBox::PrintMsg(L"[CWorkSpaceView] Add goal members.");
+    CTestBox::PrintRect(a_pGoalItem->boundingRect());
 #endif
     if(TASKMANAGER::ADDGOALMEMBERS != m_pWorkSpace->m_eStatus)
     {
@@ -491,6 +459,7 @@ void CWorkSpaceView::SLOT_ShowGoalProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
     CTestBox::PrintMsg(L"[CWorkSpaceView] Show goal.");
+    CTestBox::PrintRect(a_pGoalItem->boundingRect());
 #endif
     this->centerOn(a_pGoalItem);
     m_pWorkSpace->m_eStatus = TASKMANAGER::SHOWGOAL;
