@@ -12,6 +12,9 @@
 #include "ctestbox.h"
 #endif
 
+#include <QtCore>
+#include <qmath.h>
+
 namespace TASKMANAGER
 {
     //workspace status
@@ -22,6 +25,8 @@ namespace TASKMANAGER
     {
         EWorkSpaceStatus m_eWorkSpaceStatus;
     };
+    //math
+    const qreal g_dPI = 3.1415926;
     //properties of graphic items
     const int g_iMouseClickDistThreshold = 3;
     const int g_iItemBorderWidth = 4;

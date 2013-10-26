@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <fstream>
 
 #define TB_cout std::wcout
@@ -27,8 +28,9 @@ private:
     std::string m_strPTYName;
 public:
     static CTestBox* GetTestBox();
+    static void InitTestBox();
     ~CTestBox(){CTestBox::m_blFlag = false;}
-    void ShowMsg(TB_string a_wstrMsg, MsgType a_eMsgType);
+    void ShowMsg(TB_string a_wstrMsg, MsgType a_eMsgType = LOGMSG);
 
     static void PrintTransformMtx(QTransform* a_pMtx);
     static void PrintRect(QRectF a_cRect);

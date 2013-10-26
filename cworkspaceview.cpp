@@ -66,6 +66,13 @@ void CWorkSpaceView::SLOT_AddGoalActionProc()
         m_pWorkSpace->addItem(l_pNewGoalItem);
         m_pGoalItemList.append(l_pNewGoalItem);
 
+        connect(l_pNewGoalItem, SIGNAL(SIGNAL_ShowGoal(CGoalItem*)), \
+                this, SLOT(SLOT_ShowGoalProc(CGoalItem*)));
+        connect(l_pNewGoalItem, SIGNAL(SIGNAL_CenterOnItem(QGraphicsItem*)), \
+                this, SLOT(SLOT_CenterOnItemProc(QGraphicsItem*)));
+        connect(l_pNewGoalItem, SIGNAL(SIGNAL_RemoveItem(QGraphicsItem*,CItemAnimation*)), \
+                this, SLOT(SLOT_RemoveItemProc(QGraphicsItem*,CItemAnimation*)));
+
         this->centerOn(l_pNewGoalItem);
 
         /*
@@ -458,8 +465,7 @@ void CWorkSpaceView::SLOT_AddGoalResProc(CGoalItem *a_pGoalItem)
 void CWorkSpaceView::SLOT_ShowGoalProc(CGoalItem *a_pGoalItem)
 {
 #ifdef PF_TEST
-    CTestBox::PrintMsg(L"[CWorkSpaceView] Show goal.");
-    CTestBox::PrintRect(a_pGoalItem->boundingRect());
+    CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Show goal.", CTestBox::LOGMSG);
 #endif
     this->centerOn(a_pGoalItem);
     m_pWorkSpace->m_eStatus = TASKMANAGER::SHOWGOAL;
@@ -550,4 +556,16 @@ void CWorkSpaceView::SLOT_RemoveMemberItemGroupProc()
                this, SLOT(SLOT_RemoveItemProc(QGraphicsItem*,CItemAnimation*)));
         l_pItem->SLOT_RemoveItemEmit();
     }
+}
+
+void CWorkSpaceView::SLOT_CenterOnItemProc(QGraphicsItem *a_pItem)
+{
+    this->centerOn(a_pItem);
+}
+
+void CWorkSpaceView::SLOT_AddDayItemActionProc()
+{
+    CDayItem* l_pDayItem = new CDayItem(NULL);
+    m_pWorkSpace->addItem(l_pDayItem);
+    this->centerOn(l_pDayItem);
 }

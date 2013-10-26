@@ -34,6 +34,10 @@ public:
     QMenu* m_pViewMenu;
     QAction* m_pDragModeAction;
     QStatusBar* m_pStatusBar;
+    QMenu* m_pItemMenu;
+    QAction* m_pAddDayItemAction;
+    QAction* m_pAddMonthItemAction;
+    QAction* m_pAddYearItemAction;
 
     QToolBar* m_pSystemLabel;
 

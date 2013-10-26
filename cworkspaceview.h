@@ -17,6 +17,7 @@
 #include "clabelitem.h"
 #include "clineitem.h"
 #include "cmemberitem.h"
+#include "cdayitem.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -32,6 +33,14 @@ signals:
 public slots:
     void SLOT_DragModeSwitched(bool a_blFlag);
     void SLOT_AddGoalActionProc();
+    void SLOT_AddDayItemActionProc();
+    void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
+    void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \
+                         CItemAnimation* a_pItemAnim);
+    void SLOT_DeleteItemProc(QGraphicsItem* a_pItem);
+    void SLOT_CenterOnItemProc(QGraphicsItem* a_pItem);
+
+    //may be removed from this class
     void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
     void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
     void SLOT_RequestMembersProc(CGoalItem* a_pGoalItem);
@@ -42,11 +51,6 @@ public slots:
     void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
     void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
     void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
-    void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
-
-    void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \
-                         CItemAnimation* a_pItemAnim);
-    void SLOT_DeleteItemProc(QGraphicsItem* a_pItem);
 
 private:
     CWorkSpace* m_pWorkSpace;

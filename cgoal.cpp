@@ -4,6 +4,7 @@ CGoal::CGoal()
 {
     m_blTitle = false;
     m_blMembers = false;
+    m_blTasks = false;
 }
 
 void CGoal::SetTitle(std::wstring a_wstrTitle)
@@ -20,6 +21,11 @@ std::wstring CGoal::GetTitle()
 bool CGoal::TitleStatus()
 {
     return m_blTitle;
+}
+
+bool CGoal::TasksStatus()
+{
+    return m_blTasks;
 }
 
 void CGoal::AddMember(CMember *a_pMember)

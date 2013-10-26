@@ -15,6 +15,8 @@ public:
     std::wstring GetTitle();
     bool TitleStatus();
 
+    bool TasksStatus();
+
     void AddMember(CMember* a_pMember);
     void SetMembers(std::list<CMember *>& a_pMembers);
     std::list<CMember *>& GetMembers();
@@ -28,7 +30,7 @@ private:
     bool m_blMembers; //if members are set
     bool m_blIntro; //if introduction is set
     bool m_blBkgrnd; //if background is set
-    bool m_blSteps; //if steps are set
+    bool m_blTasks; //if tasks are set
     bool m_blRes; //if resources are set
 };
 

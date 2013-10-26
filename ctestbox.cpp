@@ -40,6 +40,11 @@ CTestBox* CTestBox::GetTestBox()
     return CTestBox::m_pTestBox;
 }
 
+void CTestBox::InitTestBox()
+{
+    GetTestBox();
+}
+
 void CTestBox::ShowMsg(std::wstring a_wstrMsg, MsgType a_eMsgType)
 {
     std::wofstream l_cOut(m_strPTYName.c_str());

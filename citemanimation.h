@@ -26,6 +26,7 @@ signals:
     void SIGNAL_DisappearItem(CItemAnimation* a_pItemAnim); //emit this signal when the item needs to be disappeared
     void SIGNAL_DeleteItem(QGraphicsItem* a_pGraphicsItem); //emit this signal when the item needs to be deleted
     void SIGNAL_AnimEnd(); //emit this signal when the item animation is over
+    void SIGNAL_CenterOnItem(QGraphicsItem* a_pGraphicsItem); //emit this signal when the item need to be centered on
 
 protected:
     int m_iFrameId;

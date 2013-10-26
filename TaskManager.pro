@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     cselectitem.cpp \
     cmemberitem.cpp \
     cgoal.cpp \
-    cmember.cpp
+    cmember.cpp \
+    cdayitem.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     cselectitem.h \
     cmemberitem.h \
     cgoal.h \
-    cmember.h
+    cmember.h \
+    cdayitem.h
 
 RESOURCES += \
     res.qrc
