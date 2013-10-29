@@ -14,6 +14,13 @@
 
 #include <QtCore>
 #include <qmath.h>
+#include <QGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QDate>
+#include <QTime>
+#include <QRectF>
+#include <QPainter>
+#include <QFont>
 
 namespace TASKMANAGER
 {
@@ -31,6 +38,7 @@ namespace TASKMANAGER
     const int g_iMouseClickDistThreshold = 3;
     const int g_iItemBorderWidth = 4;
     const int g_iItemFontSizeLarge = 25;
+    const int g_iItemFontSizeMid = 18;
     const int g_iItemFontSizeSmall = 10;
     const int g_iItemDisappearFrames = 10;
     const int g_iItemAppearFrames = 5;

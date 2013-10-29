@@ -565,7 +565,23 @@ void CWorkSpaceView::SLOT_CenterOnItemProc(QGraphicsItem *a_pItem)
 
 void CWorkSpaceView::SLOT_AddDayItemActionProc()
 {
+#ifdef PF_TEST
+    CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Create a CDayItem.");
+#endif
+
     CDayItem* l_pDayItem = new CDayItem(NULL);
+    l_pDayItem->SetRadius(100);
     m_pWorkSpace->addItem(l_pDayItem);
     this->centerOn(l_pDayItem);
+}
+
+void CWorkSpaceView::SLOT_AddMonthItemActionProc()
+{
+#ifdef PF_TEST
+    CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Create a CMonthItem.");
+#endif
+
+    CMonthItem* l_pMonthItem = new CMonthItem(NULL);
+    m_pWorkSpace->addItem(l_pMonthItem);
+    this->centerOn(l_pMonthItem);
 }

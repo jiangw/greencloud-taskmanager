@@ -18,6 +18,7 @@
 #include "clineitem.h"
 #include "cmemberitem.h"
 #include "cdayitem.h"
+#include "cmonthitem.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -34,6 +35,7 @@ public slots:
     void SLOT_DragModeSwitched(bool a_blFlag);
     void SLOT_AddGoalActionProc();
     void SLOT_AddDayItemActionProc();
+    void SLOT_AddMonthItemActionProc();
     void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
     void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \
                          CItemAnimation* a_pItemAnim);

@@ -69,6 +69,8 @@ void MainWindow::MenusCreate()
     m_pItemMenu->addAction(m_pAddYearItemAction);
     connect(m_pAddDayItemAction, SIGNAL(triggered()), \
             m_pWorkSpaceView, SLOT(SLOT_AddDayItemActionProc()));
+    connect(m_pAddMonthItemAction, SIGNAL(triggered()), \
+            m_pWorkSpaceView, SLOT(SLOT_AddMonthItemActionProc()));
 
 }
 

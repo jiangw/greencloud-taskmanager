@@ -23,7 +23,7 @@ CTestBox::CTestBox()
         l_cTest.close();
         l_iNextPtsNum++;
     }
-    std::cout << "[CTestBox] Get PTY name: " << m_strPTYName << std::endl;
+    std::cout << "[CTestBox] Get PTY device: " << m_strPTYName << std::endl;
     if(-1 == system("gnome-terminal"))
     {
         std::cerr << "[CTestBox] Failed to open terminal." << std::endl;
