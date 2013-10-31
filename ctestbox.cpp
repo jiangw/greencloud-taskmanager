@@ -54,6 +54,7 @@ void CTestBox::ShowMsg(std::wstring a_wstrMsg, MsgType a_eMsgType)
         {
         case LOGMSG:
             l_cOut << std::endl << L"\033[1;32m" << a_wstrMsg;
+            std::wcout << a_wstrMsg << std::endl; //log messages will show in std output
             break;
         case WARNINGMSG:
             l_cOut << std::endl << L"\033[1;33m" << a_wstrMsg;

@@ -581,7 +581,7 @@ void CWorkSpaceView::SLOT_AddMonthItemActionProc()
     CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Create a CMonthItem.");
 #endif
 
-    CMonthItem* l_pMonthItem = new CMonthItem(NULL);
+    CMonthItem* l_pMonthItem = new CMonthItem(NULL, 2014);
     m_pWorkSpace->addItem(l_pMonthItem);
     this->centerOn(l_pMonthItem);
 }
