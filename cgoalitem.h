@@ -27,6 +27,7 @@
 class CGoalItem : public CItemAnimation, public QGraphicsItem
 {
     Q_OBJECT
+
 public:
     enum EGoalItemStatus{IDLE, TITLEINPUT, INTROINPUT, BKGRNDINPUT, MEMBERINPUT, \
                         RESINPUT, TASKINPUT};

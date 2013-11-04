@@ -26,8 +26,6 @@ class CWorkSpaceView : public QGraphicsView
 public:
     CWorkSpaceView(CWorkSpace* a_pWorkSpace, QWidget* a_pParent);
     virtual ~CWorkSpaceView();
-
-    void ConnDelItemToCommonBtns(QList<CButtonItem *>* a_pCommonBtns, CItemAnimation* a_pDelItem);
     
 signals:
     
@@ -43,23 +41,20 @@ public slots:
     void SLOT_CenterOnItemProc(QGraphicsItem* a_pItem);
 
     //may be removed from this class
-    void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
-    void SLOT_RequestMembersProc(CGoalItem* a_pGoalItem);
-    void SLOT_AddMemberItemProc();
-    void SLOT_RemoveMemberItemProc();
-    void SLOT_RemoveMemberItemGroupProc();
-    void SLOT_AddGoalIntroProc(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
-    void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
+//    void SLOT_RequestMembersProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddMemberItemProc();
+//    void SLOT_RemoveMemberItemProc();
+//    void SLOT_RemoveMemberItemGroupProc();
+//    void SLOT_AddGoalIntroProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
+//    void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
 
 private:
     CWorkSpace* m_pWorkSpace;
-    QPoint m_cLastMousePos;
-    TASKMANAGER::SWorkSpaceFlag m_sLastFlag;
     QList<CGoalItem *> m_pGoalItemList;
-    CGoalItem* m_pGoalItem; //will be removed
     QList<CMemberItem *> m_pMemberGroup;
 
 };

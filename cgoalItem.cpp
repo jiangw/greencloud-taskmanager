@@ -356,8 +356,8 @@ void CGoalItem::SLOT_SetGoalMembersProc(QList<CMemberItem *> *a_ppMembers)
 void CGoalItem::SLOT_SetGoalIntroProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
-    TB_cout << L"[CGoalItem] Set goal introduction as \"" << \
-                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+    CTestBox::GetTestBox()->ShowMsg(QString("[CGoalItem] Set goal introduction as \"%1\"")\
+                                    .arg(a_pDoc->toPlainText()));
 #endif
     m_blIntro = true;
     emit this->SIGNAL_ShowGoal(this);
@@ -366,8 +366,8 @@ void CGoalItem::SLOT_SetGoalIntroProc(QTextDocument *a_pDoc)
 void CGoalItem::SLOT_SetGoalBkgrndProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
-    TB_cout << L"[CGoalItem] Set goal background as \"" << \
-                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+    CTestBox::GetTestBox()->ShowMsg(QString("[CGoalItem] Set goal background as \"%1\"")\
+                                    .arg(a_pDoc->toPlainText()));
 #endif
     m_blBkgrnd = true;
     emit this->SIGNAL_ShowGoal(this);
@@ -376,8 +376,8 @@ void CGoalItem::SLOT_SetGoalBkgrndProc(QTextDocument *a_pDoc)
 void CGoalItem::SLOT_SetGoalStepsProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
-    TB_cout << L"[CGoalItem] Set goal steps as \"" << \
-                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+    CTestBox::GetTestBox()->ShowMsg(QString("[CGoalItem] Set goal steps as \"%1\"")\
+                                    .arg(a_pDoc->toPlainText()));
 #endif
     m_blSteps = true;
     emit this->SIGNAL_ShowGoal(this);
@@ -386,8 +386,8 @@ void CGoalItem::SLOT_SetGoalStepsProc(QTextDocument *a_pDoc)
 void CGoalItem::SLOT_SetGoalResProc(QTextDocument *a_pDoc)
 {
 #ifdef PF_TEST
-    TB_cout << L"[CGoalItem] Set goal resources as \"" << \
-                 a_pDoc->toPlainText().toStdWString() << "\"" << std::endl;
+    CTestBox::GetTestBox()->ShowMsg(QString("[CGoalItem] Set goal resources as \"%1\"")\
+                                    .arg(a_pDoc->toPlainText()));
 #endif
     m_blRes = true;
     emit this->SIGNAL_ShowGoal(this);

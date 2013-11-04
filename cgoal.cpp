@@ -36,7 +36,8 @@ void CGoal::AddMember(CMember *a_pMember)
     m_blMembers = true;
 
 #ifdef PF_TEST
-    TB_cout << L"Add Member: " << m_pMembers.back()->GetName() << std::endl;
+    CTestBox::GetTestBox()->ShowMsg(QString("[CGoal] Add member: %1")\
+                                    .arg(QString::fromStdWString(m_pMembers.back()->GetName())));
 #endif
 }
 

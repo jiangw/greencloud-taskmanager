@@ -38,7 +38,7 @@ signals:
     void SIGNAL_SubmitText(QTextDocument* a_pDoc);
 
 private:
-    QTextDocument m_cDoc;
+    QTextDocument m_CDoc;
     QGraphicsTextItem* m_pTextItem;
 };
 

@@ -5,9 +5,9 @@ CLineItem::CLineItem(QLineF a_cLine, int a_iLineWidth, QGraphicsItem *a_pParent)
 {
     m_iFrameId = 0;
     m_pLine = new QGraphicsLineItem(a_cLine, this);
-    m_cPen.setBrush(QBrush(Qt::black));
-    m_cPen.setWidth(a_iLineWidth);
-    m_pLine->setPen(m_cPen);
+    m_CPen.setBrush(QBrush(Qt::black));
+    m_CPen.setWidth(a_iLineWidth);
+    m_pLine->setPen(m_CPen);
 }
 
 QRectF CLineItem::boundingRect() const
@@ -38,9 +38,9 @@ void CLineItem::SLOT_DeleteItemEmit()
 
 void CLineItem::SLOT_DisappearItemProc()
 {
-    QLineF l_cLine = m_pLine->line();
-    l_cLine.setLength(l_cLine.length() - m_dFinalLen / TASKMANAGER::g_iItemDisappearFrames);
-    m_pLine->setLine(l_cLine);
+    QLineF l_CLine = m_pLine->line();
+    l_CLine.setLength(l_CLine.length() - m_dFinalLen / TASKMANAGER::g_iItemDisappearFrames);
+    m_pLine->setLine(l_CLine);
     update(this->boundingRect());
     this->setOpacity(this->opacity() - 0.09);
     if(++m_iFrameId >= TASKMANAGER::g_iItemDisappearFrames)

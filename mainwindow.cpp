@@ -7,7 +7,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle(tr("Task Manager"));
     this->GVFCreate();
     this->MenusCreate();
-//    this->DockWgtCreate();
     this->ToolBarCreate();
 
     m_pStatusBar = new QStatusBar(this);
@@ -84,17 +83,6 @@ void MainWindow::GVFCreate()
     m_pWorkSpace->setSceneRect(-1500, -1500, 3000, 3000);
 
     this->setCentralWidget(m_pWorkSpaceView);
-}
-
-void MainWindow::DockWgtCreate()
-{
-    m_pCustomLabel = new QDockWidget(this);
-    m_pCustomLabel->setWindowTitle(tr("Cumstom Labels"));
-    m_pCustomLabel->resize(200, 400);
-    m_pCustomLabel->setFloating(true);
-
-    this->addDockWidget(Qt::LeftDockWidgetArea, m_pCustomLabel);
-    m_pCustomLabel->move(90, 150);
 }
 
 void MainWindow::ToolBarCreate()

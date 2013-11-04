@@ -3,14 +3,14 @@
 CButtonItem::CButtonItem(QString a_strText, QGraphicsItem *a_pParent)
     :QGraphicsItem(a_pParent)
 {
-    m_cBR.setRect(0, 0, 50, 24);
+    m_CBR.setRect(0, 0, 50, 24);
     m_strText = a_strText;
     m_iFrameId = 0;
 }
 
 QRectF CButtonItem::boundingRect() const
 {
-    return m_cBR;
+    return m_CBR;
 }
 
 void CButtonItem::SetButtonText(QString a_strText)
@@ -40,14 +40,14 @@ void CButtonItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
-        m_cLastPos = event->pos();
+        m_CMouseLastPos = event->pos();
     }
 }
 
 void CButtonItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton &&
-            QLineF(m_cLastPos, event->pos()).length() < TASKMANAGER::g_iMouseClickDistThreshold) //left button clicked
+            QLineF(m_CMouseLastPos, event->pos()).length() < TASKMANAGER::g_iMouseClickDistThreshold) //left button clicked
     {
         emit this->SIGNAL_LeftButtonClicked();
     }

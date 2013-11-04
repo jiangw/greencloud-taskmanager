@@ -6,10 +6,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QStatusBar>
-#include <QDockWidget>
 #include <QToolBar>
-#include <QList>
-#include <QScrollBar>
 
 #include "gconfig.h"
 #include "cworkspace.h"
@@ -25,7 +22,6 @@ public:
 
     void MenusCreate();
     void GVFCreate(); //Graphics View Framework
-    void DockWgtCreate();
     void ToolBarCreate();
 
     QMenu* m_pFileMenu;
@@ -33,20 +29,17 @@ public:
     QAction* m_pExitAction;
     QMenu* m_pViewMenu;
     QAction* m_pDragModeAction;
-    QStatusBar* m_pStatusBar;
+
     QMenu* m_pItemMenu;
     QAction* m_pAddDayItemAction;
     QAction* m_pAddMonthItemAction;
     QAction* m_pAddYearItemAction;
 
-    QToolBar* m_pSystemLabel;
+    QToolBar* m_pSystemLabel; //will be removed
+    QStatusBar* m_pStatusBar;
 
     CWorkSpace* m_pWorkSpace;
     CWorkSpaceView* m_pWorkSpaceView;
-
-    QDockWidget* m_pCustomLabel;
-
-public slots:
 };
 
 #endif // MAINWINDOW_H

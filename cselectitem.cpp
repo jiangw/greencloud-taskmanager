@@ -4,7 +4,7 @@ CSelectItem::CSelectItem(QGraphicsItem *a_pParent)
     :QGraphicsItem(a_pParent)
 {
     m_blSelected = false;
-    m_cBR.setRect(0, 0, 18, 18);
+    m_CBR.setRect(0, 0, 18, 18);
 }
 
 bool CSelectItem::IsChecked()
@@ -14,7 +14,7 @@ bool CSelectItem::IsChecked()
 
 QRectF CSelectItem::boundingRect() const
 {
-    return m_cBR;
+    return m_CBR;
 }
 
 void CSelectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -27,12 +27,12 @@ void CSelectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setRenderHint(QPainter::Antialiasing);
     //draw outline
     painter->setPen(QPen(QBrush(Qt::black), 2));
-    painter->drawRect(m_cBR);
+    painter->drawRect(m_CBR);
     //draw selection box if item is selected
     if(m_blSelected)
     {
-        QRectF l_cSelBox(m_cBR.x() + 3, m_cBR.y() + 3, m_cBR.width() - 6, m_cBR.height() - 6);
-        painter->fillRect(l_cSelBox, Qt::SolidPattern);
+        QRectF l_CSelBox(m_CBR.x() + 3, m_CBR.y() + 3, m_CBR.width() - 6, m_CBR.height() - 6);
+        painter->fillRect(l_CSelBox, Qt::SolidPattern);
     }
 
     painter->restore();
@@ -42,7 +42,7 @@ void CSelectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
-        m_cLastPos = event->pos();
+        m_CMouseLastPos = event->pos();
     }
     else
     {
@@ -53,10 +53,10 @@ void CSelectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void CSelectItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton &&
-            QLineF(m_cLastPos, event->pos()).length() < TASKMANAGER::g_iMouseClickDistThreshold)
+            QLineF(m_CMouseLastPos, event->pos()).length() < TASKMANAGER::g_iMouseClickDistThreshold)
     { //left button clicked
         m_blSelected = !m_blSelected;
-        update(m_cBR);
+        update(m_CBR);
     }
 }
 

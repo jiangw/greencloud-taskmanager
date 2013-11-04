@@ -5,8 +5,8 @@ CTextInputItem::CTextInputItem(QGraphicsItem *a_pParent)
 {
     m_iFrameId = 0;
     m_pTextItem = new QGraphicsTextItem(this);
-//    m_cDoc.setPlainText("Click to enter text.");
-    m_pTextItem->setDocument(&m_cDoc);
+//    m_CDoc.setPlainText("Click to enter text.");
+    m_pTextItem->setDocument(&m_CDoc);
     m_pTextItem->setTextInteractionFlags(Qt::TextEditorInteraction);
 
     this->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -15,12 +15,12 @@ CTextInputItem::CTextInputItem(QGraphicsItem *a_pParent)
 void CTextInputItem::SetInputTip(QString a_strTip)
 {
     this->prepareGeometryChange();
-    m_cDoc.setPlainText(a_strTip);
+    m_CDoc.setPlainText(a_strTip);
 }
 
 QString CTextInputItem::GetPlainText()
 {
-    return m_cDoc.toPlainText();
+    return m_CDoc.toPlainText();
 }
 
 void CTextInputItem::keyPressEvent(QKeyEvent *event)
@@ -49,7 +49,7 @@ void CTextInputItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
 void CTextInputItem::SLOT_SubmitTextEmit()
 {
-    emit this->SIGNAL_SubmitText(&m_cDoc);
+    emit this->SIGNAL_SubmitText(&m_CDoc);
 }
 
 void CTextInputItem::SLOT_RemoveItemEmit()

@@ -32,8 +32,8 @@ public slots:
 
 private:
     bool m_blSelected; //=true : selected. =false : unselected(default)
-    QRectF m_cBR;
-    QPointF m_cLastPos; //save the last mouse position when it was clicked
+    QRectF m_CBR;
+    QPointF m_CMouseLastPos; //save the last mouse position when it was clicked
 };
 
 #endif // CSELECTITEM_H

@@ -26,7 +26,7 @@ public slots:
 
 private:
     QGraphicsLineItem* m_pLine;
-    QPen m_cPen;
+    QPen m_CPen;
     qreal m_dFinalLen;
 };
 

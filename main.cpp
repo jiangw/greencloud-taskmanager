@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    //init testbox
+    //initiate testbox
 #ifdef PF_TEST
     CTestBox::InitTestBox();
 #endif

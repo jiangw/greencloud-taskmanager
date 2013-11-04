@@ -24,14 +24,6 @@
 
 namespace TASKMANAGER
 {
-    //workspace status
-    enum EWorkSpaceStatus{IDLE, ADDGOALTITLE, ADDGOALMEMBERS, ADDGOALINTRO, \
-                         ADDGOALBKGRND, ADDGOALSTEPS, ADDGOALRES, SHOWGOAL};
-    //workspace flag struct
-    struct SWorkSpaceFlag
-    {
-        EWorkSpaceStatus m_eWorkSpaceStatus;
-    };
     //math
     const qreal g_dPI = 3.1415926;
     //properties of graphic items

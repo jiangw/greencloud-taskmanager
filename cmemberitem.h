@@ -29,7 +29,6 @@ public slots:
     void SLOT_DeleteItemEmit();
 
 private:
-    QPointF m_cLastPos;
     CSelectItem* m_pSelItem;
     CTextInputItem* m_pTextInputItem;
 };

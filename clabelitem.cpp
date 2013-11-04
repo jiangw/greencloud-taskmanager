@@ -5,8 +5,8 @@ CLabelItem::CLabelItem(QString a_strText, QGraphicsItem *a_pParent)
 {
     m_iFrameId = 0;
     m_strLabel = a_strText;
-    m_cFont.setFamily("Comic Sans MS");
-    m_cFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
+    m_CFont.setFamily("Comic Sans MS");
+    m_CFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
 }
 
 void CLabelItem::SetText(QString a_strText)
@@ -18,8 +18,8 @@ void CLabelItem::SetText(QString a_strText)
 
 QRectF CLabelItem::boundingRect() const
 {
-    QFontMetrics l_cFM(m_cFont);
-    return QRectF(0, 0, l_cFM.width(m_strLabel), 30);
+    QFontMetrics l_CFM(m_CFont);
+    return QRectF(0, 0, l_CFM.width(m_strLabel), 30);
 }
 
 void CLabelItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -29,7 +29,7 @@ void CLabelItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     painter->save();
 
-    painter->setFont(m_cFont);
+    painter->setFont(m_CFont);
     painter->drawText(this->boundingRect(), m_strLabel);
 
     painter->restore();

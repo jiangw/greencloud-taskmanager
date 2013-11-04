@@ -28,7 +28,7 @@ public slots:
 
 private:
     QString m_strLabel;
-    QFont m_cFont;
+    QFont m_CFont;
 };
 
 #endif // CLABELITEM_H

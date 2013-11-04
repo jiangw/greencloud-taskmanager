@@ -35,8 +35,8 @@ signals:
     void SIGNAL_LeftButtonClicked();
 
 private:
-    QRectF m_cBR; //bounding rect
-    QPointF m_cLastPos;
+    QRectF m_CBR; //bounding rect
+    QPointF m_CMouseLastPos;
     QString m_strText;
 };
 

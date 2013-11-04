@@ -1,20 +1,12 @@
 #ifndef CTESTBOX_H
 #define CTESTBOX_H
 
-#include <QGraphicsScene>
-#include <QGraphicsItem>
-#include <QTransform>
-#include <QPointF>
-#include <QRectF>
-
 #include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
-
-#define TB_cout std::wcout
-#define TB_string std::wstring
+#include <QString>
 
 class CTestBox
 {
@@ -30,12 +22,8 @@ public:
     static CTestBox* GetTestBox();
     static void InitTestBox();
     ~CTestBox(){CTestBox::m_blFlag = false;}
-    void ShowMsg(TB_string a_wstrMsg, MsgType a_eMsgType = LOGMSG);
-
-    static void PrintTransformMtx(QTransform* a_pMtx);
-    static void PrintRect(QRectF a_cRect);
-    static void PrintGraphicsItemLocation(QGraphicsItem* a_pItem);
-    static void PrintMsg(TB_string a_wstrMsg);
+    void ShowMsg(std::wstring a_wstrMsg, MsgType a_EMsgType = LOGMSG);
+    void ShowMsg(QString a_qstrMsg, MsgType a_EMsgType = LOGMSG);
 };
 
 #endif // CTESTBOX_H
