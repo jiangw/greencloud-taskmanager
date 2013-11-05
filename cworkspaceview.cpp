@@ -140,6 +140,16 @@ void CWorkSpaceView::SLOT_AddMonthItemActionProc()
     this->centerOn(l_pMonthItem);
 }
 
+void CWorkSpaceView::SLOT_AddYearItemActionProc()
+{
+#ifdef PF_TEST
+    CTestBox::GetTestBox()->ShowMsg("[CWorkSpaceView] Create a CYearItem.");
+#endif
+    CYearItem* l_pYearItem = new CYearItem(NULL);
+    m_pWorkSpace->addItem(l_pYearItem);
+    this->centerOn(l_pYearItem);
+}
+
 //void CWorkSpaceView::SLOT_AddGoalTitleProc(CGoalItem *a_pGoalItem)
 //{
 //    //maybe shrink other goal items

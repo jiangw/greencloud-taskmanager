@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     cgoal.cpp \
     cmember.cpp \
     cdayitem.cpp \
-    cmonthitem.cpp
+    cmonthitem.cpp \
+    cyearitem.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h \
     cgoal.h \
     cmember.h \
     cdayitem.h \
-    cmonthitem.h
+    cmonthitem.h \
+    cyearitem.h
 
 RESOURCES += \
     res.qrc
