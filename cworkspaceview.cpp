@@ -123,10 +123,10 @@ void CWorkSpaceView::SLOT_AddDayItemActionProc()
     CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Create a CDayItem.");
 #endif
 
-    CDayItem* l_pDayItem = new CDayItem(NULL);
-    l_pDayItem->SetRadius(100);
-    m_pWorkSpace->addItem(l_pDayItem);
-    this->centerOn(l_pDayItem);
+    CDayWidget* l_pDayWidget = new CDayWidget(NULL);
+    l_pDayWidget->SetRadius(100);
+    m_pWorkSpace->addItem(l_pDayWidget);
+    this->centerOn(l_pDayWidget);
 }
 
 void CWorkSpaceView::SLOT_AddMonthItemActionProc()

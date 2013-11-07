@@ -17,7 +17,8 @@
 #include "clabelitem.h"
 #include "clineitem.h"
 #include "cmemberitem.h"
-#include "cdayitem.h"
+
+#include "cdaywidget.h"
 #include "cmonthitem.h"
 #include "cyearitem.h"
 

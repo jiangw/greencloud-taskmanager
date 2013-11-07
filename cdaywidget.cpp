@@ -1,13 +1,13 @@
-#include "cdayitem.h"
+#include "cdaywidget.h"
 
-CDayItem::CDayItem(QGraphicsItem *a_pParent, const QDate &a_pDate)
-    :QGraphicsItem(a_pParent)
+CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_pDate)
+    :CGraphicsWidget(a_pParent)
 {
     m_iHoursPerDay = 24;
     m_iRadius = 80;
     m_iExtRad = 25;
     m_iExtHeight = 30;
-    m_CBR.setRect(0, 0, this->ItemWidth(), this->ItemHeight());
+    this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
     this->Render();
 
     QTimer* l_pTimer1 = new QTimer(this);
@@ -21,19 +21,19 @@ CDayItem::CDayItem(QGraphicsItem *a_pParent, const QDate &a_pDate)
     }
 
     m_pDateLabel = new QGraphicsSimpleTextItem(this);
-    m_pDateLabel->setPos(6, this->ItemHeight() - m_iExtHeight);
+    m_pDateLabel->setPos(6, this->WidgetHeight() - m_iExtHeight);
     this->SetDate(a_pDate);
 
     m_iCurrHour = this->CurrHour();
 }
 
-CDayItem::~CDayItem()
+CDayWidget::~CDayWidget()
 {
     Clear();
     delete [] m_pHourSelMask;
 }
 
-void CDayItem::Clear()
+void CDayWidget::Clear()
 {
     for(int i=0; i<m_pHourSliceList.length(); i++)
     {
@@ -49,22 +49,21 @@ void CDayItem::Clear()
     }
 }
 
-void CDayItem::SetRadius(int a_iRadius)
+void CDayWidget::SetRadius(int a_iRadius)
 {
     this->prepareGeometryChange();
     m_iRadius = a_iRadius;
-    m_pDateLabel->setPos(6, this->ItemHeight() - m_iExtHeight);
-    m_CBR.setWidth(this->ItemWidth());
-    m_CBR.setHeight(this->ItemHeight());
+    m_pDateLabel->setPos(6, this->WidgetHeight() - m_iExtHeight);
+    this->UpdateBoundingRect(this->WidgetWidth(), this->WidgetHeight());
     this->Clear();
     this->Render();
 }
 
-void CDayItem::Render()
+void CDayWidget::Render()
 {
     QRectF l_CClockRect;
-    l_CClockRect.setX(m_CBR.x() + m_iExtRad);
-    l_CClockRect.setY(m_CBR.y() + m_iExtRad);
+    l_CClockRect.setX(this->boundingRect().x() + m_iExtRad);
+    l_CClockRect.setY(this->boundingRect().y() + m_iExtRad);
     l_CClockRect.setWidth(m_iRadius * 2);
     l_CClockRect.setHeight(m_iRadius * 2);
     QPoint l_CCenter;
@@ -95,36 +94,31 @@ void CDayItem::Render()
     }
 }
 
-void CDayItem::SetDate(const QDate &a_pDate)
+void CDayWidget::SetDate(const QDate &a_pDate)
 {
     m_CDate = a_pDate;
     m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
     m_iCurrHour = this->CurrHour();
 }
 
-void CDayItem::SetHoursPerDay(int a_iHoursPerDay)
+void CDayWidget::SetHoursPerDay(int a_iHoursPerDay)
 {
     m_iHoursPerDay = a_iHoursPerDay;
     this->Clear();
     this->Render();
 }
 
-int CDayItem::GetHoursPerDay()
+int CDayWidget::GetHoursPerDay()
 {
     return m_iHoursPerDay;
 }
 
-bool* CDayItem::GetHourSelMask()
+bool* CDayWidget::GetHourSelMask()
 {
     return m_pHourSelMask;
 }
 
-QRectF CDayItem::boundingRect() const
-{
-    return m_CBR;
-}
-
-void CDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void CDayWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -133,7 +127,9 @@ void CDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(QBrush(Qt::white));
     painter->setPen(QPen(QBrush(Qt::black), 4));
-    painter->drawRoundedRect(m_CBR, m_CBR.width() * 0.05, m_CBR.height() * 0.05);
+    painter->drawRoundedRect(this->boundingRect(), \
+                             this->boundingRect().width() * 0.05, \
+                             this->boundingRect().height() * 0.05);
 
     painter->restore();
 
@@ -184,7 +180,7 @@ void CDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->restore();
 }
 
-int CDayItem::CurrHour()
+int CDayWidget::CurrHour()
 {
     if(m_CDate < QDate::currentDate())
     {
@@ -201,58 +197,38 @@ int CDayItem::CurrHour()
     return m_iCurrHour;
 }
 
-int CDayItem::ItemWidth()
+void CDayWidget::LeftButtonClicked(QPointF a_CMousePos)
+{
+    for(int i=0; i<m_iHoursPerDay; i++)
+    {
+        QPainterPath* l_pHourSlice = m_pHourSliceList[i];
+        if(l_pHourSlice->contains(a_CMousePos) && i >= this->CurrHour())
+        {
+            m_pHourSelMask[i] = !m_pHourSelMask[i];
+            break;
+        }
+    }
+    update(this->boundingRect());
+}
+
+int CDayWidget::WidgetWidth()
 {
     return 2 * (m_iRadius + m_iExtRad);
 }
 
-int CDayItem::ItemHeight()
+int CDayWidget::WidgetHeight()
 {
     return 2 * (m_iRadius + m_iExtRad) + m_iExtHeight;
 }
 
-void CDayItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton)
-    {
-        m_CMouseLastPos = event->pos();
-    }
-}
-
-void CDayItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton &&
-            QLineF(m_CMouseLastPos, event->pos()).length() < \
-            TASKMANAGER::g_iMouseClickDistThreshold)
-    {//left button clicked
-        this->prepareGeometryChange();
-        for(int i=0; i<m_iHoursPerDay; i++)
-        {
-            QPainterPath* l_pHourSlice = m_pHourSliceList[i];
-            if(l_pHourSlice->contains(event->pos()) && i >= this->CurrHour())
-            {
-                m_pHourSelMask[i] = !m_pHourSelMask[i];
-                break;
-            }
-        }
-    }
-}
-
-void CDayItem::SLOT_RemoveItemEmit()
-{
-    emit this->SIGNAL_RemoveItem(this, this);
-}
-
-void CDayItem::SLOT_DeleteItemEmit()
-{
-    emit this->SIGNAL_DeleteItem(this);
-}
-
-void CDayItem::SLOT_HourChangeProc()
+void CDayWidget::SLOT_HourChangeProc()
 {
     if(QTime::currentTime().hour() != m_iCurrHour && \
             m_CDate == QDate::currentDate())
     {
-        update(QRectF(m_CBR.x(), m_CBR.y(), m_CBR.width(), m_CBR.height() - m_iExtHeight));
+        update(QRectF(this->boundingRect().x(), \
+                      this->boundingRect().y(), \
+                      this->boundingRect().width(), \
+                      this->boundingRect().height() - m_iExtHeight));
     }
 }
