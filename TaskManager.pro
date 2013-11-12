@@ -27,10 +27,11 @@ SOURCES += main.cpp\
     cmemberitem.cpp \
     cgoal.cpp \
     cmember.cpp \
-    cmonthitem.cpp \
-    cyearitem.cpp \
     ../GraphicsWidgetLib/cgraphicswidget.cpp \
-    cdaywidget.cpp
+    cdaywidget.cpp \
+    cmonthwidget.cpp \
+    cyearwidget.cpp \
+    cplanwidget.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -47,10 +48,11 @@ HEADERS  += mainwindow.h \
     cmemberitem.h \
     cgoal.h \
     cmember.h \
-    cmonthitem.h \
-    cyearitem.h \
     ../GraphicsWidgetLib/cgraphicswidget.h \
-    cdaywidget.h
+    cdaywidget.h \
+    cmonthwidget.h \
+    cyearwidget.h \
+    cplanwidget.h
 
 RESOURCES += \
     res.qrc

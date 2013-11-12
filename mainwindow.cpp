@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->resize(800, 600);
+    this->resize(1111, 600);
     this->setWindowTitle(tr("Task Manager"));
     this->GVFCreate();
     this->MenusCreate();
@@ -32,6 +32,12 @@ void MainWindow::MenusCreate()
     m_pAddGoalAction->setIcon(QIcon(":/sys/sys_elps.png"));
     m_pFileMenu->addAction(m_pAddGoalAction);
     connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(SLOT_AddGoalActionProc()));
+
+    m_pAddPlanActtion = new QAction(this);
+    m_pAddPlanActtion->setText("Add &Plan");
+    m_pFileMenu->addAction(m_pAddPlanActtion);
+    connect(m_pAddPlanActtion, SIGNAL(triggered()), \
+            m_pWorkSpaceView, SLOT(SLOT_AddPlanActionProc()));
 
     m_pFileMenu->addSeparator();
 

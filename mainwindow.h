@@ -26,6 +26,7 @@ public:
 
     QMenu* m_pFileMenu;
     QAction* m_pAddGoalAction;
+    QAction* m_pAddPlanActtion;
     QAction* m_pExitAction;
     QMenu* m_pViewMenu;
     QAction* m_pDragModeAction;

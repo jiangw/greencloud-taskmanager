@@ -19,8 +19,9 @@
 #include "cmemberitem.h"
 
 #include "cdaywidget.h"
-#include "cmonthitem.h"
-#include "cyearitem.h"
+#include "cmonthwidget.h"
+#include "cyearwidget.h"
+#include "cplanwidget.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -34,6 +35,7 @@ signals:
 public slots:
     void SLOT_DragModeSwitched(bool a_blFlag);
     void SLOT_AddGoalActionProc();
+    void SLOT_AddPlanActionProc();
     void SLOT_AddDayItemActionProc();
     void SLOT_AddMonthItemActionProc();
     void SLOT_AddYearItemActionProc();

@@ -83,6 +83,30 @@ void CWorkSpaceView::SLOT_AddGoalActionProc()
     }
 }
 
+void CWorkSpaceView::SLOT_AddPlanActionProc()
+{
+    CMonthWidget* l_pMonth = new CMonthWidget(NULL);
+    l_pMonth->setPos(-270, -218);
+    l_pMonth->EnableMultiSelection(false);
+    m_pWorkSpace->addItem(l_pMonth);
+
+    CDayWidget* l_pDay = new CDayWidget(NULL);
+    l_pDay->setPos(-240, TASKMANAGER::g_iItemIntervalY);
+    m_pWorkSpace->addItem(l_pDay);
+
+    CPlanWidget* l_pPlan = new CPlanWidget(NULL);
+    l_pPlan->setPos(TASKMANAGER::g_iItemIntervalX, -250);
+    m_pWorkSpace->addItem(l_pPlan);
+
+    this->ensureVisible(-310, -280,\
+                        l_pMonth->boundingRect().width() + l_pPlan->boundingRect().width() + 300, 500);
+
+    connect(l_pMonth, SIGNAL(SIGNAL_DaySel(QDate)),\
+            l_pDay, SLOT(SLOT_SetDate(QDate)));
+    connect(l_pDay, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
+            l_pPlan, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
+}
+
 void CWorkSpaceView::SLOT_RemoveItemProc(QGraphicsItem *a_pGraphicsItem, CItemAnimation *a_pItemAnim)
 {
     //delete the item from scene after its disappearing animaiton ends
@@ -135,7 +159,7 @@ void CWorkSpaceView::SLOT_AddMonthItemActionProc()
     CTestBox::GetTestBox()->ShowMsg(L"[CWorkSpaceView] Create a CMonthItem.");
 #endif
 
-    CMonthItem* l_pMonthItem = new CMonthItem(NULL);
+    CMonthWidget* l_pMonthItem = new CMonthWidget(NULL);
     m_pWorkSpace->addItem(l_pMonthItem);
     this->centerOn(l_pMonthItem);
 }
@@ -145,7 +169,7 @@ void CWorkSpaceView::SLOT_AddYearItemActionProc()
 #ifdef PF_TEST
     CTestBox::GetTestBox()->ShowMsg("[CWorkSpaceView] Create a CYearItem.");
 #endif
-    CYearItem* l_pYearItem = new CYearItem(NULL);
+    CYearWidget* l_pYearItem = new CYearWidget(NULL);
     m_pWorkSpace->addItem(l_pYearItem);
     this->centerOn(l_pYearItem);
 }

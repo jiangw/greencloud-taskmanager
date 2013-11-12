@@ -14,15 +14,11 @@ CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_pDate)
     connect(l_pTimer1, SIGNAL(timeout()), this, SLOT(SLOT_HourChangeProc()));
     l_pTimer1->start(60000);
 
-    m_pHourSelMask = new bool[m_iHoursPerDay];
-    for(int i=0; i<m_iHoursPerDay; i++)
-    {
-        m_pHourSelMask[i] = false;
-    }
+    this->InitHourSelMask();
 
     m_pDateLabel = new QGraphicsSimpleTextItem(this);
     m_pDateLabel->setPos(6, this->WidgetHeight() - m_iExtHeight);
-    this->SetDate(a_pDate);
+    this->SLOT_SetDate(a_pDate);
 
     m_iCurrHour = this->CurrHour();
 }
@@ -30,7 +26,7 @@ CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_pDate)
 CDayWidget::~CDayWidget()
 {
     Clear();
-    delete [] m_pHourSelMask;
+
 }
 
 void CDayWidget::Clear()
@@ -43,6 +39,12 @@ void CDayWidget::Clear()
     m_pHourSliceList.clear();
     m_pHourIdRectList.clear();
 
+    delete [] m_pHourSelMask;
+}
+
+void CDayWidget::InitHourSelMask()
+{
+    m_pHourSelMask = new bool[m_iHoursPerDay];
     for(int i=0; i<m_iHoursPerDay; i++)
     {
         m_pHourSelMask[i] = false;
@@ -94,17 +96,11 @@ void CDayWidget::Render()
     }
 }
 
-void CDayWidget::SetDate(const QDate &a_pDate)
-{
-    m_CDate = a_pDate;
-    m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
-    m_iCurrHour = this->CurrHour();
-}
-
 void CDayWidget::SetHoursPerDay(int a_iHoursPerDay)
 {
     m_iHoursPerDay = a_iHoursPerDay;
     this->Clear();
+    this->InitHourSelMask();
     this->Render();
 }
 
@@ -211,6 +207,18 @@ void CDayWidget::LeftButtonClicked(QPointF a_CMousePos)
     update(this->boundingRect());
 }
 
+void CDayWidget::MouseDragMove(QPointF a_CMousePos)
+{
+    Q_UNUSED(a_CMousePos)
+    this->setCursor(Qt::ClosedHandCursor);
+}
+
+void CDayWidget::MouseDragRelease(QPointF a_CMousePos)
+{
+    Q_UNUSED(a_CMousePos);
+    this->setCursor(Qt::ArrowCursor);
+}
+
 int CDayWidget::WidgetWidth()
 {
     return 2 * (m_iRadius + m_iExtRad);
@@ -231,4 +239,17 @@ void CDayWidget::SLOT_HourChangeProc()
                       this->boundingRect().width(), \
                       this->boundingRect().height() - m_iExtHeight));
     }
+}
+
+void CDayWidget::SLOT_SetDate(QDate a_CDate)
+{
+    if(!this->isVisible())
+    {
+        this->setVisible(true);
+    }
+    m_CDate = a_CDate;
+    m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
+    m_iCurrHour = this->CurrHour();
+    this->InitHourSelMask();
+    update(this->boundingRect());
 }
