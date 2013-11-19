@@ -13,7 +13,6 @@
 #include "cworkspace.h"
 #include "cgoalitem.h"
 #include "ctextinputitem.h"
-#include "cbuttonitem.h"
 #include "clabelitem.h"
 #include "clineitem.h"
 #include "cmemberitem.h"
@@ -22,6 +21,10 @@
 #include "cmonthwidget.h"
 #include "cyearwidget.h"
 #include "cplanwidget.h"
+#include "cgoalwidget.h"
+#include "../GraphicsWidgetLib/cgraphicswidget.h"
+#include "../GraphicsWidgetLib/cbuttonwidget.h"
+#include "../GraphicsWidgetLib/cwidgetlist.h"
 
 class CWorkSpaceView : public QGraphicsView
 {
@@ -45,6 +48,9 @@ public slots:
     void SLOT_DeleteItemProc(QGraphicsItem* a_pItem);
     void SLOT_CenterOnItemProc(QGraphicsItem* a_pItem);
 
+    //for time+task=plan framework
+    void SLOT_AddGoalWidgetToWidgetListEmit();
+
     //may be removed from this class
 //    void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
 //    void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
@@ -56,6 +62,10 @@ public slots:
 //    void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
 //    void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
 //    void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
+
+signals:
+    //for time+task=plan framework
+    void SIGNAL_AddWidgetToWidgetList(CGraphicsWidget* a_pNewWidget);
 
 private:
     CWorkSpace* m_pWorkSpace;

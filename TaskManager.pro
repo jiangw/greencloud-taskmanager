@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,7 +31,15 @@ SOURCES += main.cpp\
     cdaywidget.cpp \
     cmonthwidget.cpp \
     cyearwidget.cpp \
-    cplanwidget.cpp
+    cplanwidget.cpp \
+    ../GraphicsWidgetLib/ccheckwidget.cpp \
+    ../GraphicsWidgetLib/cbuttonwidget.cpp \
+    cgoalwidget.cpp \
+    ../GraphicsWidgetLib/csvgwidget.cpp \
+    ../GraphicsWidgetLib/cwidgetlist.cpp \
+    ../GraphicsWidgetLib/ctextwidget.cpp \
+    ../GraphicsWidgetLib/ctexteditor.cpp \
+    ctaskwidget.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -52,7 +60,15 @@ HEADERS  += mainwindow.h \
     cdaywidget.h \
     cmonthwidget.h \
     cyearwidget.h \
-    cplanwidget.h
+    cplanwidget.h \
+    ../GraphicsWidgetLib/ccheckwidget.h \
+    ../GraphicsWidgetLib/cbuttonwidget.h \
+    cgoalwidget.h \
+    ../GraphicsWidgetLib/csvgwidget.h \
+    ../GraphicsWidgetLib/cwidgetlist.h \
+    ../GraphicsWidgetLib/ctextwidget.h \
+    ../GraphicsWidgetLib/ctexteditor.h \
+    ctaskwidget.h
 
 RESOURCES += \
     res.qrc

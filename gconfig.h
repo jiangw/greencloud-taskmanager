@@ -20,8 +20,11 @@
 #include <QTime>
 #include <QRectF>
 #include <QPainter>
+#include <QColor>
 #include <QFont>
+#include <QFontMetrics>
 #include <QList>
+#include <QTransform>
 
 namespace TASKMANAGER
 {

@@ -98,8 +98,23 @@ void CWorkSpaceView::SLOT_AddPlanActionProc()
     l_pPlan->setPos(TASKMANAGER::g_iItemIntervalX, -250);
     m_pWorkSpace->addItem(l_pPlan);
 
+    //add widget list for storing goal widgets
+    CWidgetList* l_pGoalWidgetList = new CWidgetList(NULL);
+    l_pGoalWidgetList->setPos(l_pPlan->pos().x() + l_pPlan->boundingRect().width()\
+                              + 2 * TASKMANAGER::g_iItemIntervalX,\
+                              l_pPlan->pos().y());
+    m_pWorkSpace->addItem(l_pGoalWidgetList);
+    //set header of widget list as push button
+    CButtonWidget* l_pAddGoalBtn = new CButtonWidget("Add Goal", NULL);
+    l_pGoalWidgetList->SetHeaderWidget(l_pAddGoalBtn);
+    connect(l_pAddGoalBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
+            this, SLOT(SLOT_AddGoalWidgetToWidgetListEmit()));
+    connect(this, SIGNAL(SIGNAL_AddWidgetToWidgetList(CGraphicsWidget*)),\
+            l_pGoalWidgetList, SLOT(SLOT_AddWidget(CGraphicsWidget*)));
+
     this->ensureVisible(-310, -280,\
-                        l_pMonth->boundingRect().width() + l_pPlan->boundingRect().width() + 300, 500);
+                        l_pMonth->boundingRect().width()\
+                        + l_pPlan->boundingRect().width() + 490, 500);
 
     connect(l_pMonth, SIGNAL(SIGNAL_DaySel(QDate)),\
             l_pDay, SLOT(SLOT_SetDate(QDate)));
@@ -172,6 +187,12 @@ void CWorkSpaceView::SLOT_AddYearItemActionProc()
     CYearWidget* l_pYearItem = new CYearWidget(NULL);
     m_pWorkSpace->addItem(l_pYearItem);
     this->centerOn(l_pYearItem);
+}
+
+void CWorkSpaceView::SLOT_AddGoalWidgetToWidgetListEmit()
+{
+    CGoalWidget* l_pNewGoalWidget = new CGoalWidget(NULL);
+    emit this->SIGNAL_AddWidgetToWidgetList(l_pNewGoalWidget);
 }
 
 //void CWorkSpaceView::SLOT_AddGoalTitleProc(CGoalItem *a_pGoalItem)

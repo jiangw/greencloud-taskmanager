@@ -103,7 +103,8 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
 void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget *a_pWhoAmI)
 {
-    if(qstrcmp(a_pWhoAmI->WidgetClassName().toAscii(), "CDayWidget") == 0)
+    if(qstrcmp(a_pWhoAmI->WidgetClassName().toAscii(), "CDayWidget") == 0\
+            && this->contains(this->mapFromScene(a_CMouseScenePos)))
     { //add day time line
         CDayWidget* l_pDayWidget = (CDayWidget *)a_pWhoAmI;
         QDate l_CDayWidgetDate = l_pDayWidget->GetDate();

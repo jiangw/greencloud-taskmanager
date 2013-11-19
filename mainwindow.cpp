@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->resize(1111, 600);
+    this->resize(1300, 600);
     this->setWindowTitle(tr("Task Manager"));
     this->GVFCreate();
     this->MenusCreate();
@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_pStatusBar->setStatusTip("Welcome to use Task Manager.");
     this->setStatusBar(m_pStatusBar);
 
-    this->move(200, 50);
+    this->move(50, 50);
 }
 
 MainWindow::~MainWindow()
