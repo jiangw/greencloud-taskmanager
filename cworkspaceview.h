@@ -69,6 +69,7 @@ signals:
 
 private:
     CWorkSpace* m_pWorkSpace;
+    CPlanWidget* m_pPlanWidget;
     QList<CGoalItem *> m_pGoalItemList;
     QList<CMemberItem *> m_pMemberGroup;
 

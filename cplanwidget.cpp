@@ -9,6 +9,10 @@ CPlanWidget::CPlanWidget(CGraphicsWidget *a_pParent)
     m_iDateTagWidth = 200;
     m_iDateTagHeight = 20;
     m_iHeightPerTimeLine = m_iTimeSegHeight + m_iDateTagHeight;
+    m_CTaskTagFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
+    m_CTaskTagFont.setFamily("Liberation Sans Narrow");
+    m_CTaskTagPen.setWidth(1);
+
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
 }
 
@@ -22,10 +26,25 @@ void CPlanWidget::Clear()
     for(int i=0; i<m_CDateList.length(); i++)
     {
         delete m_CDateList[i];
-        delete m_CTimeSegList[i];
+        this->DeleteTimeSeg(m_CTimeSegList[i]);
     }
     m_CDateList.clear();
     m_CTimeSegList.clear();
+}
+
+void CPlanWidget::DeleteTimeSeg(STimeSeg *a_pDelTimeSeg)
+{
+    for(int i=0; i<a_pDelTimeSeg->m_CTaskListList.length(); i++)
+    {
+        delete a_pDelTimeSeg->m_CTaskListList[i];
+    }
+    delete a_pDelTimeSeg;
+}
+
+STimeSeg *CPlanWidget::ReplaceTimeSeg(STimeSeg *a_pOld, STimeSeg *a_pNew)
+{
+    delete a_pOld;
+    return a_pNew;
 }
 
 int CPlanWidget::WidgetWidth()
@@ -66,9 +85,6 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         painter->drawText(5, i * m_iHeightPerTimeLine, m_iDateTagWidth, m_iDateTagHeight,\
                           Qt::AlignLeft, m_CDateList[i]->toString("yyyy.MM.dd dddd :"));
         //time segment
-        painter->setFont(l_CNewFont);
-        painter->setPen(l_CNewPen);
-
         STimeSeg* l_pTimeSeg = m_CTimeSegList[i];
         int x = 10;
         int y = i * m_iHeightPerTimeLine + m_iDateTagHeight;
@@ -76,6 +92,9 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         {
             for(int j=0; j<l_pTimeSeg->m_CStartClockList.length(); j++)
             {
+                painter->setFont(l_CNewFont);
+                painter->setPen(l_CNewPen);
+                //draw time line
                 int l_iSegWidth = (l_pTimeSeg->m_CEndClockList[j] -\
                         l_pTimeSeg->m_CStartClockList[j]) * m_iWidthPerHour;
                 painter->drawLine(x, y + 15, x, y + 30);
@@ -89,6 +108,17 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                                   m_iClockTagWidth, m_iClockTagWidth,\
                                   Qt::AlignRight | Qt::AlignBottom,\
                                   QString("%1").arg(l_pTimeSeg->m_CEndClockList[j]));
+                //draw task tag
+                painter->setPen(m_CTaskTagPen);
+                painter->setFont(m_CTaskTagFont);
+                for(int k=0; k<l_pTimeSeg->m_CTaskListList[j]->m_qstrTaskTagList.length(); k++)
+                {
+                    QRectF l_CTaskTagRect(x + 3 + k * 25, y + 23, 23, 12);
+                    painter->fillRect(l_CTaskTagRect,\
+                                      l_pTimeSeg->m_CTaskListList[j]->m_EGoalColorTagList[k]);
+                    painter->drawText(l_CTaskTagRect, Qt::AlignCenter,\
+                                      l_pTimeSeg->m_CTaskListList[j]->m_qstrTaskTagList[k]);
+                }
 
                 x += l_iSegWidth + TASKMANAGER::g_iItemIntervalX;
             }
@@ -114,8 +144,9 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
             if(*(m_CDateList[i]) == l_CDayWidgetDate)
             { //the date has been added to the plan, then update information of this date
                 m_CTimeSegList.replace(i,\
-                                       this->ConvertHourMask2TimeSeg(\
-                                           l_pDayWidget->GetHourSelMask()));
+                                       this->ReplaceTimeSeg(m_CTimeSegList[i],\
+                                                            this->ConvertHourMask2TimeSeg(\
+                                                                l_pDayWidget->GetHourSelMask())));
                 l_iIdxOfDate = i;
                 break;
             }
@@ -128,6 +159,47 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
                                       l_pDayWidget->GetHourSelMask()));
         }
         update(this->boundingRect());
+    }
+}
+
+void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
+                                       Qt::GlobalColor a_EGoalColorTag)
+{
+    QPointF l_CMouseLocalPos = this->mapFromScene(a_CMouseScenePos);
+    if(this->contains(l_CMouseLocalPos))
+    {
+#ifdef PF_TEST
+        CTestBox::GetTestBox()->ShowMsg(QString("[CPlanWidget] Add Task: %1").arg(a_qstrTaskTag));
+#endif
+        //compute date index
+        int l_iDateIdx = qFloor(l_CMouseLocalPos.y() / m_iHeightPerTimeLine);
+        if(l_iDateIdx < m_CDateList.length() &&\
+                fmod(l_CMouseLocalPos.y(), m_iHeightPerTimeLine) > m_iDateTagHeight)
+        {
+            //compute time segment index
+            STimeSeg* l_pTimeSeg = m_CTimeSegList[l_iDateIdx];
+            int l_iTimeSegIdx = -1;
+            int l_iPosX = 10;
+            for(int i=0; i<l_pTimeSeg->m_CStartClockList.length(); i++)
+            {
+                int l_iSegLen = m_iWidthPerHour\
+                        * (l_pTimeSeg->m_CEndClockList[i] - l_pTimeSeg->m_CStartClockList[i]);
+                if(l_CMouseLocalPos.x() >= l_iPosX\
+                        && l_CMouseLocalPos.x() <= (l_iPosX + l_iSegLen))
+                {
+                    l_iTimeSegIdx = i;
+                    break;
+                }
+                l_iPosX += l_iSegLen + TASKMANAGER::g_iItemIntervalX;
+            }
+            if(-1 != l_iTimeSegIdx)
+            {
+                l_pTimeSeg->m_CTaskListList[l_iTimeSegIdx]->Append(a_qstrTaskTag,\
+                                                                   a_EGoalColorTag);
+                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine, this->boundingRect().width(),\
+                              m_iHeightPerTimeLine));
+            }
+        }
     }
 }
 
@@ -150,6 +222,8 @@ STimeSeg* CPlanWidget::ConvertHourMask2TimeSeg(const bool *a_pHourMask)
             if(l_blSegStart)
             {
                 l_pTimeSeg->m_CEndClockList.append(i);
+                STaskList* l_pNewTaskList = new STaskList;
+                l_pTimeSeg->m_CTaskListList.append(l_pNewTaskList);
                 l_blSegStart = false;
             }
         }

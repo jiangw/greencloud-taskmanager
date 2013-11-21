@@ -5,6 +5,30 @@
 #include "gconfig.h"
 #include "cdaywidget.h"
 
+struct STaskList
+{
+    void Append(QString a_qstrTaskTag, Qt::GlobalColor a_EGoalColorTag)
+    {
+        bool l_blInList = false;
+        for(int i=0; i<m_qstrTaskTagList.length(); i++)
+        {
+            if(a_qstrTaskTag == m_qstrTaskTagList[i])
+            {
+                l_blInList = true;
+                break;
+            }
+        }
+        if(!l_blInList)
+        {
+            m_qstrTaskTagList.append(a_qstrTaskTag);
+            m_EGoalColorTagList.append(a_EGoalColorTag);
+        }
+    }
+
+    QList<QString> m_qstrTaskTagList;
+    QList<Qt::GlobalColor> m_EGoalColorTagList;
+};
+
 struct STimeSeg
 {
     bool IsEmpty()\
@@ -13,6 +37,7 @@ struct STimeSeg
     }
     QList<int> m_CStartClockList;
     QList<int> m_CEndClockList;
+    QList<STaskList *> m_CTaskListList;
 };
 
 class CPlanWidget : public CGraphicsWidget
@@ -23,6 +48,8 @@ public:
     CPlanWidget(CGraphicsWidget* a_pParent);
     virtual ~CPlanWidget();
     void Clear();
+    STimeSeg* ReplaceTimeSeg(STimeSeg* a_pOld, STimeSeg* a_pNew);
+    void DeleteTimeSeg(STimeSeg* a_pDelTimeSeg);
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -33,6 +60,8 @@ public:
 
 public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
+    void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
+                              Qt::GlobalColor a_EGoalColorTag);
 
 private:
     STimeSeg* ConvertHourMask2TimeSeg(const bool* a_pHourMask);
@@ -45,6 +74,9 @@ private:
     int m_iClockTagWidth;
     int m_iDateTagWidth;
     int m_iDateTagHeight;
+
+    QFont m_CTaskTagFont;
+    QPen m_CTaskTagPen;
 };
 
 #endif // CPLANWIDGET_H

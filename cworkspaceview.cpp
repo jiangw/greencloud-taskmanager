@@ -4,6 +4,7 @@ CWorkSpaceView::CWorkSpaceView(CWorkSpace *a_pWorkSpace, QWidget *a_pParent) :
     QGraphicsView(a_pWorkSpace, a_pParent)
 {
     m_pWorkSpace = a_pWorkSpace;
+    m_pPlanWidget = NULL;
 
     //receive mouse move events even if no button is pressed
     this->setMouseTracking(true);
@@ -94,15 +95,18 @@ void CWorkSpaceView::SLOT_AddPlanActionProc()
     l_pDay->setPos(-240, TASKMANAGER::g_iItemIntervalY);
     m_pWorkSpace->addItem(l_pDay);
 
-    CPlanWidget* l_pPlan = new CPlanWidget(NULL);
-    l_pPlan->setPos(TASKMANAGER::g_iItemIntervalX, -250);
-    m_pWorkSpace->addItem(l_pPlan);
+    if(NULL == m_pPlanWidget)
+    {
+        m_pPlanWidget = new CPlanWidget(NULL);
+        m_pPlanWidget->setPos(TASKMANAGER::g_iItemIntervalX, -250);
+        m_pWorkSpace->addItem(m_pPlanWidget);
+    }
 
     //add widget list for storing goal widgets
     CWidgetList* l_pGoalWidgetList = new CWidgetList(NULL);
-    l_pGoalWidgetList->setPos(l_pPlan->pos().x() + l_pPlan->boundingRect().width()\
+    l_pGoalWidgetList->setPos(m_pPlanWidget->pos().x() + m_pPlanWidget->boundingRect().width()\
                               + 2 * TASKMANAGER::g_iItemIntervalX,\
-                              l_pPlan->pos().y());
+                              m_pPlanWidget->pos().y());
     m_pWorkSpace->addItem(l_pGoalWidgetList);
     //set header of widget list as push button
     CButtonWidget* l_pAddGoalBtn = new CButtonWidget("Add Goal", NULL);
@@ -114,12 +118,12 @@ void CWorkSpaceView::SLOT_AddPlanActionProc()
 
     this->ensureVisible(-310, -280,\
                         l_pMonth->boundingRect().width()\
-                        + l_pPlan->boundingRect().width() + 490, 500);
+                        + m_pPlanWidget->boundingRect().width() + 490, 500);
 
     connect(l_pMonth, SIGNAL(SIGNAL_DaySel(QDate)),\
             l_pDay, SLOT(SLOT_SetDate(QDate)));
     connect(l_pDay, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
-            l_pPlan, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
+            m_pPlanWidget, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
 }
 
 void CWorkSpaceView::SLOT_RemoveItemProc(QGraphicsItem *a_pGraphicsItem, CItemAnimation *a_pItemAnim)
@@ -192,6 +196,9 @@ void CWorkSpaceView::SLOT_AddYearItemActionProc()
 void CWorkSpaceView::SLOT_AddGoalWidgetToWidgetListEmit()
 {
     CGoalWidget* l_pNewGoalWidget = new CGoalWidget(NULL);
+    connect(l_pNewGoalWidget, SIGNAL(SIGNAL_GoalTaskSend(QPointF,QString,Qt::GlobalColor)),\
+            m_pPlanWidget, SLOT(SLOT_GoalTaskRecieve(QPointF,QString,Qt::GlobalColor)));
+
     emit this->SIGNAL_AddWidgetToWidgetList(l_pNewGoalWidget);
 }
 

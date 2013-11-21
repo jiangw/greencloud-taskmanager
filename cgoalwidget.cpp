@@ -138,6 +138,7 @@ void CGoalWidget::LeftButtonClicked(QPointF a_CMousePos)
         {
             m_pSvgWidgetEdit->setVisible(!m_pSvgWidgetEdit->isVisible());
             m_pSvgWidgetDel->setVisible(!m_pSvgWidgetDel->isVisible());
+            m_pTaskWidgetList->SetCollapse(!m_pTaskWidgetList->Collapse());
         }
     }
 }
@@ -174,6 +175,8 @@ void CGoalWidget::SLOT_AddTaskWidgetProc()
     m_pTaskWidgetList->AddWidget(l_pTaskWidget);
     connect(l_pTaskWidget, SIGNAL(SIGNAL_RemoveWidget(CGraphicsWidget*)),\
             m_pTaskWidgetList, SLOT(SLOT_RemoveWidget(CGraphicsWidget*)));
+    connect(l_pTaskWidget, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
+            this, SLOT(SLOT_TaskWidgetDragDropEmit(QPointF,CGraphicsWidget*)));
 }
 
 void CGoalWidget::SLOT_ChildWidgetSizeChangeProc()
@@ -211,6 +214,13 @@ void CGoalWidget::SLOT_ColorTagChangeProc()
     }
     update(QRectF(m_iControllerWidth, m_iControllerHeight / 2,\
                   this->GoalLabelWidth(), this->GoalLabelHeight()));
+}
+
+void CGoalWidget::SLOT_TaskWidgetDragDropEmit(QPointF a_CMouseScenePos, CGraphicsWidget *a_pTaskWidget)
+{
+    emit this->SIGNAL_GoalTaskSend(a_CMouseScenePos,\
+                                   ((CTaskWidget *)a_pTaskWidget)->GetTaskTag(),\
+                                   (Qt::GlobalColor)m_EColorTag);
 }
 
 void CGoalWidget::SetTaskModeBatch(CTaskWidget::ETaskMode a_eTaskMode)

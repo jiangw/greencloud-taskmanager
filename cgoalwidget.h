@@ -43,6 +43,11 @@ public slots:
     void SLOT_ChildWidgetSizeChangeProc();
     void SLOT_GoalLabelSizeChangeProc();
     void SLOT_ColorTagChangeProc();
+    void SLOT_TaskWidgetDragDropEmit(QPointF a_CMouseScenePos, CGraphicsWidget* a_pTaskWidget);
+
+signals:
+    void SIGNAL_GoalTaskSend(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
+                             Qt::GlobalColor a_EGoalColorTag);
 
 private:
     int GoalLabelWidth();

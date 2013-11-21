@@ -17,6 +17,7 @@ public:
 
     CTaskWidget(CGraphicsWidget* a_pParent);
     void SetTaskMode(ETaskMode a_ETaskMode);
+    QString GetTaskTag();
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -24,6 +25,10 @@ public:
     QString WidgetClassName()\
     {return "CTaskWidget";}
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+protected:
+    //override from CGraphicsWidget
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
     void SLOT_TaskStatusChangeProc();

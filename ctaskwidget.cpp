@@ -27,6 +27,7 @@ CTaskWidget::CTaskWidget(CGraphicsWidget *a_pParent)
     m_pTagWidget->SetFont(m_CTagFont);
     m_pTagWidget->SetFixedSize(m_iTagWidth, m_pTagWidget->WidgetHeight());
     m_pTagWidget->setPos(m_iControllerSize + TASKMANAGER::g_iItemIntervalX, 0);
+    m_pTagWidget->setFlag(QGraphicsItem::ItemStacksBehindParent);
 
     m_pDescWidget = new CTextWidget(true, this);
     m_pDescWidget->SetInputTip("Task description");
@@ -34,6 +35,7 @@ CTaskWidget::CTaskWidget(CGraphicsWidget *a_pParent)
     m_pDescWidget->SetWidgetOutline(false);
     m_pDescWidget->SetWidgetUnderline(true);
     m_pDescWidget->setPos(m_pTagWidget->pos().x() + m_pTagWidget->boundingRect().width(), 0);
+    m_pDescWidget->setFlag(QGraphicsItem::ItemStacksBehindParent);
     connect(m_pDescWidget, SIGNAL(SIGNAL_WidgetSizeChanged()),\
             this, SLOT(SLOT_TextWidgetSizeChangeProc()));
 
@@ -49,18 +51,19 @@ void CTaskWidget::SetTaskMode(ETaskMode a_ETaskMode)
     case EDIT:
         m_pCheckWidget->setVisible(false);
         m_pDelWidget->setVisible(true);
-        m_pTagWidget->SetEditable(true);
-        m_pDescWidget->SetEditable(true);
         break;
     case VIEW:
         m_pCheckWidget->setVisible(true);
         m_pDelWidget->setVisible(false);
-        m_pTagWidget->SetEditable(false);
-        m_pDescWidget->SetEditable(false);
         break;
     default:
         break;
     }
+}
+
+QString CTaskWidget::GetTaskTag()
+{
+    return m_pTagWidget->GetText();
 }
 
 int CTaskWidget::WidgetWidth()
@@ -85,9 +88,21 @@ int CTaskWidget::WidgetHeight()
     return l_iHeight;
 }
 
-void CTaskWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void CTaskWidget::paint(QPainter */*painter*/, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
+}
 
+void CTaskWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    switch(m_EMode)
+    {
+    case EDIT:
+        event->ignore();
+        break;
+    default:
+        CGraphicsWidget::mousePressEvent(event);
+        break;
+    }
 }
 
 void CTaskWidget::SLOT_TaskStatusChangeProc()
