@@ -33,6 +33,18 @@ void MainWindow::MenusCreate()
     connect(m_pCreatePlanAction, SIGNAL(triggered()), \
             m_pWorkSpaceView, SLOT(SLOT_CreatePlanActionProc()));
 
+    m_pExportPlan = new QAction(this);
+    m_pExportPlan->setText("Export Plan");
+    m_pExportPlan->setShortcut(QString("Ctrl+E"));
+    m_pStartMenu->addAction(m_pExportPlan);
+    connect(m_pExportPlan, SIGNAL(triggered()), this, SLOT(SLOT_ExportPlanProc()));
+
+    m_pExportWorkspace = new QAction(this);
+    m_pExportWorkspace->setText("Export Workspace");
+    m_pExportWorkspace->setShortcut(QString("Ctrl+Shift+E"));
+    m_pStartMenu->addAction(m_pExportWorkspace);
+    connect(m_pExportWorkspace, SIGNAL(triggered()), this, SLOT(SLOT_ExportWorkspaceProc()));
+
     m_pStartMenu->addSeparator();
 
     m_pExitAction = new QAction(this);
@@ -77,4 +89,26 @@ void MainWindow::ToolBarCreate()
     m_pSystemToolBar = this->addToolBar(tr("System ToolBar"));
     m_pSystemToolBar->setMovable(false);
     m_pSystemToolBar->setVisible(false);
+}
+
+void MainWindow::SLOT_ExportPlanProc()
+{
+    QString l_qstrFileName = QFileDialog::getSaveFileName(this, "Export Plan",\
+                                                          "/home/jiang/untitled",\
+                                                          "SVG Files (*.svg);;Images (*.jpg);;XML Files (*.xml)");
+    if(!l_qstrFileName.isEmpty())
+    {
+        m_pWorkSpaceView->ExportPlan2Svg(l_qstrFileName);
+    }
+}
+
+void MainWindow::SLOT_ExportWorkspaceProc()
+{
+    QString l_qstrFileName = QFileDialog::getSaveFileName(this, "Export Workspace",\
+                                                          "/home/jiang/untitled",\
+                                                          "SVG Files (*.svg);;XML Files (*.xml)");
+    if(!l_qstrFileName.isEmpty())
+    {
+        m_pWorkSpaceView->ExportWorkSpace2Svg(l_qstrFileName);
+    }
 }

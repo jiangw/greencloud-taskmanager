@@ -13,6 +13,66 @@ CWorkSpaceView::CWorkSpaceView(CWorkSpace *a_pWorkSpace, QWidget *a_pParent) :
     this->setMouseTracking(true);
 }
 
+bool CWorkSpaceView::ExportPlan2Img(QString a_qstrImgFileName)
+{
+    QImage l_CImage(m_pPlanWidget->boundingRect().width(),\
+                    m_pPlanWidget->boundingRect().height(),\
+                    QImage::Format_ARGB32);
+    std::cout << l_CImage.dotsPerMeterX() << "," << l_CImage.dotsPerMeterY() << std::endl;
+    l_CImage.fill(Qt::white);
+    m_pPlanWidget->RenderToImg(&l_CImage);
+
+    return l_CImage.save(a_qstrImgFileName);
+}
+
+bool CWorkSpaceView::ExportPlan2Svg(QString a_qstrSvgFileName)
+{
+    QSvgGenerator l_CSvg;
+    l_CSvg.setFileName(a_qstrSvgFileName);
+    l_CSvg.setSize(QSize(m_pPlanWidget->boundingRect().width(),\
+                         m_pPlanWidget->boundingRect().height()));
+    l_CSvg.setResolution(90);
+
+    m_pPlanWidget->RenderToSvg(&l_CSvg);
+
+    return true;
+}
+
+bool CWorkSpaceView::ExportWorkSpace2Svg(QString a_qstrSvgFileName)
+{
+    QRectF l_CRenderRect;
+    l_CRenderRect.setX(m_pMonthWidget->pos().x() - 5);
+    l_CRenderRect.setY(m_pPlanWidget->pos().y() - 5);
+    l_CRenderRect.setWidth(m_pMonthWidget->boundingRect().width()\
+                           + m_pPlanWidget->boundingRect().width()\
+                           + m_pGoalWidgetList->boundingRect().width() + 30);
+    int l_iHeight;
+    if(m_pPlanWidget->boundingRect().height() > m_pGoalWidgetList->boundingRect().height())
+    {
+        l_iHeight = m_pPlanWidget->boundingRect().height();
+    }
+    else
+    {
+        l_iHeight = m_pGoalWidgetList->boundingRect().height();
+    }
+    l_CRenderRect.setHeight(l_iHeight + 10);
+
+    QSvgGenerator l_CSvg;
+    l_CSvg.setFileName(a_qstrSvgFileName);
+    l_CSvg.setSize(QSize(l_CRenderRect.width(), l_CRenderRect.height()));
+    l_CSvg.setResolution(90);
+
+    QPainter l_CPainter;
+    l_CPainter.begin(&l_CSvg);
+    QBrush l_COldBrush = m_pWorkSpace->backgroundBrush();
+    m_pWorkSpace->setBackgroundBrush(QBrush(Qt::transparent));
+    m_pWorkSpace->render(&l_CPainter, QRectF(), l_CRenderRect);
+    l_CPainter.end();
+    m_pWorkSpace->setBackgroundBrush(l_COldBrush);
+
+    return true;
+}
+
 void CWorkSpaceView::SLOT_DragModeSwitched(bool a_blFlag)
 {
     if(a_blFlag)
@@ -101,9 +161,9 @@ void CWorkSpaceView::SLOT_CreatePlanActionProc()
                    0);
 }
 
-void CWorkSpaceView::SLOT_CenterOnItemProc(QGraphicsItem *a_pItem)
+void CWorkSpaceView::SLOT_CenterOnGraphicsWidgetProc(CGraphicsWidget *a_pWidget)
 {
-    this->centerOn(a_pItem);
+    this->centerOn(a_pWidget);
 }
 
 void CWorkSpaceView::SLOT_ResetViewActionProc()

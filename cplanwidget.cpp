@@ -47,6 +47,26 @@ void CPlanWidget::DeleteTimeSeg(STimeSeg *a_pDelTimeSeg)
     delete a_pDelTimeSeg;
 }
 
+void CPlanWidget::RenderToImg(QImage *a_pImg)
+{
+    if(NULL != a_pImg)
+    {
+        QPainter l_CPainter(a_pImg);
+        this->paint(&l_CPainter, NULL, NULL);
+    }
+}
+
+void CPlanWidget::RenderToSvg(QSvgGenerator* a_pSVG)
+{
+    if(NULL != a_pSVG)
+    {
+        QPainter l_CPainter;
+        l_CPainter.begin(a_pSVG);
+        this->paint(&l_CPainter, NULL, NULL);
+        l_CPainter.end();
+    }
+}
+
 STimeSeg *CPlanWidget::ReplaceTimeSeg(STimeSeg *a_pOld, STimeSeg *a_pNew)
 {
     delete a_pOld;

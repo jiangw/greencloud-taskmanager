@@ -5,6 +5,10 @@
 #include "gconfig.h"
 #include "cdaywidget.h"
 
+#include <QPainter>
+#include <QImage>
+#include <QSvgGenerator>
+
 struct STaskList
 {
     void Append(QString a_qstrTaskTag, Qt::GlobalColor a_EGoalColorTag)
@@ -51,6 +55,8 @@ public:
     void ResetWidget();
     STimeSeg* ReplaceTimeSeg(STimeSeg* a_pOld, STimeSeg* a_pNew);
     void DeleteTimeSeg(STimeSeg* a_pDelTimeSeg);
+    void RenderToImg(QImage* a_pImg);
+    void RenderToSvg(QSvgGenerator *a_pSVG);
 
     //override from CGraphicsWidget
     int WidgetWidth();

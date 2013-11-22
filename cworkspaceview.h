@@ -26,18 +26,28 @@ class CWorkSpaceView : public QGraphicsView
     Q_OBJECT
 public:
     CWorkSpaceView(CWorkSpace* a_pWorkSpace, QWidget* a_pParent);
+
+    bool ExportPlan2Img(QString a_qstrImgFileName);
+    bool ExportPlan2Svg(QString a_qstrSvgFileName);
+    bool ExportWorkSpace2Img(QString a_qstrImgFileName);
+    bool ExportWorkSpace2Svg(QString a_qstrSvgFileName);
     
 signals:
     
 public slots:
+    //utils
+    void SLOT_CenterOnGraphicsWidgetProc(CGraphicsWidget* a_pWidget);
+    void SLOT_DeleteWidgetFromSceneProc(CGraphicsWidget* a_pDelWidget);
+
+    //handle window actions from 'Start' menu
+    void SLOT_CreatePlanActionProc();
+
+    //handle window actions from 'View' menu
     void SLOT_DragModeSwitched(bool a_blFlag);
-    void SLOT_CenterOnItemProc(QGraphicsItem* a_pItem);
     void SLOT_ResetViewActionProc();
 
     //for time+task=plan framework
-    void SLOT_CreatePlanActionProc();
     void SLOT_AddGoalWidgetToWidgetListEmit();
-    void SLOT_DeleteWidgetFromSceneProc(CGraphicsWidget* a_pDelWidget);
 
 signals:
     //for time+task=plan framework

@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QFileDialog>
 
 #include "gconfig.h"
 #include "cworkspace.h"
@@ -27,6 +28,8 @@ public:
     //'Start' menu
     QMenu* m_pStartMenu;
     QAction* m_pCreatePlanAction;
+    QAction* m_pExportWorkspace;
+    QAction* m_pExportPlan;
     QAction* m_pExitAction;
     //'View' menu
     QMenu* m_pViewMenu;
@@ -41,6 +44,10 @@ public:
     //graphics view framework
     CWorkSpace* m_pWorkSpace;
     CWorkSpaceView* m_pWorkSpaceView;
+
+public slots:
+    void SLOT_ExportPlanProc();
+    void SLOT_ExportWorkspaceProc();
 };
 
 #endif // MAINWINDOW_H
