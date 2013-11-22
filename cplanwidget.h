@@ -48,6 +48,7 @@ public:
     CPlanWidget(CGraphicsWidget* a_pParent);
     virtual ~CPlanWidget();
     void Clear();
+    void ResetWidget();
     STimeSeg* ReplaceTimeSeg(STimeSeg* a_pOld, STimeSeg* a_pNew);
     void DeleteTimeSeg(STimeSeg* a_pDelTimeSeg);
 
@@ -62,9 +63,15 @@ public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
     void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
                               Qt::GlobalColor a_EGoalColorTag);
+    void SLOT_HourSelMaskRequestProc(QDate a_CDate, int a_iHoursPerDay);
+    void SLOT_HourSelMaskRecieveFeedbackProc(bool* a_pHourSelMask);
+
+signals:
+    void SIGNAL_HourSelMaskSend(bool* a_pHourSelMask, bool a_blFeedback);
 
 private:
-    STimeSeg* ConvertHourMask2TimeSeg(const bool* a_pHourMask);
+    STimeSeg* ConvertHourMask2TimeSeg(const bool* a_pHourMask, int a_iHoursPerDay = 24);
+    bool* ConvertTimeSeg2HourMask(STimeSeg* a_pTimeSeg, int a_iHoursPerDay = 24);
 
     QList<QDate *> m_CDateList;
     QList<STimeSeg *> m_CTimeSegList;

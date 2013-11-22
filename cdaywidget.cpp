@@ -1,6 +1,6 @@
 #include "cdaywidget.h"
 
-CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_pDate)
+CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_CDate)
     :CGraphicsWidget(a_pParent)
 {
     m_iHoursPerDay = 24;
@@ -16,10 +16,10 @@ CDayWidget::CDayWidget(CGraphicsWidget *a_pParent, const QDate &a_pDate)
 
     this->InitHourSelMask();
 
+    m_CDate = a_CDate;
     m_pDateLabel = new QGraphicsSimpleTextItem(this);
     m_pDateLabel->setPos(6, this->WidgetHeight() - m_iExtHeight);
-    this->SLOT_SetDate(a_pDate);
-
+    m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
     m_iCurrHour = this->CurrHour();
 }
 
@@ -40,6 +40,15 @@ void CDayWidget::Clear()
     m_pHourIdRectList.clear();
 
     delete [] m_pHourSelMask;
+}
+
+void CDayWidget::ResetWidget()
+{
+    m_CDate = QDate::currentDate();
+    m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
+    m_iCurrHour = this->CurrHour();
+    this->InitHourSelMask();
+    update(this->boundingRect());
 }
 
 void CDayWidget::InitHourSelMask()
@@ -241,15 +250,32 @@ void CDayWidget::SLOT_HourChangeProc()
     }
 }
 
-void CDayWidget::SLOT_SetDate(QDate a_CDate)
+void CDayWidget::SLOT_SetDateProc(QDate a_CDate)
 {
     if(!this->isVisible())
     {
         this->setVisible(true);
     }
+
     m_CDate = a_CDate;
     m_pDateLabel->setText(m_CDate.toString("yyyy.MM.dd dddd"));
     m_iCurrHour = this->CurrHour();
     this->InitHourSelMask();
     update(this->boundingRect());
+
+    emit this->SIGNAL_HourSelMaskRequest(a_CDate, m_iHoursPerDay);
+}
+
+void CDayWidget::SLOT_HourSelMaskRecieveProc(bool *a_pHourSelMask, bool a_blFeedback)
+{
+    if(NULL != a_pHourSelMask)
+    {
+        memcpy(m_pHourSelMask, a_pHourSelMask, m_iHoursPerDay * sizeof(bool));
+        update(this->boundingRect());
+    }
+
+    if(a_blFeedback)
+    {
+        emit this->SIGNAL_HourSelMaskRecieveFeedback(a_pHourSelMask);
+    }
 }

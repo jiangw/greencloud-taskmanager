@@ -11,11 +11,6 @@
 
 #include "gconfig.h"
 #include "cworkspace.h"
-#include "cgoalitem.h"
-#include "ctextinputitem.h"
-#include "clabelitem.h"
-#include "clineitem.h"
-#include "cmemberitem.h"
 
 #include "cdaywidget.h"
 #include "cmonthwidget.h"
@@ -31,37 +26,18 @@ class CWorkSpaceView : public QGraphicsView
     Q_OBJECT
 public:
     CWorkSpaceView(CWorkSpace* a_pWorkSpace, QWidget* a_pParent);
-    virtual ~CWorkSpaceView();
     
 signals:
     
 public slots:
     void SLOT_DragModeSwitched(bool a_blFlag);
-    void SLOT_AddGoalActionProc();
-    void SLOT_AddPlanActionProc();
-    void SLOT_AddDayItemActionProc();
-    void SLOT_AddMonthItemActionProc();
-    void SLOT_AddYearItemActionProc();
-    void SLOT_ShowGoalProc(CGoalItem* a_pGoalItem);
-    void SLOT_RemoveItemProc(QGraphicsItem* a_pGraphicsItem, \
-                         CItemAnimation* a_pItemAnim);
-    void SLOT_DeleteItemProc(QGraphicsItem* a_pItem);
     void SLOT_CenterOnItemProc(QGraphicsItem* a_pItem);
+    void SLOT_ResetViewActionProc();
 
     //for time+task=plan framework
+    void SLOT_CreatePlanActionProc();
     void SLOT_AddGoalWidgetToWidgetListEmit();
-
-    //may be removed from this class
-//    void SLOT_AddGoalTitleProc(CGoalItem* a_pGoalItem);
-//    void SLOT_AddGoalMembersProc(CGoalItem* a_pGoalItem);
-//    void SLOT_RequestMembersProc(CGoalItem* a_pGoalItem);
-//    void SLOT_AddMemberItemProc();
-//    void SLOT_RemoveMemberItemProc();
-//    void SLOT_RemoveMemberItemGroupProc();
-//    void SLOT_AddGoalIntroProc(CGoalItem* a_pGoalItem);
-//    void SLOT_AddGoalBkgrndProc(CGoalItem* a_pGoalItem);
-//    void SLOT_AddGoalStepsProc(CGoalItem* a_pGoalItem);
-//    void SLOT_AddGoalResProc(CGoalItem* a_pGoalItem);
+    void SLOT_DeleteWidgetFromSceneProc(CGraphicsWidget* a_pDelWidget);
 
 signals:
     //for time+task=plan framework
@@ -70,8 +46,9 @@ signals:
 private:
     CWorkSpace* m_pWorkSpace;
     CPlanWidget* m_pPlanWidget;
-    QList<CGoalItem *> m_pGoalItemList;
-    QList<CMemberItem *> m_pMemberGroup;
+    CMonthWidget* m_pMonthWidget;
+    CDayWidget* m_pDayWidget;
+    CWidgetList* m_pGoalWidgetList;
 
 };
 

@@ -4,13 +4,8 @@
 #include <iostream>
 
 //set programming flag
-#define PF_TEST
-//#define PF_RUN
-
-//Tool box for testing code
-#ifdef PF_TEST
-#include "ctestbox.h"
-#endif
+//#define PF_TEST
+#define PF_RUN
 
 #include <QtCore>
 #include <qmath.h>

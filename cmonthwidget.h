@@ -11,6 +11,7 @@ class CMonthWidget : public CGraphicsWidget
 public:
     CMonthWidget(CGraphicsWidget* a_pParent,\
                  int a_iYear = QDate::currentDate().year());
+    void ResetWidget();
 
     int GetFirstDayPos(int a_iYear, int a_iMonth);
     int GetDaysInMonth(int a_iYear, int a_iMonth);

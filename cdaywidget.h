@@ -9,9 +9,10 @@ class CDayWidget : public CGraphicsWidget
     Q_OBJECT
 
 public:
-    CDayWidget(CGraphicsWidget* a_pParent, const QDate& a_pDate = QDate::currentDate());
+    CDayWidget(CGraphicsWidget* a_pParent, const QDate& a_CDate = QDate::currentDate());
     virtual ~CDayWidget();
     void Clear();
+    void ResetWidget();
     void InitHourSelMask();
 
     void SetRadius(int a_iRadius);
@@ -39,7 +40,12 @@ protected:
 
 public slots:
     void SLOT_HourChangeProc();
-    void SLOT_SetDate(QDate a_CDate);
+    void SLOT_SetDateProc(QDate a_CDate);
+    void SLOT_HourSelMaskRecieveProc(bool* a_pHourSelMask, bool a_blFeedback);
+
+signals:
+    void SIGNAL_HourSelMaskRequest(QDate a_CDate, int a_iHoursPerDay);
+    void SIGNAL_HourSelMaskRecieveFeedback(bool* a_pHourSelMask);
 
 private:
     int m_iHoursPerDay;

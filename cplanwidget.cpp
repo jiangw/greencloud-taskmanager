@@ -32,6 +32,12 @@ void CPlanWidget::Clear()
     m_CTimeSegList.clear();
 }
 
+void CPlanWidget::ResetWidget()
+{
+    this->Clear();
+    update(this->boundingRect());
+}
+
 void CPlanWidget::DeleteTimeSeg(STimeSeg *a_pDelTimeSeg)
 {
     for(int i=0; i<a_pDelTimeSeg->m_CTaskListList.length(); i++)
@@ -70,7 +76,7 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    //draw time line
+    //draw plan line
     QFont l_COldFont = painter->font();
     QFont l_CNewFont = l_COldFont;
     l_CNewFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
@@ -154,9 +160,28 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
         if(-1 == l_iIdxOfDate)
         { //a new date
             QDate* l_pNewDate = new QDate(l_pDayWidget->GetDate());
-            m_CDateList.append(l_pNewDate);
-            m_CTimeSegList.append(this->ConvertHourMask2TimeSeg(\
-                                      l_pDayWidget->GetHourSelMask()));
+            //insert new date by the order of time
+            int l_iDatePos = -1;
+            for(int i=0; i<m_CDateList.length(); i++)
+            {
+                if((*l_pNewDate) < (*m_CDateList[i]))
+                {
+                    l_iDatePos = i;
+                    break;
+                }
+            }
+            if(-1 != l_iDatePos)
+            {
+                m_CDateList.insert(l_iDatePos, l_pNewDate);
+                m_CTimeSegList.insert(l_iDatePos, this->ConvertHourMask2TimeSeg(\
+                                                        l_pDayWidget->GetHourSelMask()));
+            }
+            else
+            {
+                m_CDateList.append(l_pNewDate);
+                m_CTimeSegList.append(this->ConvertHourMask2TimeSeg(\
+                                          l_pDayWidget->GetHourSelMask()));
+            }
         }
         update(this->boundingRect());
     }
@@ -168,9 +193,6 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrT
     QPointF l_CMouseLocalPos = this->mapFromScene(a_CMouseScenePos);
     if(this->contains(l_CMouseLocalPos))
     {
-#ifdef PF_TEST
-        CTestBox::GetTestBox()->ShowMsg(QString("[CPlanWidget] Add Task: %1").arg(a_qstrTaskTag));
-#endif
         //compute date index
         int l_iDateIdx = qFloor(l_CMouseLocalPos.y() / m_iHeightPerTimeLine);
         if(l_iDateIdx < m_CDateList.length() &&\
@@ -203,11 +225,37 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrT
     }
 }
 
-STimeSeg* CPlanWidget::ConvertHourMask2TimeSeg(const bool *a_pHourMask)
+void CPlanWidget::SLOT_HourSelMaskRequestProc(QDate a_CDate, int a_iHoursPerDay)
+{
+    STimeSeg* l_pTimeSeg = NULL;
+    for(int i=0; i<m_CDateList.length(); i++)
+    {
+        if(a_CDate == *(m_CDateList[i]))
+        {
+            l_pTimeSeg = m_CTimeSegList[i];
+            break;
+        }
+    }
+    bool* l_pHourSelMask = this->ConvertTimeSeg2HourMask(l_pTimeSeg, a_iHoursPerDay);
+    bool l_blFeedback = true;
+    if(NULL == l_pHourSelMask)
+    {
+        l_blFeedback = false;
+    }
+
+    emit this->SIGNAL_HourSelMaskSend(l_pHourSelMask, l_blFeedback);
+}
+
+void CPlanWidget::SLOT_HourSelMaskRecieveFeedbackProc(bool *a_pHourSelMask)
+{
+    delete [] a_pHourSelMask;
+}
+
+STimeSeg* CPlanWidget::ConvertHourMask2TimeSeg(const bool *a_pHourMask, int a_iHoursPerDay)
 {
     STimeSeg* l_pTimeSeg = new STimeSeg;
     bool l_blSegStart = false;
-    for(int i=0; i<24; i++)
+    for(int i=0; i<a_iHoursPerDay; i++)
     {
         if(a_pHourMask[i])
         {
@@ -230,8 +278,32 @@ STimeSeg* CPlanWidget::ConvertHourMask2TimeSeg(const bool *a_pHourMask)
     }
     if(l_blSegStart)
     {
-        l_pTimeSeg->m_CEndClockList.append(24);
+        l_pTimeSeg->m_CEndClockList.append(a_iHoursPerDay);
     }
 
     return l_pTimeSeg;
+}
+
+bool* CPlanWidget::ConvertTimeSeg2HourMask(STimeSeg *a_pTimeSeg, int a_iHoursPerDay)
+{
+    bool* l_pHourMask = NULL;
+    if(NULL != a_pTimeSeg && !a_pTimeSeg->IsEmpty())
+    {
+        l_pHourMask = new bool[a_iHoursPerDay];
+        for(int i=0; i<a_iHoursPerDay; i++)
+        {
+            l_pHourMask[i] = false;
+        }
+
+        for(int i=0; i<a_pTimeSeg->m_CStartClockList.length(); i++)
+        {
+            for(int j=a_pTimeSeg->m_CStartClockList[i]; j<a_pTimeSeg->m_CEndClockList[i];\
+                j++)
+            {
+                l_pHourMask[j] = true;
+            }
+        }
+    }
+
+    return l_pHourMask;
 }

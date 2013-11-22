@@ -37,6 +37,16 @@ CMonthWidget::CMonthWidget(CGraphicsWidget *a_pParent, int a_iYear)
     m_blMultiSel = true; //MultiSelection is enabled in default
 }
 
+void CMonthWidget::ResetWidget()
+{
+    m_iYear = QDate::currentDate().year();
+    m_iShowMonth = QDate::currentDate().month();
+    m_iZeroMonth = m_iShowMonth - 1;
+    m_pDateLabel->setText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
+    this->InitMasks();
+    update(this->boundingRect());
+}
+
 void CMonthWidget::InitMasks()
 {
     for(int i=0; i<12; i++)
@@ -344,21 +354,6 @@ void CMonthWidget::LeftButtonClicked(QPointF a_CMousePos)
         {
             this->SetDayMask(l_iSelDay);
         }
-#ifdef PF_TEST
-        CTestBox* l_pTB = CTestBox::GetTestBox();
-        l_pTB->ShowMsg(QString("[CMonthWidget] Day index: %1").\
-                       arg(l_iSelDayIdx).toStdWString());
-        if(m_pSelDayMask[m_iShowMonth - 1] & (1 << (l_iSelDay - 1)))
-        {
-            l_pTB->ShowMsg(QString("[CMonthWidget] Select day :%1 of month: %2")\
-                           .arg(l_iSelDay).arg(m_iShowMonth).toStdWString());
-        }
-        else
-        {
-            l_pTB->ShowMsg(QString("[CMonthWidget] Deselect day :%1 of month: %2")\
-                           .arg(l_iSelDay).arg(m_iShowMonth).toStdWString());
-        }
-#endif
         update(this->boundingRect());
     }
 }
@@ -400,20 +395,6 @@ void CMonthWidget::RightButtonClicked(QPointF a_CMousePos)
                     m_pSelDayMask[l_iSelMonth - 1] = 0;
                 }
                 update(this->boundingRect());
-#ifdef PF_TEST
-                if(m_pSelMonthMask[l_iSelMonth - 1])
-                {
-                    CTestBox::GetTestBox()->ShowMsg(\
-                                QString("[CMonthWidget] Select month: %1")\
-                                .arg(l_iSelMonth).toStdWString());
-                }
-                else
-                {
-                    CTestBox::GetTestBox()->ShowMsg(\
-                                QString("[CMonthWidget] Deselect month :%1")\
-                                .arg(l_iSelMonth).toStdWString());
-                }
-#endif
             }
         }
     }

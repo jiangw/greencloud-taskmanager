@@ -5,11 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-    //initiate testbox
-#ifdef PF_TEST
-    CTestBox::InitTestBox();
-#endif
-
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

@@ -24,21 +24,21 @@ public:
     void GVFCreate(); //Graphics View Framework
     void ToolBarCreate();
 
-    QMenu* m_pFileMenu;
-    QAction* m_pAddGoalAction;
-    QAction* m_pAddPlanActtion;
+    //'Start' menu
+    QMenu* m_pStartMenu;
+    QAction* m_pCreatePlanAction;
     QAction* m_pExitAction;
+    //'View' menu
     QMenu* m_pViewMenu;
     QAction* m_pDragModeAction;
+    QAction* m_pResetViewAction;
 
-    QMenu* m_pItemMenu;
-    QAction* m_pAddDayItemAction;
-    QAction* m_pAddMonthItemAction;
-    QAction* m_pAddYearItemAction;
-
-    QToolBar* m_pSystemLabel; //will be removed
+    //system tool bar
+    QToolBar* m_pSystemToolBar;
+    //status bar
     QStatusBar* m_pStatusBar;
 
+    //graphics view framework
     CWorkSpace* m_pWorkSpace;
     CWorkSpaceView* m_pWorkSpaceView;
 };

@@ -24,27 +24,21 @@ MainWindow::~MainWindow()
 void MainWindow::MenusCreate()
 {
     //'File' Menu
-    m_pFileMenu = menuBar()->addMenu("&File");
+    m_pStartMenu = menuBar()->addMenu("&Start");
 
-    m_pAddGoalAction = new QAction(this);
-    m_pAddGoalAction->setText("Add &Goal");
-    m_pAddGoalAction->setStatusTip("Add a new goal in the work space.");
-    m_pAddGoalAction->setIcon(QIcon(":/sys/sys_elps.png"));
-    m_pFileMenu->addAction(m_pAddGoalAction);
-    connect(m_pAddGoalAction, SIGNAL(triggered()), m_pWorkSpaceView, SLOT(SLOT_AddGoalActionProc()));
+    m_pCreatePlanAction = new QAction(this);
+    m_pCreatePlanAction->setText("&New Plan");
+    m_pCreatePlanAction->setStatusTip("Create a new plan.");
+    m_pStartMenu->addAction(m_pCreatePlanAction);
+    connect(m_pCreatePlanAction, SIGNAL(triggered()), \
+            m_pWorkSpaceView, SLOT(SLOT_CreatePlanActionProc()));
 
-    m_pAddPlanActtion = new QAction(this);
-    m_pAddPlanActtion->setText("Add &Plan");
-    m_pFileMenu->addAction(m_pAddPlanActtion);
-    connect(m_pAddPlanActtion, SIGNAL(triggered()), \
-            m_pWorkSpaceView, SLOT(SLOT_AddPlanActionProc()));
-
-    m_pFileMenu->addSeparator();
+    m_pStartMenu->addSeparator();
 
     m_pExitAction = new QAction(this);
     m_pExitAction->setText("E&xit");
     m_pExitAction->setShortcut(QKeySequence::Quit); //Ctrl + Q
-    m_pFileMenu->addAction(m_pExitAction);
+    m_pStartMenu->addAction(m_pExitAction);
     connect(m_pExitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     //'View' Menu
@@ -57,27 +51,12 @@ void MainWindow::MenusCreate()
     connect(m_pDragModeAction, SIGNAL(toggled(bool)), \
             m_pWorkSpaceView, SLOT(SLOT_DragModeSwitched(bool)));
 
-    //'Item' Menu
-    m_pItemMenu = menuBar()->addMenu("&Item");
-    m_pAddDayItemAction = new QAction(this);
-    m_pAddDayItemAction->setText("Day Item");
-    m_pAddDayItemAction->setStatusTip("Create a day item.");
-    m_pAddMonthItemAction = new QAction(this);
-    m_pAddMonthItemAction->setText("Month Item");
-    m_pAddMonthItemAction->setStatusTip("Create a month item");
-    m_pAddYearItemAction = new QAction(this);
-    m_pAddYearItemAction->setText("Year Item");
-    m_pAddYearItemAction->setStatusTip("Create a year item");
-
-    m_pItemMenu->addAction(m_pAddDayItemAction);
-    m_pItemMenu->addAction(m_pAddMonthItemAction);
-    m_pItemMenu->addAction(m_pAddYearItemAction);
-    connect(m_pAddDayItemAction, SIGNAL(triggered()), \
-            m_pWorkSpaceView, SLOT(SLOT_AddDayItemActionProc()));
-    connect(m_pAddMonthItemAction, SIGNAL(triggered()), \
-            m_pWorkSpaceView, SLOT(SLOT_AddMonthItemActionProc()));
-    connect(m_pAddYearItemAction, SIGNAL(triggered()), \
-            m_pWorkSpaceView, SLOT(SLOT_AddYearItemActionProc()));
+    m_pResetViewAction = new QAction(this);
+    m_pResetViewAction->setText("Reset View");
+    m_pResetViewAction->setStatusTip("Reset view of workspace.");
+    m_pViewMenu->addAction(m_pResetViewAction);
+    connect(m_pResetViewAction, SIGNAL(triggered()),\
+            m_pWorkSpaceView, SLOT(SLOT_ResetViewActionProc()));
 
 }
 
@@ -95,7 +74,7 @@ void MainWindow::GVFCreate()
 
 void MainWindow::ToolBarCreate()
 {
-    m_pSystemLabel = this->addToolBar(tr("System Labels"));
-    m_pSystemLabel->setMovable(false);
-    m_pSystemLabel->setVisible(false);
+    m_pSystemToolBar = this->addToolBar(tr("System ToolBar"));
+    m_pSystemToolBar->setMovable(false);
+    m_pSystemToolBar->setVisible(false);
 }

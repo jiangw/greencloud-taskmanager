@@ -17,14 +17,7 @@ SOURCES += main.cpp\
     cworkspace.cpp \
     cworkspaceview.cpp \
     ctestbox.cpp \
-    cgoalItem.cpp \
-    ctextinputitem.cpp \
-    cbuttonitem.cpp \
     citemanimation.cpp \
-    clabelitem.cpp \
-    clineitem.cpp \
-    cselectitem.cpp \
-    cmemberitem.cpp \
     cgoal.cpp \
     cmember.cpp \
     ../GraphicsWidgetLib/cgraphicswidget.cpp \
@@ -46,14 +39,7 @@ HEADERS  += mainwindow.h \
     cworkspaceview.h \
     ctestbox.h \
     gconfig.h \
-    cgoalitem.h \
-    ctextinputitem.h \
-    cbuttonitem.h \
     citemanimation.h \
-    clabelitem.h \
-    clineitem.h \
-    cselectitem.h \
-    cmemberitem.h \
     cgoal.h \
     cmember.h \
     ../GraphicsWidgetLib/cgraphicswidget.h \
