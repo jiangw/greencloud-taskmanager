@@ -30,7 +30,7 @@ namespace TASKMANAGER
     const int g_iItemBorderWidth = 4;
     const int g_iItemFontSizeLarge = 25;
     const int g_iItemFontSizeMid = 18;
-    const int g_iItemFontSizeSmall = 6;
+    const int g_iItemFontSizeSmall = 8;
     const int g_iItemDisappearFrames = 10;
     const int g_iItemAppearFrames = 5;
     const int g_iItemIntervalX = 8; //standard distance between two items in X direction

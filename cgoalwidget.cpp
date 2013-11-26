@@ -18,13 +18,9 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
                                      this);
     m_pSvgWidgetOK = new CSvgWidget(":/icon/ok", m_iControllerWidth, m_iControllerHeight,\
                                     this);
-    m_pSvgWidgetBack = new CSvgWidget(":/icon/back", m_iControllerWidth, m_iControllerHeight,\
-                                      this);
     m_pSvgWidgetEdit->setPos(0, 0);
     m_pSvgWidgetOK->setPos(0, 0);
     m_pSvgWidgetDel->setPos(0, this->GoalLabelHeight());
-    m_pSvgWidgetBack->setPos(0, this->GoalLabelHeight());
-    m_pSvgWidgetBack->setToolTip("Unfinished function");
 
     connect(m_pSvgWidgetEdit, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_EditProc()));
@@ -32,8 +28,6 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
             this, SLOT(SLOT_DeleteProc()));
     connect(m_pSvgWidgetOK, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_OKProc()));
-//    connect(m_pSvgWidgetBack, SIGNAL(SIGNAL_LeftButtonClicked()),\
-//            this, SLOT(SLOT_BackProc()));
 
     m_pUpArrow = new CSvgWidget(":/icon/arrow", 40, 10, this);
     connect(m_pUpArrow, SIGNAL(SIGNAL_LeftButtonClicked()),\
@@ -62,7 +56,6 @@ void CGoalWidget::SetGoalMode(EGoalMode a_EMode)
         m_pSvgWidgetEdit->setVisible(true);
         m_pSvgWidgetDel->setVisible(true);
         m_pSvgWidgetOK->setVisible(false);
-        m_pSvgWidgetBack->setVisible(false);
         m_pUpArrow->setVisible(false);
         break;
     case EDIT:
@@ -70,7 +63,6 @@ void CGoalWidget::SetGoalMode(EGoalMode a_EMode)
         m_pSvgWidgetEdit->setVisible(false);
         m_pSvgWidgetDel->setVisible(false);
         m_pSvgWidgetOK->setVisible(true);
-        m_pSvgWidgetBack->setVisible(true);
         m_pUpArrow->setVisible(true);
         break;
     default:

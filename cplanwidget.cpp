@@ -299,6 +299,8 @@ STimeSeg* CPlanWidget::ConvertHourMask2TimeSeg(const bool *a_pHourMask, int a_iH
     if(l_blSegStart)
     {
         l_pTimeSeg->m_CEndClockList.append(a_iHoursPerDay);
+        STaskList* l_pNewTaskList = new STaskList;
+        l_pTimeSeg->m_CTaskListList.append(l_pNewTaskList);
     }
 
     return l_pTimeSeg;

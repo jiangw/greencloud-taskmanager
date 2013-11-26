@@ -4,7 +4,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     this->resize(1300, 600);
-    this->setWindowTitle(tr("Task Manager"));
+    this->setWindowTitle("GreenSchedule");
     this->GVFCreate();
     this->MenusCreate();
     this->ToolBarCreate();
@@ -78,7 +78,7 @@ void MainWindow::GVFCreate()
     m_pWorkSpaceView = new CWorkSpaceView(m_pWorkSpace, this);
 
     //initiate workspace
-    m_pWorkSpace->setBackgroundBrush(QBrush(Qt::gray));
+    m_pWorkSpace->setBackgroundBrush(QBrush(QPixmap(QString(":/img/sceneback"))));
     m_pWorkSpace->setSceneRect(-1500, -1500, 3000, 3000);
 
     this->setCentralWidget(m_pWorkSpaceView);

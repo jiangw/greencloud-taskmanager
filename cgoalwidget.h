@@ -67,7 +67,6 @@ private:
     CSvgWidget* m_pSvgWidgetEdit; //svg widget for Edit action
     CSvgWidget* m_pSvgWidgetDel; //svg widget for Delete action
     CSvgWidget* m_pSvgWidgetOK; //svg widget for OK action
-    CSvgWidget* m_pSvgWidgetBack; //svg widget for Back action
 
     void SetTaskModeBatch(CTaskWidget::ETaskMode a_eTaskMode);
     void SetLabelHeaderForTaskWidgetList(QString a_qstrLabelText);
