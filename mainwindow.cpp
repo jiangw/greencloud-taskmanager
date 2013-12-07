@@ -3,16 +3,17 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->resize(1300, 600);
     this->setWindowTitle("GreenSchedule");
     this->GVFCreate();
     this->MenusCreate();
     this->ToolBarCreate();
+    this->setWindowFlags(Qt::FramelessWindowHint);
 
     m_pStatusBar = new QStatusBar(this);
     m_pStatusBar->setStatusTip("Welcome to use Task Manager.");
     this->setStatusBar(m_pStatusBar);
 
+    this->resize(1300, 600);
     this->move(50, 50);
 }
 
@@ -28,6 +29,7 @@ void MainWindow::MenusCreate()
 
     m_pCreatePlanAction = new QAction(this);
     m_pCreatePlanAction->setText("&New Plan");
+    m_pCreatePlanAction->setShortcut(QString("Ctrl+N"));
     m_pCreatePlanAction->setStatusTip("Create a new plan.");
     m_pStartMenu->addAction(m_pCreatePlanAction);
     connect(m_pCreatePlanAction, SIGNAL(triggered()), \

@@ -2,6 +2,7 @@
 #define CMONTHWIDGET_H
 
 #include "../GraphicsWidgetLib/cgraphicswidget.h"
+#include "../GraphicsWidgetLib/ctextwidget.h"
 #include "gconfig.h"
 
 class CMonthWidget : public CGraphicsWidget
@@ -45,7 +46,7 @@ private:
     QFont m_CMonthFont;
     QFont m_CDayNameFont;
     QPointF m_CMouseLastPos;
-    QGraphicsSimpleTextItem* m_pDateLabel;
+    CTextWidget* m_pDateLabel;
     int m_iYear; //input year
     int m_iShowMonth; //current month to show
     int m_iMonthBarHeight;

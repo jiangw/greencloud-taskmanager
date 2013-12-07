@@ -117,12 +117,10 @@ void CWorkSpaceView::SLOT_CreatePlanActionProc()
 
         connect(m_pDayWidget, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
                 m_pPlanWidget, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
-        connect(m_pDayWidget, SIGNAL(SIGNAL_HourSelMaskRequest(QDate,int)),\
-                m_pPlanWidget, SLOT(SLOT_HourSelMaskRequestProc(QDate,int)));
-        connect(m_pPlanWidget, SIGNAL(SIGNAL_HourSelMaskSend(bool*,bool)),\
-                m_pDayWidget, SLOT(SLOT_HourSelMaskRecieveProc(bool*,bool)));
-        connect(m_pDayWidget, SIGNAL(SIGNAL_HourSelMaskRecieveFeedback(bool*)),\
-                m_pPlanWidget, SLOT(SLOT_HourSelMaskRecieveFeedbackProc(bool*)));
+        connect(m_pDayWidget, SIGNAL(SIGNAL_HourSelMaskRequest(QDate,bool*,int)),\
+                CPlan::GetPlan(), SLOT(SLOT_HourSelMaskRequestProc(QDate,bool*,int)));
+        connect(CPlan::GetPlan(), SIGNAL(SIGNAL_HourSelMaskRequestFinished()),\
+                m_pDayWidget, SLOT(SLOT_HourSelMaskRecieveProc()));
     }
     else
     {
@@ -133,6 +131,7 @@ void CWorkSpaceView::SLOT_CreatePlanActionProc()
     if(NULL == m_pGoalWidgetList)
     {
         m_pGoalWidgetList = new CWidgetList(NULL);
+        m_pGoalWidgetList->SetWidgetOutline(false);
         m_pWorkSpace->addItem(m_pGoalWidgetList);
         //set header of widget list as push button
         CButtonWidget* l_pAddGoalBtn = new CButtonWidget("Add Goal", NULL);
@@ -154,11 +153,7 @@ void CWorkSpaceView::SLOT_CreatePlanActionProc()
                               + TASKMANAGER::g_iItemIntervalX,\
                               m_pPlanWidget->pos().y());
 
-/*    this->ensureVisible(-310, -280,\
-                        m_pMonthWidget->boundingRect().width()\
-                        + m_pPlanWidget->boundingRect().width() + 490, 500);*/
-    this->centerOn(m_pPlanWidget->pos().x() + m_pPlanWidget->boundingRect().width() * 0.7,\
-                   0);
+    this->SLOT_ResetViewActionProc();
 }
 
 void CWorkSpaceView::SLOT_CenterOnGraphicsWidgetProc(CGraphicsWidget *a_pWidget)
@@ -168,8 +163,8 @@ void CWorkSpaceView::SLOT_CenterOnGraphicsWidgetProc(CGraphicsWidget *a_pWidget)
 
 void CWorkSpaceView::SLOT_ResetViewActionProc()
 {
-    this->centerOn(m_pPlanWidget->pos().x() + m_pPlanWidget->boundingRect().width() * 0.7,\
-                   0);
+    this->centerOn(m_pPlanWidget->pos().x() + m_pPlanWidget->boundingRect().width() * 0.75,\
+                   m_pPlanWidget->boundingRect().height() * 0.1);
 }
 
 void CWorkSpaceView::SLOT_AddGoalWidgetToWidgetListEmit()

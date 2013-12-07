@@ -28,6 +28,8 @@ CTaskWidget::CTaskWidget(CGraphicsWidget *a_pParent)
     m_pTagWidget->SetFixedSize(m_iTagWidth, m_pTagWidget->WidgetHeight());
     m_pTagWidget->setPos(m_iControllerSize + TASKMANAGER::g_iItemIntervalX, 0);
     m_pTagWidget->setFlag(QGraphicsItem::ItemStacksBehindParent);
+    m_pTagWidget->SetHorizontalExt(0);
+    m_pTagWidget->SetVerticalExt(0);
 
     m_pDescWidget = new CTextWidget(true, this);
     m_pDescWidget->SetInputTip("Task description");

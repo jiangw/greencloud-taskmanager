@@ -28,10 +28,14 @@ CMonthWidget::CMonthWidget(CGraphicsWidget *a_pParent, int a_iYear)
     m_CDayNameFont.setFamily("Courier New");
     m_CDayNameFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
 
-    m_pDateLabel = new QGraphicsSimpleTextItem(this);
+    m_pDateLabel = new CTextWidget(false, this);
+    m_pDateLabel->SetWidgetOutline(false);
+    m_pDateLabel->SetVerticalExt(0);
     m_pDateLabel->setPos(0, this->WidgetHeight() - m_iDateLabelHeight);
-    m_pDateLabel->setFont(m_CDayNameFont);
-    m_pDateLabel->setText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
+    m_pDateLabel->SetFont(m_CDayNameFont);
+    m_pDateLabel->SetFontSize(TASKMANAGER::g_iItemFontSizeSmall + 3);
+    m_pDateLabel->SetTextColor(Qt::darkRed);
+    m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
 
     this->InitMasks();
     m_blMultiSel = true; //MultiSelection is enabled in default
@@ -42,7 +46,7 @@ void CMonthWidget::ResetWidget()
     m_iYear = QDate::currentDate().year();
     m_iShowMonth = QDate::currentDate().month();
     m_iZeroMonth = m_iShowMonth - 1;
-    m_pDateLabel->setText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
+    m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
     this->InitMasks();
     update(this->boundingRect());
 }
@@ -134,7 +138,7 @@ void CMonthWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
             {
                 painter->fillRect(l_CRect.x() + 2, l_CRect.y() + 2, \
                                   l_CRect.width() - 4, l_CRect.height() - 4, \
-                                  Qt::cyan);
+                                  QBrush(Qt::cyan, Qt::Dense3Pattern));
             }
             painter->setPen(l_CPen);
             painter->drawText(l_CRect, Qt::AlignCenter, QString("%1").arg(l_iMonthId));
@@ -238,7 +242,7 @@ void CMonthWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
             if(m_pSelDayMask[m_iShowMonth - 1] & (1 << i))
             {
                 painter->fillRect(l_CRect.x() + 2, l_CRect.y() + 2, l_CRect.width() - 4, l_CRect.height() - 4, \
-                                  Qt::cyan);
+                                  QBrush(Qt::cyan, Qt::Dense3Pattern));
             }
         }
         painter->setPen(l_CPen);
@@ -337,7 +341,7 @@ void CMonthWidget::LeftButtonClicked(QPointF a_CMousePos)
         else
         { //click month number buttons
             m_iShowMonth = this->MonthBarId2MonthId(l_iMonthBarId);
-            m_pDateLabel->setText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
+            m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
             update(this->boundingRect());
         }
     }

@@ -32,7 +32,10 @@ SOURCES += main.cpp\
     ../GraphicsWidgetLib/cwidgetlist.cpp \
     ../GraphicsWidgetLib/ctextwidget.cpp \
     ../GraphicsWidgetLib/ctexteditor.cpp \
-    ctaskwidget.cpp
+    ctaskwidget.cpp \
+    ccolortagwidget.cpp \
+    cplan.cpp \
+    cplantimehour.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -54,7 +57,10 @@ HEADERS  += mainwindow.h \
     ../GraphicsWidgetLib/cwidgetlist.h \
     ../GraphicsWidgetLib/ctextwidget.h \
     ../GraphicsWidgetLib/ctexteditor.h \
-    ctaskwidget.h
+    ctaskwidget.h \
+    ccolortagwidget.h \
+    cplan.h \
+    cplantimehour.h
 
 RESOURCES += \
     res.qrc

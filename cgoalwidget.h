@@ -8,6 +8,7 @@
 #include "../GraphicsWidgetLib/ctextwidget.h"
 #include "gconfig.h"
 #include "ctaskwidget.h"
+#include "ccolortagwidget.h"
 
 class CGoalWidget : public CGraphicsWidget
 {
@@ -22,7 +23,7 @@ public:
 
     CGoalWidget(CGraphicsWidget* a_pParent);
     void SetGoalMode(EGoalMode a_EMode);
-    void SetGoalColorTag(EGoalColorTag a_EColorTag);
+    void SetGoalColorTag(Qt::GlobalColor a_EColorTag);
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -42,7 +43,7 @@ public slots:
     void SLOT_AddTaskWidgetProc();
     void SLOT_ChildWidgetSizeChangeProc();
     void SLOT_GoalLabelSizeChangeProc();
-    void SLOT_ColorTagChangeProc();
+    void SLOT_ColorTagChangeProc(Qt::GlobalColor a_EColor);
     void SLOT_TaskWidgetDragDropEmit(QPointF a_CMouseScenePos, CGraphicsWidget* a_pTaskWidget);
 
 signals:
@@ -54,19 +55,18 @@ private:
     int GoalLabelHeight();
 
     EGoalMode m_EMode;
-    EGoalColorTag m_EColorTag;
+    Qt::GlobalColor m_EColorTag;
 
     QString m_qstrGoalName;
     int m_iGoalNameLabelWidth, m_iGoalNameLabelHeight;
     QFont m_CGoalNameFont;
     CTextWidget* m_pGoalNameLabel;
 
-    CSvgWidget* m_pUpArrow;
-
     int m_iControllerWidth, m_iControllerHeight;
     CSvgWidget* m_pSvgWidgetEdit; //svg widget for Edit action
     CSvgWidget* m_pSvgWidgetDel; //svg widget for Delete action
     CSvgWidget* m_pSvgWidgetOK; //svg widget for OK action
+    CColorTagWidget* m_pColorTag; //widget for setting goal's color tag
 
     void SetTaskModeBatch(CTaskWidget::ETaskMode a_eTaskMode);
     void SetLabelHeaderForTaskWidgetList(QString a_qstrLabelText);

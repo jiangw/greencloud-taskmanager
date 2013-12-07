@@ -4,6 +4,7 @@
 #include "../GraphicsWidgetLib/cgraphicswidget.h"
 #include "gconfig.h"
 #include "cdaywidget.h"
+#include "cplan.h"
 
 #include <QPainter>
 #include <QImage>
@@ -64,23 +65,17 @@ public:
     QString WidgetClassName()\
     {return "CPlanWidget";}
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void PlanTimeHourPaint(QPainter *painter);
 
 public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
     void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
                               Qt::GlobalColor a_EGoalColorTag);
-    void SLOT_HourSelMaskRequestProc(QDate a_CDate, int a_iHoursPerDay);
-    void SLOT_HourSelMaskRecieveFeedbackProc(bool* a_pHourSelMask);
-
-signals:
-    void SIGNAL_HourSelMaskSend(bool* a_pHourSelMask, bool a_blFeedback);
 
 private:
-    STimeSeg* ConvertHourMask2TimeSeg(const bool* a_pHourMask, int a_iHoursPerDay = 24);
-    bool* ConvertTimeSeg2HourMask(STimeSeg* a_pTimeSeg, int a_iHoursPerDay = 24);
-
     QList<QDate *> m_CDateList;
     QList<STimeSeg *> m_CTimeSegList;
+    CPlan* m_pPlan;
     int m_iHeightPerTimeLine; //= m_iTimeSegHeight + m_iDateTagHeight
     int m_iTimeSegHeight;
     int m_iWidthPerHour;

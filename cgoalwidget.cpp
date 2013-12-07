@@ -8,7 +8,10 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
 
     m_pGoalNameLabel = new CTextWidget(false, this);
     m_pGoalNameLabel->SetInputTip("Goal Name");
+    m_pGoalNameLabel->SetMinimWidth(100);
     m_pGoalNameLabel->SetWidgetOutline(false);
+    m_pGoalNameLabel->setPos(m_iControllerWidth + this->GoalLabelWidth() / 4,\
+                             m_iControllerHeight / 2 + this->GoalLabelHeight() / 4);
     connect(m_pGoalNameLabel, SIGNAL(SIGNAL_WidgetSizeChanged()),\
             this, SLOT(SLOT_GoalLabelSizeChangeProc()));
 
@@ -18,9 +21,13 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
                                      this);
     m_pSvgWidgetOK = new CSvgWidget(":/icon/ok", m_iControllerWidth, m_iControllerHeight,\
                                     this);
+    m_pColorTag = new CColorTagWidget(m_iControllerWidth, m_iControllerHeight, this);
+    m_pColorTag->InitSelector();
+
     m_pSvgWidgetEdit->setPos(0, 0);
     m_pSvgWidgetOK->setPos(0, 0);
     m_pSvgWidgetDel->setPos(0, this->GoalLabelHeight());
+    m_pColorTag->setPos(3, this->GoalLabelHeight());
 
     connect(m_pSvgWidgetEdit, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_EditProc()));
@@ -28,22 +35,22 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
             this, SLOT(SLOT_DeleteProc()));
     connect(m_pSvgWidgetOK, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_OKProc()));
-
-    m_pUpArrow = new CSvgWidget(":/icon/arrow", 40, 10, this);
-    connect(m_pUpArrow, SIGNAL(SIGNAL_LeftButtonClicked()),\
-            this, SLOT(SLOT_ColorTagChangeProc()));
+    connect(m_pColorTag, SIGNAL(SIGNAL_ColorChanged(Qt::GlobalColor)),\
+            this, SLOT(SLOT_ColorTagChangeProc(Qt::GlobalColor)));
 
     m_pTaskWidgetList = new CWidgetList(this);
     m_pTaskWidgetList->SetWidgetOutline(false);
+    m_pTaskWidgetList->SetPageLength(10);
+    m_pTaskWidgetList->setPos(m_iControllerWidth + this->GoalLabelWidth(),\
+                              m_iControllerHeight / 2 + this->GoalLabelHeight() / 2\
+                              - m_pTaskWidgetList->GetHeaderWidget()->boundingRect().height());
     this->SetLabelHeaderForTaskWidgetList("Task List");
     connect(m_pTaskWidgetList, SIGNAL(SIGNAL_WidgetSizeChanged()),\
             this, SLOT(SLOT_ChildWidgetSizeChangeProc()));
 
-    this->SLOT_GoalLabelSizeChangeProc();
-
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
     this->SetGoalMode(VIEW);
-    this->SetGoalColorTag(PROGRAMMING);
+    this->SetGoalColorTag(m_pColorTag->GetColor());
 }
 
 void CGoalWidget::SetGoalMode(EGoalMode a_EMode)
@@ -56,21 +63,21 @@ void CGoalWidget::SetGoalMode(EGoalMode a_EMode)
         m_pSvgWidgetEdit->setVisible(true);
         m_pSvgWidgetDel->setVisible(true);
         m_pSvgWidgetOK->setVisible(false);
-        m_pUpArrow->setVisible(false);
+        m_pColorTag->setVisible(false);
         break;
     case EDIT:
         m_pGoalNameLabel->SetEditable(true);
         m_pSvgWidgetEdit->setVisible(false);
         m_pSvgWidgetDel->setVisible(false);
         m_pSvgWidgetOK->setVisible(true);
-        m_pUpArrow->setVisible(true);
+        m_pColorTag->setVisible(true);
         break;
     default:
         break;
     }
 }
 
-void CGoalWidget::SetGoalColorTag(EGoalColorTag a_EColorTag)
+void CGoalWidget::SetGoalColorTag(Qt::GlobalColor a_EColorTag)
 {
     m_EColorTag = a_EColorTag;
     update(this->boundingRect());
@@ -105,16 +112,17 @@ QString CGoalWidget::WidgetClassName()
 
 void CGoalWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QRectF l_CRect(m_iControllerWidth, m_iControllerHeight / 2,\
-                   this->GoalLabelWidth(), this->GoalLabelHeight());
+    QRectF l_CRect(m_iControllerWidth + 2, m_iControllerHeight / 2 + 2,\
+                   this->GoalLabelWidth() - 4, this->GoalLabelHeight() - 4);
     QPainterPath l_CPath;
     l_CPath.addEllipse(l_CRect);
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
+    painter->setPen(QPen(QBrush(Qt::black), 4));
 
-    painter->drawEllipse(l_CRect);
     painter->fillPath(l_CPath, QBrush((Qt::GlobalColor)m_EColorTag));
+    painter->drawEllipse(l_CRect);
 
     painter->restore();
 }
@@ -178,9 +186,6 @@ void CGoalWidget::SLOT_ChildWidgetSizeChangeProc()
 
 void CGoalWidget::SLOT_GoalLabelSizeChangeProc()
 {
-    m_pGoalNameLabel->setPos(m_iControllerWidth + this->GoalLabelWidth() / 4,\
-                             m_iControllerHeight / 2 + this->GoalLabelHeight() / 4);
-    m_pUpArrow->setPos(m_iControllerWidth + this->GoalLabelWidth() / 2 - 20, 0);
     m_pTaskWidgetList->setPos(m_iControllerWidth + this->GoalLabelWidth(),\
                               m_iControllerHeight / 2 + this->GoalLabelHeight() / 2\
                               - m_pTaskWidgetList->GetHeaderWidget()->boundingRect().height());
@@ -188,24 +193,11 @@ void CGoalWidget::SLOT_GoalLabelSizeChangeProc()
 
 }
 
-void CGoalWidget::SLOT_ColorTagChangeProc()
+void CGoalWidget::SLOT_ColorTagChangeProc(Qt::GlobalColor a_EColor)
 {
-    switch(m_EColorTag)
-    {
-    case PROGRAMMING:
-        m_EColorTag = LEARNENGLISH;
-        break;
-    case ECONOMICS:
-        m_EColorTag = PROGRAMMING;
-        break;
-    case LEARNENGLISH:
-        m_EColorTag = ECONOMICS;
-        break;
-    default:
-        break;
-    }
-    update(QRectF(m_iControllerWidth, m_iControllerHeight / 2,\
-                  this->GoalLabelWidth(), this->GoalLabelHeight()));
+    m_EColorTag = a_EColor;
+    this->update(m_iControllerWidth, m_iControllerHeight / 2, this->GoalLabelWidth(),\
+                 this->GoalLabelHeight());
 }
 
 void CGoalWidget::SLOT_TaskWidgetDragDropEmit(QPointF a_CMouseScenePos, CGraphicsWidget *a_pTaskWidget)

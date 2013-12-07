@@ -146,6 +146,7 @@ void CDayWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QBrush l_CDeadHourSliceBrush(Qt::darkGray);
     QBrush l_CCurrHourSliceBrush(Qt::yellow);
     QBrush l_CSelHourSliceBrush(Qt::cyan);
+    l_CSelHourSliceBrush.setStyle(Qt::Dense3Pattern);
     QPen l_CBlackTextPen(QBrush(Qt::black), 1);
     QPen l_CRedTextPen(QBrush(Qt::red), 1);
 
@@ -263,19 +264,10 @@ void CDayWidget::SLOT_SetDateProc(QDate a_CDate)
     this->InitHourSelMask();
     update(this->boundingRect());
 
-    emit this->SIGNAL_HourSelMaskRequest(a_CDate, m_iHoursPerDay);
+    emit this->SIGNAL_HourSelMaskRequest(a_CDate, m_pHourSelMask, m_iHoursPerDay);
 }
 
-void CDayWidget::SLOT_HourSelMaskRecieveProc(bool *a_pHourSelMask, bool a_blFeedback)
+void CDayWidget::SLOT_HourSelMaskRecieveProc()
 {
-    if(NULL != a_pHourSelMask)
-    {
-        memcpy(m_pHourSelMask, a_pHourSelMask, m_iHoursPerDay * sizeof(bool));
-        update(this->boundingRect());
-    }
-
-    if(a_blFeedback)
-    {
-        emit this->SIGNAL_HourSelMaskRecieveFeedback(a_pHourSelMask);
-    }
+    update(this->boundingRect());
 }

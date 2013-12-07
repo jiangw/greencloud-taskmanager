@@ -41,11 +41,10 @@ protected:
 public slots:
     void SLOT_HourChangeProc();
     void SLOT_SetDateProc(QDate a_CDate);
-    void SLOT_HourSelMaskRecieveProc(bool* a_pHourSelMask, bool a_blFeedback);
+    void SLOT_HourSelMaskRecieveProc();
 
 signals:
-    void SIGNAL_HourSelMaskRequest(QDate a_CDate, int a_iHoursPerDay);
-    void SIGNAL_HourSelMaskRecieveFeedback(bool* a_pHourSelMask);
+    void SIGNAL_HourSelMaskRequest(QDate a_CDate, bool* a_pHourSelMask, int a_iHoursPerDay);
 
 private:
     int m_iHoursPerDay;
