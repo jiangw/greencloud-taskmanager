@@ -21,7 +21,7 @@
 #include <QList>
 #include <QTransform>
 
-namespace TASKMANAGER
+namespace GREENSCHEDULE
 {
     //math
     const qreal g_dPI = 3.1415926;
@@ -35,6 +35,9 @@ namespace TASKMANAGER
     const int g_iItemAppearFrames = 5;
     const int g_iItemIntervalX = 8; //standard distance between two items in X direction
     const int g_iItemIntervalY = 10; //standard distance between two items in Y direction
+    const QColor g_CBackGroundColor(0, 230, 0, 150);
+
+    enum ETimePage{INPROGRESS, HISTORY};
 }
 
 #endif // GCONFIG_H

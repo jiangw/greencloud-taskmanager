@@ -19,6 +19,7 @@ public:
     void SelectorSwitch(bool a_blSelOn);
 
     //override from CGraphicsWidget
+    void ResetWidget();
     int WidgetWidth();
     int WidgetHeight();
     QString WidgetClassName()\

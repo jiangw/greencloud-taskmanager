@@ -47,13 +47,27 @@ void CColorTagWidget::InitSelector()
         return;
     }
     int x = this->boundingRect().width();
-    int y = this->boundingRect().height() / 2;
+//    int y = this->boundingRect().height() / 2;
+    int y = 0;
+    int l_iSteps = m_ColorList.length() - 1;
+    int l_iStepLen = 6;
 
-    for(int i=0; i<m_ColorList.length()-1; i++)
+    for(int i=0; i<l_iSteps; i++)
     {
-        CColorTagWidget* l_pColorTag = new CColorTagWidget(m_iWidgetHeight / 2,\
-                                                           m_iWidgetHeight / 2, this);
-        l_pColorTag->setPos(3 + x, y);
+//        CColorTagWidget* l_pColorTag = new CColorTagWidget(m_iWidgetHeight / 2,\
+//                                                           m_iWidgetHeight / 2, this);
+        int l_iSize = m_iWidgetHeight - l_iStepLen * (i + 1);
+        if(l_iSize < m_iWidgetHeight / 2)
+        {
+            l_iSize = m_iWidgetHeight / 2;
+        }
+        CColorTagWidget* l_pColorTag = new CColorTagWidget(l_iSize, l_iSize, this);
+        int l_iY = y + l_iStepLen * (i + 1);
+        if(l_iY > this->boundingRect().height() / 2)
+        {
+            l_iY = this->boundingRect().height() / 2;
+        }
+        l_pColorTag->setPos(3 + x, l_iY);
         l_pColorTag->setVisible(false);
         m_CTagList.append(l_pColorTag);
         x = x + 3 + l_pColorTag->boundingRect().width();
@@ -86,6 +100,12 @@ void CColorTagWidget::SelectorSwitch(bool a_blSelOn)
             m_CTagList[i]->setVisible(false);
         }
     }
+}
+
+void CColorTagWidget::ResetWidget()
+{
+    this->SetColor(Qt::blue);
+    this->UpdateSelector();
 }
 
 int CColorTagWidget::WidgetWidth()

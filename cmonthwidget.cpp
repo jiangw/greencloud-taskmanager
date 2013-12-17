@@ -23,17 +23,17 @@ CMonthWidget::CMonthWidget(CGraphicsWidget *a_pParent, int a_iYear)
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
 
     m_CMonthFont.setFamily("Comic Sans MS");
-    m_CMonthFont.setPointSize(TASKMANAGER::g_iItemFontSizeMid);
+    m_CMonthFont.setPointSize(GREENSCHEDULE::g_iItemFontSizeMid);
 
     m_CDayNameFont.setFamily("Courier New");
-    m_CDayNameFont.setPointSize(TASKMANAGER::g_iItemFontSizeSmall);
+    m_CDayNameFont.setPointSize(GREENSCHEDULE::g_iItemFontSizeSmall);
 
     m_pDateLabel = new CTextWidget(false, this);
     m_pDateLabel->SetWidgetOutline(false);
     m_pDateLabel->SetVerticalExt(0);
     m_pDateLabel->setPos(0, this->WidgetHeight() - m_iDateLabelHeight);
     m_pDateLabel->SetFont(m_CDayNameFont);
-    m_pDateLabel->SetFontSize(TASKMANAGER::g_iItemFontSizeSmall + 3);
+    m_pDateLabel->SetFontSize(GREENSCHEDULE::g_iItemFontSizeSmall + 3);
     m_pDateLabel->SetTextColor(Qt::darkRed);
     m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
 
@@ -92,6 +92,8 @@ void CMonthWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
+    painter->fillRect(this->boundingRect(), GREENSCHEDULE::g_CBackGroundColor);
+
     QRectF l_CRect;
     //draw month bar
     painter->save();
@@ -99,6 +101,7 @@ void CMonthWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setFont(m_CMonthFont);
     QPen l_COldPen = painter->pen();
+    l_COldPen.setWidth(2);
     for(int i=0; i<m_iMonthBarCellNum; i++)
     {
         painter->setPen(l_COldPen); //reset pen to original setting
@@ -149,6 +152,7 @@ void CMonthWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->restore();
     //draw day-name bar
     painter->save();
+    painter->setPen(QPen(QBrush(Qt::black), 2));
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setFont(m_CDayNameFont);

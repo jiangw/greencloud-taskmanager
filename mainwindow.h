@@ -23,11 +23,12 @@ public:
 
     void MenusCreate();
     void GVFCreate(); //Graphics View Framework
+    void GVFViewAdjust();
     void ToolBarCreate();
 
     //'Start' menu
     QMenu* m_pStartMenu;
-    QAction* m_pCreatePlanAction;
+    QAction* m_pSavePlan;
     QAction* m_pExportWorkspace;
     QAction* m_pExportPlan;
     QAction* m_pExitAction;
@@ -45,7 +46,11 @@ public:
     CWorkSpace* m_pWorkSpace;
     CWorkSpaceView* m_pWorkSpaceView;
 
+protected:
+    void closeEvent(QCloseEvent *);
+
 public slots:
+    void SLOT_SavePlanProc();
     void SLOT_ExportPlanProc();
     void SLOT_ExportWorkspaceProc();
 };

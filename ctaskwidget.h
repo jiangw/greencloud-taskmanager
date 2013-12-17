@@ -18,6 +18,12 @@ public:
     CTaskWidget(CGraphicsWidget* a_pParent);
     void SetTaskMode(ETaskMode a_ETaskMode);
     QString GetTaskTag();
+    QString GetTaskDescription();
+    bool IsTaskFinished();
+    void SetTaskData(QString a_qstrTaskTag,\
+                     QString a_qstrTaskDesc,\
+                     bool a_blIsFinished);
+    void DisableCheck();
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -29,11 +35,17 @@ public:
 protected:
     //override from CGraphicsWidget
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void MouseDragMove(QPointF a_CMousePos);
+    void MouseDragRelease(QPointF a_CMousePos);
 
 public slots:
     void SLOT_TaskStatusChangeProc();
     void SLOT_RemoveWidgetEmit();
     void SLOT_TextWidgetSizeChangeProc();
+    void SLOT_TaskTagEditFinishProc();
+
+signals:
+    void SIGNAL_TaskFinishStatChange(CTaskWidget* a_pTaskWidget);
 
 private:
     CTextWidget* m_pTagWidget; //used to edit and show task text tag

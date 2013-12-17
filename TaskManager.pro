@@ -8,7 +8,7 @@ QT       += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TaskManager
+TARGET = GreenSchedule
 TEMPLATE = app
 
 
@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     ctaskwidget.cpp \
     ccolortagwidget.cpp \
     cplan.cpp \
-    cplantimehour.cpp
+    cplantimehour.cpp \
+    cplangoal.cpp \
+    cgoaltagwidget.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -60,7 +62,9 @@ HEADERS  += mainwindow.h \
     ctaskwidget.h \
     ccolortagwidget.h \
     cplan.h \
-    cplantimehour.h
+    cplantimehour.h \
+    cplangoal.h \
+    cgoaltagwidget.h
 
 RESOURCES += \
     res.qrc

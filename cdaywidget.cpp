@@ -81,7 +81,7 @@ void CDayWidget::Render()
     l_CCenter.setX(l_CClockRect.x() + l_CClockRect.width() / 2);
     l_CCenter.setY(l_CClockRect.y() + l_CClockRect.height() / 2);
 
-    qreal l_dArcPerHour =  2 * TASKMANAGER::g_dPI / m_iHoursPerDay;
+    qreal l_dArcPerHour =  2 * GREENSCHEDULE::g_dPI / m_iHoursPerDay;
     qreal l_dAnglePerHour = 360 / m_iHoursPerDay;
     int l_iTranslate = 8;
     for(int i=m_iHoursPerDay; i>0; i--)
@@ -130,7 +130,7 @@ void CDayWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     //draw background
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setBrush(QBrush(Qt::white));
+    painter->setBrush(QBrush(GREENSCHEDULE::g_CBackGroundColor));
     painter->setPen(QPen(QBrush(Qt::black), 4));
     painter->drawRoundedRect(this->boundingRect(), \
                              this->boundingRect().width() * 0.05, \
@@ -160,11 +160,16 @@ void CDayWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         {
             painter->fillPath(*(m_pHourSliceList[i]), l_CCurrHourSliceBrush);
         }
-        if(i < this->CurrHour())
+        else if(i < this->CurrHour())
         {
             painter->fillPath(*(m_pHourSliceList[i]), l_CDeadHourSliceBrush);
             painter->setPen(l_CDeadHourSlicePen);
         }
+        else
+        {
+            painter->fillPath(*(m_pHourSliceList[i]), QBrush(QColor(Qt::white)));
+        }
+
         if(m_pHourSelMask[i])
         {
             painter->fillPath(*(m_pHourSliceList[i]), l_CSelHourSliceBrush);

@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QTimer>
 #include <QList>
+#include <QMessageBox>
 
 #include "gconfig.h"
 #include "cworkspace.h"
@@ -17,6 +18,7 @@
 #include "cyearwidget.h"
 #include "cplanwidget.h"
 #include "cgoalwidget.h"
+#include "cgoaltagwidget.h"
 #include "../GraphicsWidgetLib/cgraphicswidget.h"
 #include "../GraphicsWidgetLib/cbuttonwidget.h"
 #include "../GraphicsWidgetLib/cwidgetlist.h"
@@ -31,6 +33,8 @@ public:
     bool ExportPlan2Svg(QString a_qstrSvgFileName);
     bool ExportWorkSpace2Img(QString a_qstrImgFileName);
     bool ExportWorkSpace2Svg(QString a_qstrSvgFileName);
+
+    void InitWorkSpace();
     
 signals:
     
@@ -39,27 +43,35 @@ public slots:
     void SLOT_CenterOnGraphicsWidgetProc(CGraphicsWidget* a_pWidget);
     void SLOT_DeleteWidgetFromSceneProc(CGraphicsWidget* a_pDelWidget);
 
-    //handle window actions from 'Start' menu
-    void SLOT_CreatePlanActionProc();
-
     //handle window actions from 'View' menu
     void SLOT_DragModeSwitched(bool a_blFlag);
     void SLOT_ResetViewActionProc();
 
     //for time+task=plan framework
-    void SLOT_AddGoalWidgetToWidgetListEmit();
+    void SLOT_AddGoalProc();
+    void SLOT_AddGoalTagProc(CPlanGoal* a_pPlanGoal);
+    void SLOT_UpdateGoalTagProc(CPlanGoal* a_pPlanGoal);
+    void SLOT_RemoveGoalTagProc(int a_iGoalId);
+    void SLOT_ShowGoalProc(CGoalTagWidget *a_pGoalTag);
+
+    //show message box
+    void SLOT_ShowMsgBoxProc(QString a_qstrMsg);
 
 signals:
     //for time+task=plan framework
     void SIGNAL_AddWidgetToWidgetList(CGraphicsWidget* a_pNewWidget);
 
 private:
+    void AddGoalTagWidgetToWidgetList(CGoalTagWidget* a_pGoalTagWidget);
+    bool InitGoalEditor();
+
     CWorkSpace* m_pWorkSpace;
     CPlanWidget* m_pPlanWidget;
     CMonthWidget* m_pMonthWidget;
     CDayWidget* m_pDayWidget;
-    CWidgetList* m_pGoalWidgetList;
-
+    CWidgetList* m_pGoalTagWidgetList;
+    CGoalWidget* m_pGoalEditor;
+    CGoalTagWidget* m_pCurrSelGoal;
 };
 
 #endif // CWORKSPACEVIEW_H

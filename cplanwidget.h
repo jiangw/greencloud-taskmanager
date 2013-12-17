@@ -69,8 +69,10 @@ public:
 
 public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
-    void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrTaskTag,\
+    void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrGoalName,\
+                              QString a_qstrTaskTag,\
                               Qt::GlobalColor a_EGoalColorTag);
+    void SLOT_WidgetUpdateProc();
 
 private:
     QList<QDate *> m_CDateList;
