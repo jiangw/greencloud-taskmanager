@@ -81,7 +81,7 @@ CPlanTimeHour* CPlan::GetPlanTimeHour(QDate a_CDate)
     return l_pPlanTimeHour;
 }
 
-QList<CPlanTimeHour*>& CPlan::GetPlanTimeHourList()
+QList<CPlanTimeHour*>& CPlan::GetPlanTimeHourListInProgress()
 {
     m_CPlanTimeHourInProgress.clear();
     for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
@@ -92,6 +92,16 @@ QList<CPlanTimeHour*>& CPlan::GetPlanTimeHourList()
         }
     }
     return m_CPlanTimeHourInProgress;
+}
+
+void CPlan::UpdatePlanTimeHour(CPlanTimeHour *a_pPlanTimeHour,\
+                               const bool *a_pDayHourMask, int a_iHoursPerDay)
+{
+    if(NULL != a_pPlanTimeHour)
+    {
+        a_pPlanTimeHour->SetTimeSeg(a_pDayHourMask, a_iHoursPerDay);
+    }
+    m_blSaveFlag = true;
 }
 
 void CPlan::RemovePlanTimeHour(CPlanTimeHour *a_pDelPlanTime)
@@ -107,7 +117,7 @@ void CPlan::RemovePlanTimeHour(CPlanTimeHour *a_pDelPlanTime)
     m_blSaveFlag = true;
 }
 
-CPlanGoal* CPlan::CreatePlanGoal(QString a_qstrGoalName, Qt::GlobalColor a_EColor)
+CPlanGoal* CPlan::CreatePlanGoal(QString a_qstrGoalName, CGraphicsWidget::gColor a_EColor)
 {
     CPlanGoal* l_pPlanGoal = NULL;
     for(int i=0; i<m_CPlanGoalFactory.length(); i++)
@@ -137,7 +147,7 @@ CPlanGoal* CPlan::CreatePlanGoal(QString a_qstrGoalName, Qt::GlobalColor a_EColo
 
 CPlanGoal* CPlan::CreateEmptyPlanGoal()
 {
-    return this->CreatePlanGoal("", (Qt::GlobalColor)0);
+    return this->CreatePlanGoal("", (CGraphicsWidget::gColor)0);
 }
 
 CPlanGoal *CPlan::GetPlanGoalById(int a_iGoalId)
@@ -170,7 +180,7 @@ CPlanGoal* CPlan::GetPlanGoalByName(QString a_qstrGoalName)
     return l_pPlanGoal;
 }
 
-CPlanGoal* CPlan::GetPlanGoalByColorTag(Qt::GlobalColor a_EColor)
+CPlanGoal* CPlan::GetPlanGoalByColorTag(CGraphicsWidget::gColor a_EColor)
 {
     CPlanGoal* l_pPlanGoal = NULL;
     for(int i=0; i<m_CPlanGoalFactory.length(); i++)
@@ -196,8 +206,8 @@ void CPlan::RemovePlanGoal(int a_iGoalId)
                 const STask* l_pTask = m_CPlanGoalFactory[i]->GetTaskListHead();
                 while(l_pTask)
                 {
-                    m_CPlanTimeHourFactory[j]->DeleteTaskAbstract(m_CPlanGoalFactory[i]->GetGoalName(),\
-                                                                  l_pTask->m_qstrTaskTag);
+                    m_CPlanTimeHourFactory[j]->DeleteTaskAbstract(a_iGoalId,\
+                                                                  l_pTask->m_iTaskId);
                     l_pTask = l_pTask->m_pNext;
                 }
             }
@@ -210,12 +220,12 @@ void CPlan::RemovePlanGoal(int a_iGoalId)
     emit this->SIGNAL_PlanWidgetUpdate();
 }
 
-int CPlan::GetPlanGoalIndex(QString a_qstrGoalName)
+int CPlan::GetPlanGoalIndex(int a_iGoalId)
 {
     int l_iIdx = -1;
     for(int i=0; i<m_CPlanGoalFactory.length(); i++)
     {
-        if(m_CPlanGoalFactory[i]->GetGoalName() == a_qstrGoalName)
+        if(m_CPlanGoalFactory[i]->GetGoalId() == a_iGoalId)
         {
             l_iIdx = i;
             break;
@@ -241,17 +251,17 @@ bool CPlan::SavePlan(QString a_qstrFileName)
     {
         CPlanGoal* l_pPlanGoal = m_CPlanGoalFactory[i];
         l_COut << l_pPlanGoal->GetGoalName();
-        l_COut << (int)(l_pPlanGoal->GetGoalColor());
+        l_COut << (unsigned int)(l_pPlanGoal->GetGoalColor());
         l_COut << l_pPlanGoal->TaskNumber();
         //save task list
         int l_iTaskCounter = 0;//used to verify task number
-        const STask* l_pTaskListHead = l_pPlanGoal->GetTaskListHead();
-        while(l_pTaskListHead)
+        const STask* l_pTaskListIter = l_pPlanGoal->GetTaskListHead();
+        while(l_pTaskListIter)
         {
-            l_COut << l_pTaskListHead->m_qstrTaskTag;
-            l_COut << l_pTaskListHead->m_qstrDescription;
-            l_COut << l_pTaskListHead->m_blIsFinished;
-            l_pTaskListHead = l_pTaskListHead->m_pNext;
+            l_COut << l_pTaskListIter->m_qstrTaskTag;
+            l_COut << l_pTaskListIter->m_qstrDescription;
+            l_COut << l_pTaskListIter->m_blIsFinished;
+            l_pTaskListIter = l_pTaskListIter->m_pNext;
             l_iTaskCounter++;
         }
         //verify task number
@@ -279,19 +289,15 @@ bool CPlan::SavePlan(QString a_qstrFileName)
         l_COut << l_pPlanTimeHour->TaskCounter();
         int l_iCounter = 0; //used to verify task number
         //save task list
-        STaskAbstractHour* l_pTaskAbsListHead = l_pPlanTimeHour->GetTaskAbstract(0);
-        while(l_pTaskAbsListHead)
+        STaskAbstractHour* l_pTaskAbsListIter = l_pPlanTimeHour->GetTaskAbstract(0);
+        while(l_pTaskAbsListIter)
         {
-            int l_iGoalIndex = this->GetPlanGoalIndex(l_pTaskAbsListHead->m_qstrGoalName);
-            int l_iTaskIndex = -1;
-            if(-1 != l_iGoalIndex)
-            {
-                l_iTaskIndex = m_CPlanGoalFactory[l_iGoalIndex]->GetTaskIndex(\
-                                                        l_pTaskAbsListHead->m_qstrTaskTag);
-            }
+            int l_iGoalIndex = CPlan::GetPlan()->GetPlanGoalIndex(l_pTaskAbsListIter->m_iGoalId);
+            int l_iTaskIndex = CPlan::GetPlanGoalById(l_pTaskAbsListIter->m_iGoalId)\
+                                        ->GetTaskIndex(l_pTaskAbsListIter->m_iTaskId);
             l_COut << l_iGoalIndex;
             l_COut << l_iTaskIndex;
-            l_pTaskAbsListHead = l_pTaskAbsListHead->m_pNext;
+            l_pTaskAbsListIter = l_pTaskAbsListIter->m_pNext;
             l_iCounter++;
         }
         if(l_iCounter != l_pPlanTimeHour->TaskCounter())
@@ -313,8 +319,8 @@ bool CPlan::SavePlan(QString a_qstrFileName)
             for(int j=0; j<l_CTaskAbsListInTimeSeg.length(); j++)
             {
                 l_iTaskIndices[j] = l_pPlanTimeHour->GetTaskIndex(\
-                                                l_CTaskAbsListInTimeSeg[j]->m_qstrGoalName,\
-                                                l_CTaskAbsListInTimeSeg[j]->m_qstrTaskTag);
+                                                l_CTaskAbsListInTimeSeg[j]->m_iGoalId,\
+                                                l_CTaskAbsListInTimeSeg[j]->m_iTaskId);
             }
             l_COut << l_CTaskAbsListInTimeSeg.length();
             l_COut.writeRawData((char *)&l_iTaskIndices,\
@@ -340,7 +346,8 @@ bool CPlan::LoadPlan(QString a_qstrFileName)
     QFile l_CInFile(a_qstrFileName);
     if(!l_CInFile.open(QIODevice::ReadOnly))
     {
-        std::cerr << "Cannot open loading file." << std::endl;
+        std::cerr << "Cannot load plan file." << std::endl;
+        emit this->SIGNAL_ShowInMessageBox("Cannot load plan file.");
         return false;
     }
     QDataStream l_CIn(&l_CInFile);
@@ -352,7 +359,8 @@ bool CPlan::LoadPlan(QString a_qstrFileName)
     l_CIn >> l_iGoalNumber;
     //load goals list
     QString l_qstrGoalName, l_qstrTaskTag, l_qstrTaskDesc;
-    int l_iGoalColorTag, l_iTaskNumber;
+    int l_iTaskNumber;
+    unsigned int l_iGoalColorTag;
     bool l_blTaskFinishStat;
     for(int i=0; i<l_iGoalNumber; i++)
     {
@@ -360,15 +368,16 @@ bool CPlan::LoadPlan(QString a_qstrFileName)
         l_CIn >> l_qstrGoalName;
         l_CIn >> l_iGoalColorTag;
         CPlanGoal* l_pGoal = this->CreatePlanGoal(l_qstrGoalName,\
-                                                  (Qt::GlobalColor)l_iGoalColorTag);
+                                                  (CGraphicsWidget::gColor)l_iGoalColorTag);
         //load task list
         l_CIn >> l_iTaskNumber;
+        int l_iTaskIdGen = -1;
         for(int j=0; j<l_iTaskNumber; j++)
         {
             l_CIn >> l_qstrTaskTag;
             l_CIn >> l_qstrTaskDesc;
             l_CIn >> l_blTaskFinishStat;
-            l_pGoal->AddTask(l_qstrTaskTag, l_qstrTaskDesc, l_blTaskFinishStat);
+            l_pGoal->AddTask(++l_iTaskIdGen, l_qstrTaskTag, l_qstrTaskDesc, l_blTaskFinishStat);
         }
     }
     /*------------load PlanTimeHour list------------*/
@@ -392,13 +401,26 @@ bool CPlan::LoadPlan(QString a_qstrFileName)
         {
             l_CIn >> l_iGoalIndex;
             l_CIn >> l_iTaskIndex;
-            STaskAbstractHour* l_pTaskAbs = l_pPlanTimeHour->CreateTaskAbstract(\
-                                                m_CPlanGoalFactory[l_iGoalIndex]->GetGoalName(),\
-                                                m_CPlanGoalFactory[l_iGoalIndex]->GetTaskByIndex(\
-                                                        l_iTaskIndex)->m_qstrTaskTag,\
-                                                m_CPlanGoalFactory[l_iGoalIndex]->GetGoalColor());
-            l_pTaskAbs->m_blIsFinished =\
-                            m_CPlanGoalFactory[l_iGoalIndex]->GetTaskByIndex(l_iTaskIndex)->m_blIsFinished;
+            if(l_iGoalIndex < 0 || l_iGoalIndex >= m_CPlanGoalFactory.length()\
+                    || l_iTaskIndex < 0)
+            {
+                std::cerr << "Invalid goal or task." << std::endl;
+                emit this->SIGNAL_ShowInMessageBox("Invalid goal or task.");
+                l_pPlanTimeHour->CreateTaskAbstract(-1, "Error", -1, "Error", Qt::white);
+            }
+            else
+            {
+                STaskAbstractHour* l_pTaskAbs = l_pPlanTimeHour->CreateTaskAbstract(\
+                                                    m_CPlanGoalFactory[l_iGoalIndex]->GetGoalId(),\
+                                                    m_CPlanGoalFactory[l_iGoalIndex]->GetGoalName(),\
+                                                    m_CPlanGoalFactory[l_iGoalIndex]->GetTaskByIndex(\
+                                                            l_iTaskIndex)->m_iTaskId,\
+                                                    m_CPlanGoalFactory[l_iGoalIndex]->GetTaskByIndex(\
+                                                            l_iTaskIndex)->m_qstrTaskTag,\
+                                                    m_CPlanGoalFactory[l_iGoalIndex]->GetGoalColor());
+                l_pTaskAbs->m_blIsFinished =\
+                                m_CPlanGoalFactory[l_iGoalIndex]->GetTaskByIndex(l_iTaskIndex)->m_blIsFinished;
+            }
         }
         //load time segments
         int l_iTimeSegNum, l_iStartClock, l_iEndClock, l_iTaskNumInTimeSeg;
@@ -465,8 +487,7 @@ void CPlan::SLOT_PlanGoalReviewProc(CGoalWidget *a_pGoalProposer)
 
 void CPlan::SLOT_PlanGoalSyncProc(const CPlanGoal *a_pPlanGoal)
 {
-    int i = a_pPlanGoal->GetGoalId();
-    CPlanGoal* l_pPlanGoal = this->GetPlanGoalById(i);
+    CPlanGoal* l_pPlanGoal = this->GetPlanGoalById(a_pPlanGoal->GetGoalId());
     if(NULL == l_pPlanGoal)
     {
         std::cerr << "Error[CPlan]: Failed to synchronize Goal '"\
@@ -481,38 +502,14 @@ void CPlan::SLOT_PlanGoalSyncProc(const CPlanGoal *a_pPlanGoal)
     const STask* l_pTaskListHead = a_pPlanGoal->GetTaskListHead();
     while(l_pTaskListHead)
     {
-        l_pPlanGoal->AddTask(l_pTaskListHead->m_qstrTaskTag, l_pTaskListHead->m_qstrDescription);
-        l_pPlanGoal->FinishTask(l_pTaskListHead->m_qstrTaskTag, l_pTaskListHead->m_blIsFinished);
+        l_pPlanGoal->AddTask(l_pTaskListHead->m_iTaskId,\
+                             l_pTaskListHead->m_qstrTaskTag,\
+                             l_pTaskListHead->m_qstrDescription,\
+                             l_pTaskListHead->m_blIsFinished);
         l_pTaskListHead = l_pTaskListHead->m_pNext;
     }
-    //update time segments
-    for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
-    {
-        CPlanTimeHour* l_pPlanTimeHour = m_CPlanTimeHourFactory[i];
-        STaskAbstractHour* l_pTaskListHead = l_pPlanTimeHour->GetTaskAbstract(0);
-        QList<QString> l_CDelGoalNameList, l_CDelTaskTagList;
-        while(l_pTaskListHead)
-        {
-            if(l_pPlanGoal->GetGoalName() == l_pTaskListHead->m_qstrGoalName)
-            {
-                if(l_pPlanGoal->HasTask(l_pTaskListHead->m_qstrTaskTag))
-                {
-                    l_pTaskListHead->m_EGoalColorTag = l_pPlanGoal->GetGoalColor();
-                }
-                else
-                {
-                    l_CDelGoalNameList.append(l_pPlanGoal->GetGoalName());
-                    l_CDelTaskTagList.append(l_pTaskListHead->m_qstrTaskTag);
-                }
-            }
-            l_pTaskListHead = l_pTaskListHead->m_pNext;
-        }
-        for(int i=0; i<l_CDelGoalNameList.length(); i++)
-        {
-            l_pPlanTimeHour->DeleteTaskAbstract(l_CDelGoalNameList[i],\
-                                                l_CDelTaskTagList[i]);
-        }
-    }
+    //update goal data in time segments
+    this->UpdateGoalInPlanTimeHour(l_pPlanGoal);
 
     m_blSaveFlag = true;
     emit this->SIGNAL_PlanWidgetUpdate();
@@ -525,13 +522,13 @@ void CPlan::SLOT_PlanGoalRetractProc(int a_iGoalId)
     emit this->SIGNAL_PlanGoalRemoved(a_iGoalId);
 }
 
-void CPlan::SLOT_GoalTaskFinishStatSync(int a_iGoalId, QString a_qstrTaskTag,\
+void CPlan::SLOT_GoalTaskFinishStatSync(int a_iGoalId, int a_iTaskId,\
                                         bool a_blIsFinished)
 {
     CPlanGoal* l_pPlanGoal = this->GetPlanGoalById(a_iGoalId);
     if(NULL != l_pPlanGoal)
     {
-        l_pPlanGoal->FinishTask(a_qstrTaskTag, a_blIsFinished);
+        l_pPlanGoal->FinishTask(a_iTaskId, a_blIsFinished);
         for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
         {
             CPlanTimeHour* l_pPlanTimeHour = m_CPlanTimeHourFactory[i];
@@ -539,7 +536,7 @@ void CPlan::SLOT_GoalTaskFinishStatSync(int a_iGoalId, QString a_qstrTaskTag,\
             while(l_pTaskListHead)
             {
                 if(l_pTaskListHead->m_qstrGoalName == l_pPlanGoal->GetGoalName()\
-                        && l_pTaskListHead->m_qstrTaskTag == a_qstrTaskTag)
+                        && l_pTaskListHead->m_iTaskId == a_iTaskId)
                 {
                     l_pTaskListHead->m_blIsFinished = a_blIsFinished;
                     break;
@@ -559,6 +556,7 @@ void CPlan::SLOT_UpdateTimePage()
     {
         m_CPlanTimeHourFactory[i]->UpdateTimeSegPage();
     }
+    emit this->SIGNAL_PlanWidgetUpdate();
 }
 
 void CPlan::ClearPlan()
@@ -584,5 +582,39 @@ void CPlan::ClearPlanGoalFactory()
     {
         CPlanGoal* l_pDelGoal = m_CPlanGoalFactory.takeFirst();
         delete l_pDelGoal;
+    }
+}
+
+void CPlan::UpdateGoalInPlanTimeHour(const CPlanGoal *a_pUpdatedGoal)
+{
+    for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
+    {
+        CPlanTimeHour* l_pPlanTimeHour = m_CPlanTimeHourFactory[i];
+        STaskAbstractHour* l_pTaskListIter = l_pPlanTimeHour->GetTaskAbstract(0);
+        QList<int> l_CDelGoalIdList, l_CDelTaskIdList;
+        while(l_pTaskListIter)
+        {
+            if(a_pUpdatedGoal->GetGoalId() == l_pTaskListIter->m_iGoalId)
+            {
+                if(a_pUpdatedGoal->HasTask(l_pTaskListIter->m_iTaskId))
+                {
+                    l_pTaskListIter->m_qstrGoalName = a_pUpdatedGoal->GetGoalName();
+                    l_pTaskListIter->m_qstrTaskTag = a_pUpdatedGoal->GetTaskById(\
+                                                            l_pTaskListIter->m_iTaskId)->m_qstrTaskTag;
+                    l_pTaskListIter->m_EGoalColorTag = a_pUpdatedGoal->GetGoalColor();
+                }
+                else
+                {
+                    l_CDelGoalIdList.append(l_pTaskListIter->m_iGoalId);
+                    l_CDelTaskIdList.append(l_pTaskListIter->m_iTaskId);
+                }
+            }
+            l_pTaskListIter = l_pTaskListIter->m_pNext;
+        }
+        for(int i=0; i<l_CDelGoalIdList.length(); i++)
+        {
+            l_pPlanTimeHour->DeleteTaskAbstract(l_CDelGoalIdList[i],\
+                                                l_CDelTaskIdList[i]);
+        }
     }
 }

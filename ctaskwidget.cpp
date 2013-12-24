@@ -1,9 +1,11 @@
 #include "ctaskwidget.h"
 
-CTaskWidget::CTaskWidget(CGraphicsWidget *a_pParent)
+CTaskWidget::CTaskWidget(int a_iTaskId, CGraphicsWidget *a_pParent)
     :CGraphicsWidget(a_pParent)
 {
+    m_iTaskId = a_iTaskId;
     m_blIsTaskFinished = false;
+
     m_iControllerSize = 20;
     m_iTagWidth = 80;
     m_CDescFont.setFamily("Courier New");

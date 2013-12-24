@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     cworkspaceview.cpp \
     ctestbox.cpp \
     citemanimation.cpp \
-    cgoal.cpp \
     cmember.cpp \
     ../GraphicsWidgetLib/cgraphicswidget.cpp \
     cdaywidget.cpp \
@@ -37,7 +36,8 @@ SOURCES += main.cpp\
     cplan.cpp \
     cplantimehour.cpp \
     cplangoal.cpp \
-    cgoaltagwidget.cpp
+    cgoaltagwidget.cpp \
+    ../GraphicsWidgetLib/cmessagewidget.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -45,7 +45,6 @@ HEADERS  += mainwindow.h \
     ctestbox.h \
     gconfig.h \
     citemanimation.h \
-    cgoal.h \
     cmember.h \
     ../GraphicsWidgetLib/cgraphicswidget.h \
     cdaywidget.h \
@@ -64,7 +63,8 @@ HEADERS  += mainwindow.h \
     cplan.h \
     cplantimehour.h \
     cplangoal.h \
-    cgoaltagwidget.h
+    cgoaltagwidget.h \
+    ../GraphicsWidgetLib/cmessagewidget.h
 
 RESOURCES += \
     res.qrc

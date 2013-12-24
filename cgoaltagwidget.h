@@ -10,12 +10,12 @@ class CGoalTagWidget : public CGraphicsWidget
 
 public:
     CGoalTagWidget(CGraphicsWidget* a_pParent);
-    void InitGoalData(int a_iGoalId, QString a_qstrGoalName, Qt::GlobalColor a_EColorTag);
+    void InitGoalData(int a_iGoalId, QString a_qstrGoalName, CGraphicsWidget::gColor a_EColorTag);
     int GetGoalId(){return m_iGoalId;}
     void SetGoalName(QString a_qstrGoalName);
     QString GetGoalName(){return m_qstrGoalName;}
-    void SetGoalColorTag(Qt::GlobalColor a_EColorTag);
-    Qt::GlobalColor GetGoalColorTag(){return m_EColorTag;}
+    void SetGoalColorTag(CGraphicsWidget::gColor a_EColorTag);
+    CGraphicsWidget::gColor GetGoalColorTag(){return m_EColorTag;}
     void SetWidgetSelection(bool a_blSelected);
 
     //override from CGraphicsWidget
@@ -29,7 +29,7 @@ protected:
 
 public slots:
     void SLOT_GoalUpdateProc(int a_iGoalId, QString a_qstrGoalName,\
-                             Qt::GlobalColor a_EColorTag);
+                             CGraphicsWidget::gColor a_EColorTag);
 
 
 signals:
@@ -41,7 +41,7 @@ private:
 
     int m_iGoalId;
     QString m_qstrGoalName;
-    Qt::GlobalColor m_EColorTag;
+    CGraphicsWidget::gColor m_EColorTag;
 };
 
 #endif // CGOALTAGWIDGET_H

@@ -3,7 +3,7 @@
 CColorTagWidget::CColorTagWidget(int a_iWidgetWidth, int a_iWidgetHeight, CGraphicsWidget *a_pParent)
     :CGraphicsWidget(a_pParent)
 {
-    m_EColor = Qt::blue;
+    m_EColor = CGraphicsWidget::blue;
     m_EShapeStyle = ELLIPSE;
     m_iWidgetWidth = a_iWidgetWidth;
     m_iWidgetHeight = a_iWidgetHeight;
@@ -21,14 +21,14 @@ void CColorTagWidget::SetWidgetSize(int a_iWidth, int a_iHeight)
     this->UpdateBoundingRect();
 }
 
-void CColorTagWidget::SetColor(Qt::GlobalColor a_EColor)
+void CColorTagWidget::SetColor(CGraphicsWidget::gColor a_EColor)
 {
     m_EColor = a_EColor;
 
     this->update(this->boundingRect());
 }
 
-Qt::GlobalColor CColorTagWidget::GetColor()
+CGraphicsWidget::gColor CColorTagWidget::GetColor()
 {
     return m_EColor;
 }
@@ -72,8 +72,8 @@ void CColorTagWidget::InitSelector()
         m_CTagList.append(l_pColorTag);
         x = x + 3 + l_pColorTag->boundingRect().width();
 
-        connect(l_pColorTag, SIGNAL(SIGNAL_ColorSelected(Qt::GlobalColor)),\
-                this, SLOT(SLOT_SetColorProc(Qt::GlobalColor)));
+        connect(l_pColorTag, SIGNAL(SIGNAL_ColorSelected(CGraphicsWidget::gColor)),\
+                this, SLOT(SLOT_SetColorProc(CGraphicsWidget::gColor)));
     }
 }
 
@@ -104,7 +104,7 @@ void CColorTagWidget::SelectorSwitch(bool a_blSelOn)
 
 void CColorTagWidget::ResetWidget()
 {
-    this->SetColor(Qt::blue);
+    this->SetColor(CGraphicsWidget::blue);
     this->UpdateSelector();
 }
 
@@ -149,7 +149,7 @@ void CColorTagWidget::LeftButtonClicked(QPointF a_CMousePos)
     emit this->SIGNAL_ColorSelected(m_EColor);
 }
 
-void CColorTagWidget::SLOT_SetColorProc(Qt::GlobalColor a_EColor)
+void CColorTagWidget::SLOT_SetColorProc(CGraphicsWidget::gColor a_EColor)
 {
     this->SetColor(a_EColor);
     this->UpdateSelector();
@@ -158,15 +158,16 @@ void CColorTagWidget::SLOT_SetColorProc(Qt::GlobalColor a_EColor)
 
 void CColorTagWidget::InitColorList()
 {
-    m_ColorList.append(Qt::red);
-    m_ColorList.append(Qt::darkRed);
-    m_ColorList.append(Qt::green);
-    m_ColorList.append(Qt::blue);
-    m_ColorList.append(Qt::cyan);
-    m_ColorList.append(Qt::darkCyan);
-    m_ColorList.append(Qt::magenta);
-    m_ColorList.append(Qt::yellow);
-    m_ColorList.append(Qt::gray);
+    m_ColorList.append(CGraphicsWidget::red);
+    m_ColorList.append(CGraphicsWidget::orange);
+    m_ColorList.append(CGraphicsWidget::yellow);
+    m_ColorList.append(CGraphicsWidget::green);
+    m_ColorList.append(CGraphicsWidget::blue);
+    m_ColorList.append(CGraphicsWidget::brown);
+    m_ColorList.append(CGraphicsWidget::purple);
+    m_ColorList.append(CGraphicsWidget::pink);
+    m_ColorList.append(CGraphicsWidget::gray);
+    m_ColorList.append(CGraphicsWidget::white);
 }
 
 void CColorTagWidget::UpdateSelector()

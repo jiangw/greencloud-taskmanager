@@ -26,18 +26,20 @@ public:
 
     CPlanTimeHour* CreatePlanTimeHour(QDate a_CDate);
     CPlanTimeHour* GetPlanTimeHour(QDate a_CDate);
-    QList<CPlanTimeHour *>& GetPlanTimeHourList();
+    QList<CPlanTimeHour *>& GetPlanTimeHourListInProgress();
+    void UpdatePlanTimeHour(CPlanTimeHour* a_pPlanTimeHour,\
+                            const bool *a_pDayHourMask, int a_iHoursPerDay);
     void RemovePlanTimeHour(CPlanTimeHour* a_pDelPlanTime);
 
-    CPlanGoal* CreatePlanGoal(QString a_qstrGoalName, Qt::GlobalColor a_EColor);
+    CPlanGoal* CreatePlanGoal(QString a_qstrGoalName, CGraphicsWidget::gColor a_EColor);
     CPlanGoal* CreateEmptyPlanGoal();
     CPlanGoal *GetPlanGoalById(int a_iGoalId);
     CPlanGoal* GetPlanGoalByName(QString a_qstrGoalName);
-    CPlanGoal* GetPlanGoalByColorTag(Qt::GlobalColor a_EColor);
+    CPlanGoal* GetPlanGoalByColorTag(CGraphicsWidget::gColor a_EColor);
     QList<CPlanGoal *>& GetPlanGoalList()\
     {return m_CPlanGoalFactory;}
     void RemovePlanGoal(int a_iGoalId);
-    int GetPlanGoalIndex(QString a_qstrGoalName);
+    int GetPlanGoalIndex(int a_iGoalId);
 
     bool NeedSave(){return m_blSaveFlag;}
     bool SavePlan(QString a_qstrFileName);
@@ -49,7 +51,7 @@ public slots:
     void SLOT_PlanGoalReviewProc(CGoalWidget* a_pGoalProposer);
     void SLOT_PlanGoalSyncProc(const CPlanGoal* a_pPlanGoal);
     void SLOT_PlanGoalRetractProc(int a_iGoalId);
-    void SLOT_GoalTaskFinishStatSync(int a_iGoalId, QString a_qstrTaskTag, bool a_blIsFinished);
+    void SLOT_GoalTaskFinishStatSync(int a_iGoalId, int a_iTaskId, bool a_blIsFinished);
 
     void SLOT_UpdateTimePage();
 
@@ -67,6 +69,7 @@ private:
     CPlan(QObject *parent = 0);
     void ClearPlanTimeHourFactory();
     void ClearPlanGoalFactory();
+    void UpdateGoalInPlanTimeHour(const CPlanGoal* a_pUpdatedGoal);
 
     QList<CPlanTimeHour *> m_CPlanTimeHourFactory;
     QList<CPlanTimeHour *> m_CPlanTimeHourInProgress;

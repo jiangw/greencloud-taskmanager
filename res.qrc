@@ -8,5 +8,6 @@
     </qresource>
     <qresource prefix="/img">
         <file alias="sceneback">res/sceneback.jpg</file>
+        <file alias="planback">res/planback.png</file>
     </qresource>
 </RCC>

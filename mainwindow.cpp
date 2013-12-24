@@ -3,8 +3,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    CPlan::GetPlan()->LoadPlan("greenschedule.gcd");
-
     this->setWindowTitle("GreenSchedule");
     this->GVFCreate();
     this->MenusCreate();
@@ -14,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_pStatusBar = new QStatusBar(this);
     m_pStatusBar->setStatusTip("Welcome to use GreenSchedule.");
     this->setStatusBar(m_pStatusBar);
+
+    CPlan::GetPlan()->LoadPlan("greenschedule.gcd");
 }
 
 MainWindow::~MainWindow()
@@ -78,11 +78,11 @@ void MainWindow::GVFCreate()
     //initiate workspace
     m_pWorkSpace = new CWorkSpace(this);
     m_pWorkSpace->setBackgroundBrush(QBrush(QPixmap(QString(":/img/sceneback"))));
-    m_pWorkSpace->setSceneRect(-300, -300, 2000, 600);
+    m_pWorkSpace->setSceneRect(-300, -300, 2000, 650);
 
     //initiate workspace view
     m_pWorkSpaceView = new CWorkSpaceView(m_pWorkSpace, this);
-    m_pWorkSpaceView->setSceneRect(-300, -300, 2000, 600);
+    m_pWorkSpaceView->setSceneRect(-300, -300, 2000, 650);
 
     this->setCentralWidget(m_pWorkSpaceView);
 }

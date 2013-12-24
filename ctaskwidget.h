@@ -15,8 +15,9 @@ public:
     enum ETaskMode{VIEW, /*In VIEW mode, task widget can show task description and can flag the task to different status*/\
                    EDIT/*In Edit mode, task widget can delete and edit task*/};
 
-    CTaskWidget(CGraphicsWidget* a_pParent);
+    CTaskWidget(int a_iTaskId, CGraphicsWidget* a_pParent);
     void SetTaskMode(ETaskMode a_ETaskMode);
+    int GetTaskId() const{return m_iTaskId;}
     QString GetTaskTag();
     QString GetTaskDescription();
     bool IsTaskFinished();
@@ -61,6 +62,7 @@ private:
 
     ETaskMode m_EMode;
     bool m_blIsTaskFinished;
+    int m_iTaskId;
 };
 
 #endif // CTASKWIDGET_H

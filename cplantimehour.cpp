@@ -255,29 +255,29 @@ void CPlanTimeHour::AssignTaskToTimeSeg(STimeSegHour *a_pTimeSegHour, STaskAbstr
     this->AddTaskAbstractToLocalList(a_pTimeSegHour, a_pTaskAbs);
 }
 
-void CPlanTimeHour::AssignTaskToTimeSeg(STimeSegHour *a_pTimeSegHour, QString a_qstrGoalName,\
-                                        QString a_qstrTaskTag, Qt::GlobalColor a_EColorTag)
+void CPlanTimeHour::AssignTaskToTimeSeg(STimeSegHour *a_pTimeSegHour, int a_iGoalId, QString a_qstrGoalName, \
+                                        int a_iTaskId, QString a_qstrTaskTag, QRgb a_EColorTag)
 {
     //Add new task abstract
-    STaskAbstractHour* l_pNewTaskAbstract = this->HasTaskAbstract(a_qstrGoalName,\
-                                                                  a_qstrTaskTag);
+    STaskAbstractHour* l_pNewTaskAbstract = this->HasTaskAbstract(a_iGoalId,\
+                                                                  a_iTaskId);
     if(NULL == l_pNewTaskAbstract)
     {
-        l_pNewTaskAbstract = this->CreateTaskAbstract(a_qstrGoalName,\
-                                                      a_qstrTaskTag,\
+        l_pNewTaskAbstract = this->CreateTaskAbstract(a_iGoalId, a_qstrGoalName,\
+                                                      a_iTaskId, a_qstrTaskTag,\
                                                       a_EColorTag);
     }
     //add task abstract to local task-list of the time segment
     this->AddTaskAbstractToLocalList(a_pTimeSegHour, l_pNewTaskAbstract);
 }
 
-STaskAbstractHour* CPlanTimeHour::HasTaskAbstract(QString a_qstrGoalName, QString a_qstrTaskTag)
+STaskAbstractHour* CPlanTimeHour::HasTaskAbstract(int a_iGoalId, int a_iTaskId)
 {
     STaskAbstractHour* l_pTask = m_pTaskListHead;
     while(l_pTask)
     {
-        if(l_pTask->m_qstrGoalName == a_qstrGoalName\
-                && l_pTask->m_qstrTaskTag == a_qstrTaskTag)
+        if(l_pTask->m_iGoalId == a_iGoalId\
+                && l_pTask->m_iTaskId == a_iTaskId)
         {
             break;
         }
@@ -286,16 +286,18 @@ STaskAbstractHour* CPlanTimeHour::HasTaskAbstract(QString a_qstrGoalName, QStrin
     return l_pTask;
 }
 
-STaskAbstractHour* CPlanTimeHour::CreateTaskAbstract(QString a_qstrGoalName,\
-                                                     QString a_qstrTaskTag,\
-                                                     Qt::GlobalColor a_EColorTag)
+STaskAbstractHour* CPlanTimeHour::CreateTaskAbstract(int a_iGoalId, QString a_qstrGoalName, \
+                                                     int a_iTaskId, QString a_qstrTaskTag, \
+                                                     QRgb a_EColorTag)
 {
-    if(NULL != this->HasTaskAbstract(a_qstrGoalName, a_qstrTaskTag))
+    if(NULL != this->HasTaskAbstract(a_iGoalId, a_iTaskId))
     {
         return NULL;
     }
     STaskAbstractHour* l_pNewTask = new STaskAbstractHour;
+    l_pNewTask->m_iGoalId = a_iGoalId;
     l_pNewTask->m_qstrGoalName = a_qstrGoalName;
+    l_pNewTask->m_iTaskId = a_iTaskId;
     l_pNewTask->m_qstrTaskTag = a_qstrTaskTag;
     l_pNewTask->m_EGoalColorTag = a_EColorTag;
     l_pNewTask->m_blIsFinished = false;
@@ -305,27 +307,34 @@ STaskAbstractHour* CPlanTimeHour::CreateTaskAbstract(QString a_qstrGoalName,\
     return l_pNewTask;
 }
 
-void CPlanTimeHour::DeleteTaskAbstract(QString a_qstrGoalName, QString a_qstrTaskTag)
+void CPlanTimeHour::DeleteTaskAbstract(int a_iGoalId, int a_iTaskId)
 {
-    STaskAbstractHour* l_pDelTask = this->HasTaskAbstract(a_qstrGoalName, a_qstrTaskTag);
+    STaskAbstractHour* l_pDelTask = this->HasTaskAbstract(a_iGoalId, a_iTaskId);
     this->DeleteTaskAbstract(l_pDelTask);
 }
 
 void CPlanTimeHour::DeleteTaskAbstract(STaskAbstractHour *a_pDelTask)
 {
+    STaskAbstractHour* l_pDelTaskInList = NULL;
     if(NULL != a_pDelTask)
     {
         STaskAbstractHour* l_pTask = m_pTaskListHead;
-        if(m_pTaskListHead == a_pDelTask)
+        if(m_pTaskListHead == a_pDelTask
+                || (m_pTaskListHead->m_iGoalId == a_pDelTask->m_iGoalId\
+                    && m_pTaskListHead->m_qstrTaskTag == a_pDelTask->m_qstrTaskTag))
         {
+            l_pDelTaskInList = m_pTaskListHead;
             m_pTaskListHead = a_pDelTask->m_pNext;
         }
         else
         {
             while(l_pTask)
             {
-                if(l_pTask->m_pNext == a_pDelTask)
+                if(l_pTask->m_pNext == a_pDelTask\
+                        || (l_pTask->m_pNext->m_iGoalId == a_pDelTask->m_iGoalId\
+                            && l_pTask->m_pNext->m_qstrTaskTag == a_pDelTask->m_qstrTaskTag))
                 {
+                    l_pDelTaskInList = l_pTask->m_pNext;
                     l_pTask->m_pNext = a_pDelTask->m_pNext;
                 }
                 l_pTask = l_pTask->m_pNext;
@@ -336,7 +345,7 @@ void CPlanTimeHour::DeleteTaskAbstract(STaskAbstractHour *a_pDelTask)
         {
             for(int i=0; i<l_pTimeSeg->m_CTaskList.length(); i++)
             {
-                if(l_pTimeSeg->m_CTaskList[i] == a_pDelTask)
+                if(l_pTimeSeg->m_CTaskList[i] == l_pDelTaskInList)
                 {
                     l_pTimeSeg->m_CTaskList.removeAt(i);
                     break;
@@ -344,7 +353,7 @@ void CPlanTimeHour::DeleteTaskAbstract(STaskAbstractHour *a_pDelTask)
             }
             l_pTimeSeg = l_pTimeSeg->m_pNext;
         }
-        delete a_pDelTask;
+        delete l_pDelTaskInList;
         m_iTaskCounter--;
         if(0 == m_iTaskCounter)
         {
@@ -396,14 +405,14 @@ STaskAbstractHour* CPlanTimeHour::GetTaskAbstract(int a_iTaskIndex)
     return l_pTask;
 }
 
-int CPlanTimeHour::GetTaskIndex(QString a_qstrGoalName, QString a_qstrTaskTag)
+int CPlanTimeHour::GetTaskIndex(int a_iGoalId, int a_iTaskId)
 {
     STaskAbstractHour* l_pTaskListHead = m_pTaskListHead;
     int l_iIdx = 0;
     while(l_pTaskListHead)
     {
-        if(l_pTaskListHead->m_qstrGoalName == a_qstrGoalName\
-                && l_pTaskListHead->m_qstrTaskTag == a_qstrTaskTag)
+        if(l_pTaskListHead->m_iGoalId == a_iGoalId\
+                && l_pTaskListHead->m_iTaskId == a_iTaskId)
         {
             break;
         }

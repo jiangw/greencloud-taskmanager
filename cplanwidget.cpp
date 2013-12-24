@@ -14,6 +14,7 @@ CPlanWidget::CPlanWidget(CGraphicsWidget *a_pParent)
     m_CTaskTagFont.setPointSize(GREENSCHEDULE::g_iItemFontSizeSmall);
     m_CTaskTagFont.setFamily("Liberation Sans Narrow");
     m_CTaskTagPen.setWidth(1);
+    m_CBackground.setTextureImage(QImage(":/img/planback"));
 
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
 }
@@ -82,7 +83,7 @@ int CPlanWidget::WidgetWidth()
 
 int CPlanWidget::WidgetHeight()
 {
-    return 500;
+    return 550;
 }
 
 void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -93,8 +94,9 @@ void CPlanWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->save();
 
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(QBrush(Qt::black), 2, Qt::DotLine));
-    painter->drawRect(this->boundingRect());
+    painter->fillRect(this->boundingRect(), m_CBackground);
+//    painter->setPen(QPen(QBrush(Qt::black), 2, Qt::DotLine));
+//    painter->drawRect(this->boundingRect());
 
     painter->restore();
 
@@ -112,6 +114,7 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
+    QFontMetrics l_CFM(m_CTaskTagFont);
     //draw plan line
     QFont l_COldFont = painter->font();
     QFont l_CNewFont = l_COldFont;
@@ -123,17 +126,17 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
     QPen l_CPenHistory = l_CPenInProgress;
     l_CPenHistory.setColor(QColor(Qt::gray));
 
-    QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourList();
+    QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourListInProgress();
 
     for(int i=0; i<l_pPlanTimeHourList.length(); i++)
     {
         CPlanTimeHour* l_pPlanTimeHour = l_pPlanTimeHourList[i];
         //date tag
-        painter->drawText(5, i * m_iHeightPerTimeLine, m_iDateTagWidth, m_iDateTagHeight,\
+        painter->drawText(5, i * m_iHeightPerTimeLine + 10, m_iDateTagWidth, m_iDateTagHeight,\
                           Qt::AlignLeft, l_pPlanTimeHour->Date().toString("yyyy.MM.dd dddd :"));
         //hour segments
         int x = 10;
-        int y = i * m_iHeightPerTimeLine + m_iDateTagHeight;
+        int y = i * m_iHeightPerTimeLine + 10 + m_iDateTagHeight;
         STimeSegHour* l_pTimeSegListIter = l_pPlanTimeHour->GetTimeSeg(0);
         for(int j=0; j<l_pPlanTimeHour->TimeSegCounter(); j++)
         {
@@ -164,9 +167,12 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
             painter->setPen(m_CTaskTagPen);
             painter->setFont(m_CTaskTagFont);
             QList<STaskAbstractHour*> l_CTaskList = l_pTimeSegListIter->m_CTaskList;
+            int l_iPrevTagsWidth = 0;
             for(int k=0; k<l_CTaskList.length(); k++)
             {
-                QRectF l_CTaskTagRect(x + 3 + k * 25, y + 23, 23, 12);
+                QRectF l_CTaskTagRect(x + 3 + l_iPrevTagsWidth, y + 23,\
+                                      l_CFM.boundingRect(l_CTaskList[k]->m_qstrTaskTag).width() + 2,\
+                                      12);
                 painter->fillRect(l_CTaskTagRect,\
                                   l_CTaskList[k]->m_EGoalColorTag);
                 painter->drawText(l_CTaskTagRect, Qt::AlignCenter,\
@@ -178,6 +184,7 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
                                       l_CTaskTagRect.bottomRight().x(),\
                                       l_CTaskTagRect.topLeft().y() + 6);
                 }
+                l_iPrevTagsWidth += l_CTaskTagRect.width() + 2;
             }
 
             x += l_iSegWidth + GREENSCHEDULE::g_iItemIntervalX;
@@ -204,8 +211,9 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
         { //create a new hours plan for the date
             l_pNewPlanTimeHour = m_pPlan->CreatePlanTimeHour(l_CDayWidgetDate);
         }
-        l_pNewPlanTimeHour->SetTimeSeg(l_pDayWidget->GetHourSelMask(),\
-                                       l_pDayWidget->GetHoursPerDay());
+        m_pPlan->UpdatePlanTimeHour(l_pNewPlanTimeHour,\
+                                    l_pDayWidget->GetHourSelMask(),\
+                                    l_pDayWidget->GetHoursPerDay());
         if(l_pNewPlanTimeHour->IsEmpty())
         {
             m_pPlan->RemovePlanTimeHour(l_pNewPlanTimeHour);
@@ -214,20 +222,18 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
     }
 }
 
-void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrGoalName,\
-                                       QString a_qstrTaskTag, \
-                                       Qt::GlobalColor a_EGoalColorTag)
+void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, int a_iTaskId)
 {
     QPointF l_CMouseLocalPos = this->mapFromScene(a_CMouseScenePos);
     if(this->contains(l_CMouseLocalPos))
     {
         //compute date index
-        int l_iDateIdx = qFloor(l_CMouseLocalPos.y() / m_iHeightPerTimeLine);
-        if(l_iDateIdx < m_pPlan->GetPlanTimeHourList().length() &&\
-                fmod(l_CMouseLocalPos.y(), m_iHeightPerTimeLine) > m_iDateTagHeight)
+        int l_iDateIdx = qFloor((l_CMouseLocalPos.y() - 10) / m_iHeightPerTimeLine);
+        if(l_iDateIdx < m_pPlan->GetPlanTimeHourListInProgress().length() &&\
+                fmod(l_CMouseLocalPos.y() - 10, m_iHeightPerTimeLine) > m_iDateTagHeight)
         {
             //compute time segment index
-            CPlanTimeHour* l_pPlanTimeHour = m_pPlan->GetPlanTimeHourList()[l_iDateIdx];
+            CPlanTimeHour* l_pPlanTimeHour = m_pPlan->GetPlanTimeHourListInProgress()[l_iDateIdx];
             STimeSegHour* l_pTimeSegHourAssign = NULL;
             int l_iPosX = 10;
             STimeSegHour* l_pTimeSegHour = l_pPlanTimeHour->GetTimeSeg(0);
@@ -247,11 +253,15 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrG
             }
             if(NULL != l_pTimeSegHourAssign)
             {
-                l_pPlanTimeHour->AssignTaskToTimeSeg(l_pTimeSegHourAssign,\
-                                                     a_qstrGoalName, a_qstrTaskTag,\
-                                                     a_EGoalColorTag);
+                CPlanGoal* l_pPlanGoal = m_pPlan->GetPlanGoalById(a_iGoalId);
+                const STask* l_pPlanGoalTask = l_pPlanGoal->GetTaskById(a_iTaskId);
+                l_pPlanTimeHour->AssignTaskToTimeSeg(l_pTimeSegHourAssign, a_iGoalId,\
+                                                     l_pPlanGoal->GetGoalName(),\
+                                                     l_pPlanGoalTask->m_iTaskId,\
+                                                     l_pPlanGoalTask->m_qstrTaskTag,\
+                                                     l_pPlanGoal->GetGoalColor());
 
-                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine, this->boundingRect().width(),\
+                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine + 10, this->boundingRect().width(),\
                               m_iHeightPerTimeLine));
             }
         }

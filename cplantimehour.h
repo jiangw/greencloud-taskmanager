@@ -11,9 +11,11 @@
 struct STaskAbstractHour
 { //this struct contains a simple description about a task
   //which looses coupling with real goal and task classes
+    int m_iGoalId;
     QString m_qstrGoalName;
+    int m_iTaskId;
     QString m_qstrTaskTag;
-    Qt::GlobalColor m_EGoalColorTag;
+    QRgb m_EGoalColorTag;
     bool m_blIsFinished;
 
     STaskAbstractHour* m_pNext; //point to the next task in the tasklist of whole day
@@ -51,17 +53,17 @@ public:
     void UpdateTimeSegPage();
 
     void AssignTaskToTimeSeg(STimeSegHour* a_pTimeSegHour, STaskAbstractHour* a_pTaskAbs);
-    void AssignTaskToTimeSeg(STimeSegHour* a_pTimeSegHour, QString a_qstrGoalName,\
-                             QString a_qstrTaskTag, Qt::GlobalColor a_EColorTag);
+    void AssignTaskToTimeSeg(STimeSegHour* a_pTimeSegHour, int a_iGoalId, QString a_qstrGoalName,\
+                             int a_iTaskId, QString a_qstrTaskTag, QRgb a_EColorTag);
 
-    STaskAbstractHour* HasTaskAbstract(QString a_qstrGoalName, QString a_qstrTaskTag);
-    STaskAbstractHour* CreateTaskAbstract(QString a_qstrGoalName, QString a_qstrTaskTag,\
-                                          Qt::GlobalColor a_EColorTag);
-    void DeleteTaskAbstract(QString a_qstrGoalName, QString a_qstrTaskTag);
+    STaskAbstractHour* HasTaskAbstract(int a_iGoalId, int a_iTaskId);
+    STaskAbstractHour* CreateTaskAbstract(int a_iGoalId, QString a_qstrGoalName, int a_iTaskId, QString a_qstrTaskTag, \
+                                          QRgb a_EColorTag);
+    void DeleteTaskAbstract(int a_iGoalId, int a_iTaskId);
     void DeleteTaskAbstract(STaskAbstractHour* a_pDelTask);
     bool TaskInTimeSeg(STimeSegHour* a_pTimeSegHour, STaskAbstractHour* a_pTask);
     STaskAbstractHour* GetTaskAbstract(int a_iTaskIndex);
-    int GetTaskIndex(QString a_qstrGoalName, QString a_qstrTaskTag);
+    int GetTaskIndex(int a_iGoalId, int a_iTaskId);
     int TaskCounter(){return m_iTaskCounter;}
 
 private:

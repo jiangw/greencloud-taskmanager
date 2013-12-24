@@ -10,7 +10,7 @@ CGoalTagWidget::CGoalTagWidget(CGraphicsWidget *a_pParent)
     this->InitBoundingRect();
 }
 
-void CGoalTagWidget::InitGoalData(int a_iGoalId, QString a_qstrGoalName, Qt::GlobalColor a_EColorTag)
+void CGoalTagWidget::InitGoalData(int a_iGoalId, QString a_qstrGoalName, CGraphicsWidget::gColor a_EColorTag)
 {
     m_iGoalId = a_iGoalId;
     m_qstrGoalName = a_qstrGoalName;
@@ -26,7 +26,7 @@ void CGoalTagWidget::SetGoalName(QString a_qstrGoalName)
     this->setToolTip(m_qstrGoalName);
 }
 
-void CGoalTagWidget::SetGoalColorTag(Qt::GlobalColor a_EColorTag)
+void CGoalTagWidget::SetGoalColorTag(CGraphicsWidget::gColor a_EColorTag)
 {
     m_EColorTag = a_EColorTag;
     update(this->boundingRect());
@@ -80,7 +80,7 @@ void CGoalTagWidget::LeftButtonClicked(QPointF a_CMousePos)
     emit this->SIGNAL_Selected(this);
 }
 
-void CGoalTagWidget::SLOT_GoalUpdateProc(int a_iGoalId, QString a_qstrGoalName, Qt::GlobalColor a_EColorTag)
+void CGoalTagWidget::SLOT_GoalUpdateProc(int a_iGoalId, QString a_qstrGoalName, CGraphicsWidget::gColor a_EColorTag)
 {
     if(m_iGoalId == a_iGoalId)
     {

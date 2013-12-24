@@ -34,7 +34,7 @@ CMonthWidget::CMonthWidget(CGraphicsWidget *a_pParent, int a_iYear)
     m_pDateLabel->setPos(0, this->WidgetHeight() - m_iDateLabelHeight);
     m_pDateLabel->SetFont(m_CDayNameFont);
     m_pDateLabel->SetFontSize(GREENSCHEDULE::g_iItemFontSizeSmall + 3);
-    m_pDateLabel->SetTextColor(Qt::darkRed);
+    m_pDateLabel->SetTextColor((CGraphicsWidget::gColor)Qt::darkRed);
     m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
 
     this->InitMasks();

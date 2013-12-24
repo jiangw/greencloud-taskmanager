@@ -140,24 +140,8 @@ void CWorkSpaceView::InitWorkSpace()
             CGoalTagWidget* l_pNewGoalTagWidget = new CGoalTagWidget(NULL);
             l_pNewGoalTagWidget->InitGoalData(l_CPlanGoalList[i]->GetGoalId(),\
                                               l_CPlanGoalList[i]->GetGoalName(),\
-                                              l_CPlanGoalList[i]->GetGoalColor());
+                                              (CGraphicsWidget::gColor)l_CPlanGoalList[i]->GetGoalColor());
             this->AddGoalTagWidgetToWidgetList(l_pNewGoalTagWidget);
-//            CGoalWidget* l_pNewGoalWidget = new CGoalWidget(NULL);
-//            l_pNewGoalWidget->SetGoalData(l_CPlanGoalList[i]);
-
-//            const STask* l_pTaskListHead = l_CPlanGoalList[i]->GetTaskListHead();
-//            while(l_pTaskListHead)
-//            {
-//                CTaskWidget* l_pNewTaskWidget = new CTaskWidget(NULL);
-//                l_pNewTaskWidget->SetTaskData(l_pTaskListHead->m_qstrTaskTag,\
-//                                              l_pTaskListHead->m_qstrDescription,\
-//                                              l_pTaskListHead->m_blIsFinished);
-//                l_pNewGoalWidget->AddTaskWidget(l_pNewTaskWidget);
-//                l_pTaskListHead = l_pTaskListHead->m_pNext;
-//            }
-
-//            l_pNewGoalWidget->SetGoalMode(CGoalWidget::VIEW);
-//            this->AddGoalWidgetToGoalWidgetList(l_pNewGoalWidget);
         }
     }
 
@@ -170,9 +154,9 @@ void CWorkSpaceView::InitWorkSpace()
 
         //communication between CGoalWidget and CPlanWidget
         connect(m_pGoalEditor,\
-                SIGNAL(SIGNAL_GoalTaskSend(QPointF,QString,QString,Qt::GlobalColor)),\
+                SIGNAL(SIGNAL_GoalTaskSend(QPointF,int,int)),\
                 m_pPlanWidget,\
-                SLOT(SLOT_GoalTaskRecieve(QPointF,QString,QString,Qt::GlobalColor)));
+                SLOT(SLOT_GoalTaskRecieve(QPointF,int,int)));
         //communication between CGoalWidget and CPlan
         connect(m_pGoalEditor, SIGNAL(SIGNAL_PlanGoalPropose(CGoalWidget*)),\
                 CPlan::GetPlan(), SLOT(SLOT_PlanGoalReviewProc(CGoalWidget*)));
@@ -180,8 +164,8 @@ void CWorkSpaceView::InitWorkSpace()
                 CPlan::GetPlan(), SLOT(SLOT_PlanGoalSyncProc(const CPlanGoal*)));
         connect(m_pGoalEditor, SIGNAL(SIGNAL_PlanGoalRetract(int)),\
                 CPlan::GetPlan(), SLOT(SLOT_PlanGoalRetractProc(int)));
-        connect(m_pGoalEditor, SIGNAL(SIGNAL_TaskFinishStatSync(int,QString,bool)),\
-                CPlan::GetPlan(), SLOT(SLOT_GoalTaskFinishStatSync(int,QString,bool)));
+        connect(m_pGoalEditor, SIGNAL(SIGNAL_TaskFinishStatSync(int,int,bool)),\
+                CPlan::GetPlan(), SLOT(SLOT_GoalTaskFinishStatSync(int,int,bool)));
         connect(m_pGoalEditor, SIGNAL(SIGNAL_ShowInMessageBox(QString)),\
                 this, SLOT(SLOT_ShowMsgBoxProc(QString)));
     }
@@ -190,10 +174,10 @@ void CWorkSpaceView::InitWorkSpace()
     m_pDayWidget->setPos(-240, m_pMonthWidget->pos().y()\
                          + m_pMonthWidget->boundingRect().height()\
                          + GREENSCHEDULE::g_iItemIntervalY);
-    m_pPlanWidget->setPos(GREENSCHEDULE::g_iItemIntervalX, m_pMonthWidget->pos().y());
+    m_pPlanWidget->setPos(GREENSCHEDULE::g_iItemIntervalX, m_pMonthWidget->pos().y() - 10);
     m_pGoalTagWidgetList->setPos(m_pPlanWidget->pos().x() + m_pPlanWidget->boundingRect().width()\
                               + GREENSCHEDULE::g_iItemIntervalX,\
-                              m_pPlanWidget->pos().y());
+                              m_pMonthWidget->pos().y());
     m_pGoalEditor->setPos(m_pGoalTagWidgetList->pos().x(),\
                           m_pGoalTagWidgetList->pos().y() + 100);
 }
@@ -238,9 +222,7 @@ void CWorkSpaceView::SLOT_AddGoalTagProc(CPlanGoal *a_pPlanGoal)
     CGoalTagWidget* l_pNewGoalTagWidget = new CGoalTagWidget(NULL);
     l_pNewGoalTagWidget->InitGoalData(a_pPlanGoal->GetGoalId(),\
                                 a_pPlanGoal->GetGoalName(),\
-                                a_pPlanGoal->GetGoalColor());
-    m_pCurrSelGoal = l_pNewGoalTagWidget;
-    m_pCurrSelGoal->SetWidgetSelection(true);
+                                (CGraphicsWidget::gColor)a_pPlanGoal->GetGoalColor());
     this->AddGoalTagWidgetToWidgetList(l_pNewGoalTagWidget);
 }
 
@@ -254,7 +236,7 @@ void CWorkSpaceView::SLOT_UpdateGoalTagProc(CPlanGoal *a_pPlanGoal)
         {
             if(a_pPlanGoal->GetGoalColor() != l_pGoalTagWidget->GetGoalColorTag())
             {
-                l_pGoalTagWidget->SetGoalColorTag(a_pPlanGoal->GetGoalColor());
+                l_pGoalTagWidget->SetGoalColorTag((CGraphicsWidget::gColor)a_pPlanGoal->GetGoalColor());
             }
             if(a_pPlanGoal->GetGoalName() != l_pGoalTagWidget->GetGoalName())
             {
@@ -310,10 +292,11 @@ void CWorkSpaceView::SLOT_DeleteWidgetFromSceneProc(CGraphicsWidget *a_pDelWidge
 
 void CWorkSpaceView::SLOT_ShowMsgBoxProc(QString a_qstrMsg)
 {
-    QMessageBox l_CMsgBox(this->parentWidget());
-    l_CMsgBox.setText(a_qstrMsg);
-    l_CMsgBox.setModal(true);
-    l_CMsgBox.exec();
+    CMessageWidget* l_pMsgBox = new CMessageWidget(m_pWorkSpace);
+    l_pMsgBox->SetQuestion(a_qstrMsg);
+    l_pMsgBox->SetMsgBoxWidth(500);
+    l_pMsgBox->SetMsgBoxPos(0,\
+                            -l_pMsgBox->GetMsgBoxHeight() / 2);
 }
 
 void CWorkSpaceView::AddGoalTagWidgetToWidgetList(CGoalTagWidget *a_pGoalTagWidget)

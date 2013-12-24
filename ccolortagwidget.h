@@ -12,8 +12,8 @@ public:
     enum EShapeStype{RECTANGLE, ELLIPSE};
     CColorTagWidget(int a_iWidgetWidth, int a_iWidgetHeight, CGraphicsWidget* a_pParent);
     void SetWidgetSize(int a_iWidth, int a_iHeight);
-    void SetColor(Qt::GlobalColor a_EColor);
-    Qt::GlobalColor GetColor();
+    void SetColor(CGraphicsWidget::gColor a_EColor);
+    CGraphicsWidget::gColor GetColor();
     void SetShapeStyle(EShapeStype a_EShape);
     void InitSelector();
     void SelectorSwitch(bool a_blSelOn);
@@ -30,20 +30,20 @@ protected:
     void LeftButtonClicked(QPointF a_CMousePos);
 
 public slots:
-    void SLOT_SetColorProc(Qt::GlobalColor a_EColor);
+    void SLOT_SetColorProc(CGraphicsWidget::gColor a_EColor);
 
 signals:
-    void SIGNAL_ColorSelected(Qt::GlobalColor a_EColor);
-    void SIGNAL_ColorChanged(Qt::GlobalColor a_EColor);
+    void SIGNAL_ColorSelected(CGraphicsWidget::gColor a_EColor);
+    void SIGNAL_ColorChanged(CGraphicsWidget::gColor a_EColor);
 
 private:
     void InitColorList();
     void UpdateSelector();
 
-    QList<Qt::GlobalColor> m_ColorList;
+    QList<CGraphicsWidget::gColor> m_ColorList;
     QList<CColorTagWidget *> m_CTagList;
     bool m_blSelSwitch;
-    Qt::GlobalColor m_EColor;
+    CGraphicsWidget::gColor m_EColor;
     EShapeStype m_EShapeStyle;
     int m_iWidgetWidth, m_iWidgetHeight;
 };

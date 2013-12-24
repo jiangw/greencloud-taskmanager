@@ -37,6 +37,7 @@ namespace GREENSCHEDULE
     const int g_iItemIntervalY = 10; //standard distance between two items in Y direction
     const QColor g_CBackGroundColor(0, 230, 0, 150);
 
+    //time page
     enum ETimePage{INPROGRESS, HISTORY};
 }
 

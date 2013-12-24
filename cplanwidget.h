@@ -12,7 +12,7 @@
 
 struct STaskList
 {
-    void Append(QString a_qstrTaskTag, Qt::GlobalColor a_EGoalColorTag)
+    void Append(QString a_qstrTaskTag, CGraphicsWidget::gColor a_EGoalColorTag)
     {
         bool l_blInList = false;
         for(int i=0; i<m_qstrTaskTagList.length(); i++)
@@ -31,7 +31,7 @@ struct STaskList
     }
 
     QList<QString> m_qstrTaskTagList;
-    QList<Qt::GlobalColor> m_EGoalColorTagList;
+    QList<CGraphicsWidget::gColor> m_EGoalColorTagList;
 };
 
 struct STimeSeg
@@ -69,9 +69,7 @@ public:
 
 public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
-    void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, QString a_qstrGoalName,\
-                              QString a_qstrTaskTag,\
-                              Qt::GlobalColor a_EGoalColorTag);
+    void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, int a_iTaskId);
     void SLOT_WidgetUpdateProc();
 
 private:
@@ -84,6 +82,7 @@ private:
     int m_iClockTagWidth;
     int m_iDateTagWidth;
     int m_iDateTagHeight;
+    QBrush m_CBackground;
 
     QFont m_CTaskTagFont;
     QPen m_CTaskTagPen;
