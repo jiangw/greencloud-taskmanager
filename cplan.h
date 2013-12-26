@@ -26,10 +26,12 @@ public:
 
     CPlanTimeHour* CreatePlanTimeHour(QDate a_CDate);
     CPlanTimeHour* GetPlanTimeHour(QDate a_CDate);
-    QList<CPlanTimeHour *>& GetPlanTimeHourListInProgress();
+    QList<CPlanTimeHour *>& GetPlanTimeHourList(GREENSCHEDULE::ETimePage a_ETimePage);
     void UpdatePlanTimeHour(CPlanTimeHour* a_pPlanTimeHour,\
                             const bool *a_pDayHourMask, int a_iHoursPerDay);
     void RemovePlanTimeHour(CPlanTimeHour* a_pDelPlanTime);
+    int GetPlanTimeHourIndex(QDate a_CDate,\
+                             GREENSCHEDULE::ETimePage a_ETimePage = GREENSCHEDULE::INPROGRESS);
 
     CPlanGoal* CreatePlanGoal(QString a_qstrGoalName, CGraphicsWidget::gColor a_EColor);
     CPlanGoal* CreateEmptyPlanGoal();
@@ -70,9 +72,12 @@ private:
     void ClearPlanTimeHourFactory();
     void ClearPlanGoalFactory();
     void UpdateGoalInPlanTimeHour(const CPlanGoal* a_pUpdatedGoal);
+    QList<CPlanTimeHour *>& GetPlanTimeHourListInProgress();
+    QList<CPlanTimeHour *>& GetPlanTimeHourListHistory();
 
     QList<CPlanTimeHour *> m_CPlanTimeHourFactory;
     QList<CPlanTimeHour *> m_CPlanTimeHourInProgress;
+    QList<CPlanTimeHour *> m_CPlanTimeHourHistory;
     QList<CPlanGoal *> m_CPlanGoalFactory;
     int m_iGoalIdGen;
     bool m_blSaveFlag;

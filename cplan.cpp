@@ -81,17 +81,17 @@ CPlanTimeHour* CPlan::GetPlanTimeHour(QDate a_CDate)
     return l_pPlanTimeHour;
 }
 
-QList<CPlanTimeHour*>& CPlan::GetPlanTimeHourListInProgress()
+QList<CPlanTimeHour *>& CPlan::GetPlanTimeHourList(GREENSCHEDULE::ETimePage a_ETimePage)
 {
-    m_CPlanTimeHourInProgress.clear();
-    for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
+    switch(a_ETimePage)
     {
-        if(!m_CPlanTimeHourFactory[i]->IsHistory())
-        {
-            m_CPlanTimeHourInProgress.append(m_CPlanTimeHourFactory[i]);
-        }
+    case GREENSCHEDULE::HISTORY:
+        return this->GetPlanTimeHourListHistory();
+        break;
+    default:
+        return this->GetPlanTimeHourListInProgress();
+        break;
     }
-    return m_CPlanTimeHourInProgress;
 }
 
 void CPlan::UpdatePlanTimeHour(CPlanTimeHour *a_pPlanTimeHour,\
@@ -115,6 +115,21 @@ void CPlan::RemovePlanTimeHour(CPlanTimeHour *a_pDelPlanTime)
         }
     }
     m_blSaveFlag = true;
+}
+
+int CPlan::GetPlanTimeHourIndex(QDate a_CDate, GREENSCHEDULE::ETimePage a_ETimePage)
+{
+    QList<CPlanTimeHour *>& l_pPlanTimeHourList = this->GetPlanTimeHourList(a_ETimePage);
+    int l_iIndex = -1;
+    for(int i=0; i<l_pPlanTimeHourList.length(); i++)
+    {
+        if(l_pPlanTimeHourList[i]->Date() == a_CDate)
+        {
+            l_iIndex = i;
+            break;
+        }
+    }
+    return l_iIndex;
 }
 
 CPlanGoal* CPlan::CreatePlanGoal(QString a_qstrGoalName, CGraphicsWidget::gColor a_EColor)
@@ -617,4 +632,30 @@ void CPlan::UpdateGoalInPlanTimeHour(const CPlanGoal *a_pUpdatedGoal)
                                                 l_CDelTaskIdList[i]);
         }
     }
+}
+
+QList<CPlanTimeHour*>& CPlan::GetPlanTimeHourListInProgress()
+{
+    m_CPlanTimeHourInProgress.clear();
+    for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
+    {
+        if(!m_CPlanTimeHourFactory[i]->IsHistory())
+        {
+            m_CPlanTimeHourInProgress.append(m_CPlanTimeHourFactory[i]);
+        }
+    }
+    return m_CPlanTimeHourInProgress;
+}
+
+QList<CPlanTimeHour *>& CPlan::GetPlanTimeHourListHistory()
+{
+    m_CPlanTimeHourHistory.clear();
+    for(int i=0; i<m_CPlanTimeHourFactory.length(); i++)
+    {
+        if(m_CPlanTimeHourFactory[i]->IsHistory())
+        {
+            m_CPlanTimeHourHistory.append(m_CPlanTimeHourFactory[i]);
+        }
+    }
+    return m_CPlanTimeHourHistory;
 }

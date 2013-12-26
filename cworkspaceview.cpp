@@ -10,6 +10,8 @@ CWorkSpaceView::CWorkSpaceView(CWorkSpace *a_pWorkSpace, QWidget *a_pParent) :
     m_pGoalTagWidgetList = NULL;
     m_pGoalEditor = NULL;
     m_pCurrSelGoal = NULL;
+    m_pShowPlanHistory = NULL;
+    m_pShowPlanInProgress = NULL;
 
     //receive mouse move events even if no button is pressed
     this->setMouseTracking(true);
@@ -105,6 +107,7 @@ void CWorkSpaceView::InitWorkSpace()
     if(NULL == m_pPlanWidget)
     {
         m_pPlanWidget = new CPlanWidget(NULL);
+//        m_pPlanWidget->SetTimePage(GREENSCHEDULE::HISTORY);
         m_pWorkSpace->addItem(m_pPlanWidget);
 
         connect(m_pDayWidget, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
@@ -115,6 +118,8 @@ void CWorkSpaceView::InitWorkSpace()
                 m_pDayWidget, SLOT(SLOT_HourSelMaskRecieveProc()));
         connect(CPlan::GetPlan(), SIGNAL(SIGNAL_PlanWidgetUpdate()),\
                 m_pPlanWidget, SLOT(SLOT_WidgetUpdateProc()));
+        connect(m_pPlanWidget, SIGNAL(SIGNAL_ShowInMessageBox(QString)),\
+                this, SLOT(SLOT_ShowMsgBoxProc(QString)));
     }
 
     //add widget list for storing goal widgets
@@ -170,6 +175,22 @@ void CWorkSpaceView::InitWorkSpace()
                 this, SLOT(SLOT_ShowMsgBoxProc(QString)));
     }
 
+    if(NULL == m_pShowPlanHistory)
+    {
+        m_pShowPlanHistory = new CButtonWidget("History", NULL);
+        m_pWorkSpace->addItem(m_pShowPlanHistory);
+        connect(m_pShowPlanHistory, SIGNAL(SIGNAL_ButtonTriggered()),\
+                m_pPlanWidget, SLOT(SLOT_ShowPlanHistoryProc()));
+    }
+
+    if(NULL == m_pShowPlanInProgress)
+    {
+        m_pShowPlanInProgress = new CButtonWidget("On Going", NULL);
+        m_pWorkSpace->addItem(m_pShowPlanInProgress);
+        connect(m_pShowPlanInProgress, SIGNAL(SIGNAL_ButtonTriggered()),\
+                m_pPlanWidget, SLOT(SLOT_ShowPlanInProgressProc()));
+    }
+
     m_pMonthWidget->setPos(-270, -280);
     m_pDayWidget->setPos(-240, m_pMonthWidget->pos().y()\
                          + m_pMonthWidget->boundingRect().height()\
@@ -180,6 +201,11 @@ void CWorkSpaceView::InitWorkSpace()
                               m_pMonthWidget->pos().y());
     m_pGoalEditor->setPos(m_pGoalTagWidgetList->pos().x(),\
                           m_pGoalTagWidgetList->pos().y() + 100);
+    m_pShowPlanInProgress->setPos(m_pPlanWidget->pos().x(),\
+                                  m_pPlanWidget->pos().y() +  m_pPlanWidget->WidgetHeight());
+    m_pShowPlanHistory->setPos(m_pShowPlanInProgress->pos().x()\
+                               + m_pShowPlanInProgress->WidgetWidth() + GREENSCHEDULE::g_iItemIntervalX,\
+                               m_pShowPlanInProgress->pos().y());
 }
 
 void CWorkSpaceView::SLOT_DragModeSwitched(bool a_blFlag)

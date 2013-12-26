@@ -23,12 +23,13 @@ public:
     CGoalWidget(CGraphicsWidget* a_pParent);
     void SetGoalWidgetMode(EGoalWidgetMode a_EMode);
     EGoalWidgetMode GetGoalWidgetMode(){return m_EMode;}
-    void SetGoalData(const CPlanGoal* a_pPlanGoal);
+    void SetGoalData(const CPlanGoal* a_pPlanGoal, bool a_blSimpleView = true);
     void SetGoalColorTag(CGraphicsWidget::gColor a_EColorTag);
     QString GetGoalName(){return m_pGoalNameLabel->GetText();}
     void AddTaskWidget(CTaskWidget* a_pTaskWidget);
     void PlanGoalRevise(int a_iGoalId);
     void PlanGoalSubmit();
+    void SetSimpleView(bool a_blSimpleView);
 
     //override from CGraphicsWidget
     void ResetWidget();
@@ -80,10 +81,12 @@ private:
     void SetTaskModeBatch(CTaskWidget::ETaskMode a_ETaskMode);
     void SetLabelHeaderForTaskWidgetList(QString a_qstrLabelText);
     void SetAddTaskBtnForTaskWidgetList();
+    void UpdateGoalWidget();
     CWidgetList* m_pTaskWidgetList;
 
     CPlanGoal m_CPlanGoal;
     int m_iTaskIdGen;
+    bool m_blSimpleView;
 };
 
 #endif // CGOALWIDGET_H

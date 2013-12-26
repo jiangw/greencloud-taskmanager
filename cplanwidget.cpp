@@ -5,16 +5,36 @@ CPlanWidget::CPlanWidget(CGraphicsWidget *a_pParent)
 {
     m_pPlan = CPlan::GetPlan();
 
-    m_iTimeSegHeight = 40;
+    m_iTimeSegHeight = 50;
     m_iClockTagWidth = 15;
     m_iWidthPerHour = 2 * m_iClockTagWidth;
-    m_iDateTagWidth = 200;
-    m_iDateTagHeight = 20;
+    m_iDateTagWidth = 190;
+    m_iDateTagHeight = 15;
+    m_iTimeLineStartY = 20;
     m_iHeightPerTimeLine = m_iTimeSegHeight + m_iDateTagHeight;
     m_CTaskTagFont.setPointSize(GREENSCHEDULE::g_iItemFontSizeSmall);
     m_CTaskTagFont.setFamily("Liberation Sans Narrow");
     m_CTaskTagPen.setWidth(1);
     m_CBackground.setTextureImage(QImage(":/img/planback"));
+
+    m_ETimePage = GREENSCHEDULE::INPROGRESS;
+    m_EPlanPageFlag = PPF_END;
+    m_iDaysPerPage = 7;
+    m_iTotalPages = 0;
+    m_iPageNo = 1;
+    m_pPageList = new CWidgetList(this);
+    m_pPageList->SetWidgetOutline(false);
+    m_pPageList->SetListOrientation(CWidgetList::HORIZONTAL);
+    m_pPageList->SetPageLength(6);
+    m_pPageListTitle = new CTextWidget(false, m_pPageList);
+    m_pPageListTitle->SetText("  Pages");
+    m_pPageListTitle->SetWidgetOutline(false);
+    m_pPageListTitle->SetWidgetUnderline(false);
+    m_pPageListTitle->SetFontSize(8);
+    m_pPageListTitle->SetTextColor(CGraphicsWidget::indigo);
+    m_pPageList->SetHeaderWidget(m_pPageListTitle);
+    m_pPageList->setPos(10, 485);
+    m_pCurrPage = NULL;
 
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
 }
@@ -26,28 +46,12 @@ CPlanWidget::~CPlanWidget()
 
 void CPlanWidget::Clear()
 {
-    for(int i=0; i<m_CDateList.length(); i++)
-    {
-        delete m_CDateList[i];
-        this->DeleteTimeSeg(m_CTimeSegList[i]);
-    }
-    m_CDateList.clear();
-    m_CTimeSegList.clear();
 }
 
 void CPlanWidget::ResetWidget()
 {
     this->Clear();
     update(this->boundingRect());
-}
-
-void CPlanWidget::DeleteTimeSeg(STimeSeg *a_pDelTimeSeg)
-{
-    for(int i=0; i<a_pDelTimeSeg->m_CTaskListList.length(); i++)
-    {
-        delete a_pDelTimeSeg->m_CTaskListList[i];
-    }
-    delete a_pDelTimeSeg;
 }
 
 void CPlanWidget::RenderToImg(QImage *a_pImg)
@@ -70,10 +74,18 @@ void CPlanWidget::RenderToSvg(QSvgGenerator* a_pSVG)
     }
 }
 
-STimeSeg *CPlanWidget::ReplaceTimeSeg(STimeSeg *a_pOld, STimeSeg *a_pNew)
+void CPlanWidget::SetTimePage(GREENSCHEDULE::ETimePage a_ETimePage)
 {
-    delete a_pOld;
-    return a_pNew;
+    m_ETimePage = a_ETimePage;
+
+    update(this->boundingRect());
+}
+
+void CPlanWidget::SetPlanPage(int a_iPageNO)
+{
+    m_iPageNo = a_iPageNO;
+    m_EPlanPageFlag = PPF_SPECIFY;
+    update(this->boundingRect());
 }
 
 int CPlanWidget::WidgetWidth()
@@ -124,19 +136,48 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
     l_CPenInProgress.setWidth(3);
     l_CPenInProgress.setCapStyle(Qt::RoundCap);
     QPen l_CPenHistory = l_CPenInProgress;
-    l_CPenHistory.setColor(QColor(Qt::gray));
+    l_CPenHistory.setColor(QColor(CGraphicsWidget::gray));
 
-    QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourListInProgress();
+    l_COldPen.setColor(QColor(Qt::black));
+    l_COldFont.setFamily("STLiti");
+    l_COldFont.setBold(true);
 
-    for(int i=0; i<l_pPlanTimeHourList.length(); i++)
+    QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourList(m_ETimePage);
+    m_iTotalPages = qCeil((qreal)l_pPlanTimeHourList.length() / (qreal)m_iDaysPerPage);
+    if(m_iTotalPages <= 0)
     {
-        CPlanTimeHour* l_pPlanTimeHour = l_pPlanTimeHourList[i];
+        m_iTotalPages = 1;
+    }
+    switch(m_EPlanPageFlag)
+    {
+    case PPF_BEGIN:
+        m_iPageNo = 1;
+        break;
+    case PPF_END:
+        m_iPageNo = m_iTotalPages;
+        break;
+    default:
+        break;
+    }
+
+    int l_iBase = (m_iPageNo - 1) * m_iDaysPerPage;
+    for(int i=0; i<m_iDaysPerPage; i++)
+    {
+        if(i + l_iBase >= l_pPlanTimeHourList.length() || l_iBase < 0)
+        {
+            break;
+        }
+        painter->setFont(l_COldFont);
+        painter->setPen(l_COldPen);
+
+        CPlanTimeHour* l_pPlanTimeHour = l_pPlanTimeHourList[i + l_iBase];
         //date tag
-        painter->drawText(5, i * m_iHeightPerTimeLine + 10, m_iDateTagWidth, m_iDateTagHeight,\
-                          Qt::AlignLeft, l_pPlanTimeHour->Date().toString("yyyy.MM.dd dddd :"));
+        painter->drawText(5, i * m_iHeightPerTimeLine + m_iTimeLineStartY, m_iDateTagWidth, m_iDateTagHeight,\
+                          Qt::AlignLeft, l_pPlanTimeHour->Date().toString("- yyyy.MM.dd dddd -"));
+
         //hour segments
         int x = 10;
-        int y = i * m_iHeightPerTimeLine + 10 + m_iDateTagHeight;
+        int y = i * m_iHeightPerTimeLine + m_iTimeLineStartY + m_iDateTagHeight;
         STimeSegHour* l_pTimeSegListIter = l_pPlanTimeHour->GetTimeSeg(0);
         for(int j=0; j<l_pPlanTimeHour->TimeSegCounter(); j++)
         {
@@ -190,9 +231,34 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
             x += l_iSegWidth + GREENSCHEDULE::g_iItemIntervalX;
             l_pTimeSegListIter = l_pTimeSegListIter->m_pNext;
         }
-
-        painter->setFont(l_COldFont);
-        painter->setPen(l_COldPen);
+    }
+    if(m_iTotalPages != m_pPageList->ListLength())
+    {
+        m_pPageList->ResetWidget();
+        m_pPageListTitle->SetText(QString("%1 Pages").arg(m_iTotalPages));
+        for(int i=0; i<m_iTotalPages; i++)
+        {
+            CPageNOWidget* l_pNewPageNO = new CPageNOWidget(m_pPageList);
+            l_pNewPageNO->SetPageNO(i+1);
+            m_pPageList->AddWidget(l_pNewPageNO);
+            connect(l_pNewPageNO, SIGNAL(SIGNAL_PageNOSelected(CPageNOWidget*)),
+                    this, SLOT(SLOT_SetPageNOProc(CPageNOWidget*)));
+            if(PPF_BEGIN == m_EPlanPageFlag && 0 == i)
+            {
+                m_pCurrPage = l_pNewPageNO;
+                m_pCurrPage->Select(true);
+            }
+            if(PPF_END == m_EPlanPageFlag && m_iTotalPages == i + 1)
+            {
+                m_pCurrPage = l_pNewPageNO;
+                m_pCurrPage->Select(true);
+            }
+            if(PPF_SPECIFY == m_EPlanPageFlag && m_iPageNo == i + 1)
+            {
+                m_pCurrPage = l_pNewPageNO;
+                m_pCurrPage->Select(true);
+            }
+        }
     }
 
     painter->restore();
@@ -200,16 +266,23 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
 
 void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget *a_pWhoAmI)
 {
+    if(GREENSCHEDULE::HISTORY == m_ETimePage)
+    {
+        this->SIGNAL_ShowInMessageBox("You cannot do anything in HISTORY view.");
+        return;
+    }
     if(a_pWhoAmI->WidgetClassName() == QString("CDayWidget")\
             && this->contains(this->mapFromScene(a_CMouseScenePos)))
     { //process hours plan
         CDayWidget* l_pDayWidget = (CDayWidget *)a_pWhoAmI;
         QDate l_CDayWidgetDate = l_pDayWidget->GetDate();
+        int l_iFlag = 0;
 
         CPlanTimeHour* l_pNewPlanTimeHour = m_pPlan->GetPlanTimeHour(l_CDayWidgetDate);
         if(NULL == l_pNewPlanTimeHour)
         { //create a new hours plan for the date
             l_pNewPlanTimeHour = m_pPlan->CreatePlanTimeHour(l_CDayWidgetDate);
+            l_iFlag = 1;
         }
         m_pPlan->UpdatePlanTimeHour(l_pNewPlanTimeHour,\
                                     l_pDayWidget->GetHourSelMask(),\
@@ -217,6 +290,46 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
         if(l_pNewPlanTimeHour->IsEmpty())
         {
             m_pPlan->RemovePlanTimeHour(l_pNewPlanTimeHour);
+            l_iFlag = -1;
+        }
+
+        int l_iTotalPages = qCeil((qreal)m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::INPROGRESS).length()\
+                                  / (qreal)m_iDaysPerPage);
+        if(l_iTotalPages > m_iTotalPages) //add a item and total-pages change
+        {
+            int l_iNewPlanTimeHourIdx = m_pPlan->GetPlanTimeHourIndex(l_CDayWidgetDate);
+            m_iPageNo = qCeil((qreal)(l_iNewPlanTimeHourIdx + 1) / (qreal)m_iDaysPerPage);
+            m_EPlanPageFlag = PPF_SPECIFY;
+        }
+        else if(l_iTotalPages < m_iTotalPages) //delete a item and total-pages change
+        {
+            if(m_iPageNo == m_iTotalPages)
+            {
+                m_EPlanPageFlag = PPF_END;
+            }
+        }
+        else
+        {
+            if(1 == l_iFlag)
+            {
+                int l_iNewPlanTimeHourIdx = m_pPlan->GetPlanTimeHourIndex(l_CDayWidgetDate);
+                int l_iPageNo = qCeil((qreal)(l_iNewPlanTimeHourIdx + 1) / (qreal)m_iDaysPerPage);
+                if(l_iPageNo != m_iPageNo)
+                {
+                    m_iPageNo = l_iPageNo;
+                    CWidgetNode* l_pWidgetIter = m_pPageList->GetWidgetList();
+                    while(l_pWidgetIter)
+                    {
+                        CPageNOWidget* l_pPageNOWidget = (CPageNOWidget *)(l_pWidgetIter->m_pWidget);
+                        if(l_pPageNOWidget->GetPageNO() == m_iPageNo)
+                        {
+                            l_pPageNOWidget->Select(true);
+                            this->SLOT_SetPageNOProc(l_pPageNOWidget);
+                        }
+                        l_pWidgetIter = l_pWidgetIter->m_pNext;
+                    }
+                }
+            }
         }
         update(this->boundingRect());
     }
@@ -224,16 +337,30 @@ void CPlanWidget::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidg
 
 void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, int a_iTaskId)
 {
+    if(GREENSCHEDULE::HISTORY == m_ETimePage)
+    {
+        this->SIGNAL_ShowInMessageBox("You cannot do anything in HISTORY view.");
+        return;
+    }
+    int l_iCurrentPageLen;
+    if(m_iPageNo * m_iDaysPerPage <= (m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::INPROGRESS)).length())
+    {
+        l_iCurrentPageLen = m_iDaysPerPage;
+    }
+    else
+    {
+        l_iCurrentPageLen = (m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::INPROGRESS)).length() % m_iDaysPerPage;
+    }
     QPointF l_CMouseLocalPos = this->mapFromScene(a_CMouseScenePos);
     if(this->contains(l_CMouseLocalPos))
     {
         //compute date index
-        int l_iDateIdx = qFloor((l_CMouseLocalPos.y() - 10) / m_iHeightPerTimeLine);
-        if(l_iDateIdx < m_pPlan->GetPlanTimeHourListInProgress().length() &&\
-                fmod(l_CMouseLocalPos.y() - 10, m_iHeightPerTimeLine) > m_iDateTagHeight)
+        int l_iDateIdx = qFloor((l_CMouseLocalPos.y() - m_iTimeLineStartY) / m_iHeightPerTimeLine);
+        if(l_iDateIdx < l_iCurrentPageLen &&\
+                fmod(l_CMouseLocalPos.y() - m_iTimeLineStartY, m_iHeightPerTimeLine) > m_iDateTagHeight)
         {
             //compute time segment index
-            CPlanTimeHour* l_pPlanTimeHour = m_pPlan->GetPlanTimeHourListInProgress()[l_iDateIdx];
+            CPlanTimeHour* l_pPlanTimeHour = m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::INPROGRESS)[l_iDateIdx];
             STimeSegHour* l_pTimeSegHourAssign = NULL;
             int l_iPosX = 10;
             STimeSegHour* l_pTimeSegHour = l_pPlanTimeHour->GetTimeSeg(0);
@@ -261,7 +388,7 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, 
                                                      l_pPlanGoalTask->m_qstrTaskTag,\
                                                      l_pPlanGoal->GetGoalColor());
 
-                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine + 10, this->boundingRect().width(),\
+                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine + m_iTimeLineStartY, this->boundingRect().width(),\
                               m_iHeightPerTimeLine));
             }
         }
@@ -271,4 +398,34 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, 
 void CPlanWidget::SLOT_WidgetUpdateProc()
 {
     update(this->boundingRect());
+}
+
+void CPlanWidget::SLOT_SetPageNOProc(CPageNOWidget *a_pSelPage)
+{
+
+    if(NULL != m_pCurrPage)
+    {
+        if(m_pCurrPage != a_pSelPage)
+        {
+            m_pCurrPage->Select(false);
+            m_pCurrPage = a_pSelPage;
+            this->SetPlanPage(m_pCurrPage->GetPageNO());
+        }
+
+    }
+}
+
+void CPlanWidget::SLOT_ShowPlanHistoryProc()
+{
+    m_EPlanPageFlag = PPF_END;
+    this->SetTimePage(GREENSCHEDULE::HISTORY);
+}
+
+void CPlanWidget::SLOT_ShowPlanInProgressProc()
+{
+    if(GREENSCHEDULE::HISTORY == m_ETimePage)
+    {
+        m_EPlanPageFlag = PPF_BEGIN;
+    }
+    this->SetTimePage(GREENSCHEDULE::INPROGRESS);
 }

@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     cplantimehour.cpp \
     cplangoal.cpp \
     cgoaltagwidget.cpp \
-    ../GraphicsWidgetLib/cmessagewidget.cpp
+    ../GraphicsWidgetLib/cmessagewidget.cpp \
+    cpagenowidget.cpp
 
 HEADERS  += mainwindow.h \
     cworkspace.h \
@@ -64,7 +65,8 @@ HEADERS  += mainwindow.h \
     cplantimehour.h \
     cplangoal.h \
     cgoaltagwidget.h \
-    ../GraphicsWidgetLib/cmessagewidget.h
+    ../GraphicsWidgetLib/cmessagewidget.h \
+    cpagenowidget.h
 
 RESOURCES += \
     res.qrc

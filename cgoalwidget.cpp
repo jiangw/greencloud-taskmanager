@@ -54,40 +54,16 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
 
     m_CPlanGoal.SetGoalId(-1); //set goal as invalid
     m_iTaskIdGen = -1;
+    m_blSimpleView = true;
 }
 
 void CGoalWidget::SetGoalWidgetMode(EGoalWidgetMode a_EMode)
 {
     m_EMode = a_EMode;
-    switch(m_EMode)
-    {
-    case VIEW:
-        m_pGoalNameLabel->SetEditable(false);
-        m_pSvgWidgetEdit->setVisible(true);
-        m_pSvgWidgetDel->setVisible(true);
-        m_pSvgWidgetOK->setVisible(false);
-        m_pColorTag->setVisible(false);
-        this->SetLabelHeaderForTaskWidgetList("Task List");
-        this->SetTaskModeBatch(CTaskWidget::VIEW);
-        break;
-    case EDIT:
-        m_pGoalNameLabel->SetEditable(true);
-        m_pSvgWidgetEdit->setVisible(false);
-        m_pSvgWidgetDel->setVisible(false);
-        m_pSvgWidgetOK->setVisible(true);
-        m_pColorTag->setVisible(true);
-        m_pColorTag->SelectorSwitch(true);
-        this->SetAddTaskBtnForTaskWidgetList();
-        this->SetTaskModeBatch(CTaskWidget::EDIT);
-        break;
-    default:
-        break;
-    }
-
-    this->UpdateBoundingRect();
+    this->UpdateGoalWidget();
 }
 
-void CGoalWidget::SetGoalData(const CPlanGoal *a_pPlanGoal)
+void CGoalWidget::SetGoalData(const CPlanGoal *a_pPlanGoal, bool a_blSimpleView)
 {
     m_CPlanGoal.SetGoalId(a_pPlanGoal->GetGoalId());
     m_CPlanGoal.SetGoalName(a_pPlanGoal->GetGoalName());
@@ -112,6 +88,7 @@ void CGoalWidget::SetGoalData(const CPlanGoal *a_pPlanGoal)
         l_pTaskListIter = l_pTaskListIter->m_pNext;
     }
 
+    this->SetSimpleView(a_blSimpleView);
     this->UpdateBoundingRect();
 }
 
@@ -161,6 +138,15 @@ void CGoalWidget::PlanGoalSubmit()
     emit this->SIGNAL_PlanGoalSubmit(&m_CPlanGoal);
 }
 
+void CGoalWidget::SetSimpleView(bool a_blSimpleView)
+{
+    m_blSimpleView = a_blSimpleView;
+    if(VIEW == m_EMode)
+    {
+        this->UpdateGoalWidget();
+    }
+}
+
 void CGoalWidget::ResetWidget()
 {
     m_pTaskWidgetList->ResetWidget();
@@ -197,6 +183,9 @@ QString CGoalWidget::WidgetClassName()
 
 void CGoalWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
     QRectF l_CRect(m_iControllerWidth + 2, m_iControllerHeight / 2 + 2,\
                    this->GoalLabelWidth() - 4, this->GoalLabelHeight() - 4);
     QPainterPath l_CPath;
@@ -219,23 +208,7 @@ void CGoalWidget::LeftButtonClicked(QPointF a_CMousePos)
                                    this->GoalLabelWidth(), this->GoalLabelHeight());
     if(l_CGoalNameAreaPath.contains(a_CMousePos))
     {
-        if(VIEW == m_EMode)
-        {
-            m_pSvgWidgetEdit->setVisible(!m_pSvgWidgetEdit->isVisible());
-            m_pSvgWidgetDel->setVisible(!m_pSvgWidgetDel->isVisible());
-//            m_pTaskWidgetList->SetCollapse(!m_pTaskWidgetList->IsCollapsed());
-            //just show unfinished tasks
-            CWidgetNode* l_pWidgeIter = m_pTaskWidgetList->GetWidgetList();
-            while(l_pWidgeIter)
-            {
-                if(((CTaskWidget *)l_pWidgeIter->m_pWidget)->IsTaskFinished())
-                {
-                    l_pWidgeIter->m_pWidget->FreezeWidget(!l_pWidgeIter->m_pWidget->IsFreezed());
-                }
-                l_pWidgeIter = l_pWidgeIter->m_pNext;
-            }
-            m_pTaskWidgetList->UpdateWidgetList();
-        }
+        this->SetSimpleView(!m_blSimpleView);
     }
 }
 
@@ -364,7 +337,14 @@ void CGoalWidget::SetTaskModeBatch(CTaskWidget::ETaskMode a_ETaskMode)
             }
             else
             {
-                ((CTaskWidget *)(l_pWidgetListHead->m_pWidget))->FreezeWidget(false);
+                if(m_blSimpleView)
+                {
+                    ((CTaskWidget *)(l_pWidgetListHead->m_pWidget))->FreezeWidget(true);
+                }
+                else
+                {
+                    ((CTaskWidget *)(l_pWidgetListHead->m_pWidget))->FreezeWidget(false);
+                }
             }
         }
         l_pWidgetListHead = l_pWidgetListHead->m_pNext;
@@ -389,6 +369,44 @@ void CGoalWidget::SetAddTaskBtnForTaskWidgetList()
     m_pTaskWidgetList->SetHeaderWidget(l_pAddTaskBtn);
     connect(l_pAddTaskBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_AddTaskWidgetProc()));
+}
+
+void CGoalWidget::UpdateGoalWidget()
+{
+    switch(m_EMode)
+    {
+    case VIEW:
+        m_pGoalNameLabel->SetEditable(false);
+        if(m_blSimpleView)
+        {
+            m_pSvgWidgetEdit->setVisible(false);
+            m_pSvgWidgetDel->setVisible(false);
+        }
+        else
+        {
+            m_pSvgWidgetEdit->setVisible(true);
+            m_pSvgWidgetDel->setVisible(true);
+        }
+        m_pSvgWidgetOK->setVisible(false);
+        m_pColorTag->setVisible(false);
+        this->SetLabelHeaderForTaskWidgetList("Task List");
+        this->SetTaskModeBatch(CTaskWidget::VIEW);
+        break;
+    case EDIT:
+        m_pGoalNameLabel->SetEditable(true);
+        m_pSvgWidgetEdit->setVisible(false);
+        m_pSvgWidgetDel->setVisible(false);
+        m_pSvgWidgetOK->setVisible(true);
+        m_pColorTag->setVisible(true);
+        m_pColorTag->SelectorSwitch(true);
+        this->SetAddTaskBtnForTaskWidgetList();
+        this->SetTaskModeBatch(CTaskWidget::EDIT);
+        break;
+    default:
+        break;
+    }
+
+    this->UpdateBoundingRect();
 }
 
 int CGoalWidget::GoalLabelWidth()

@@ -72,6 +72,8 @@ private:
     CWidgetList* m_pGoalTagWidgetList;
     CGoalWidget* m_pGoalEditor;
     CGoalTagWidget* m_pCurrSelGoal;
+    CButtonWidget* m_pShowPlanInProgress;
+    CButtonWidget* m_pShowPlanHistory;
 };
 
 #endif // CWORKSPACEVIEW_H

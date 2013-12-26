@@ -2,62 +2,31 @@
 #define CPLANWIDGET_H
 
 #include "../GraphicsWidgetLib/cgraphicswidget.h"
+#include "../GraphicsWidgetLib/cwidgetlist.h"
+#include "../GraphicsWidgetLib/ctextwidget.h"
 #include "gconfig.h"
 #include "cdaywidget.h"
 #include "cplan.h"
+#include "cpagenowidget.h"
 
 #include <QPainter>
 #include <QImage>
 #include <QSvgGenerator>
-
-struct STaskList
-{
-    void Append(QString a_qstrTaskTag, CGraphicsWidget::gColor a_EGoalColorTag)
-    {
-        bool l_blInList = false;
-        for(int i=0; i<m_qstrTaskTagList.length(); i++)
-        {
-            if(a_qstrTaskTag == m_qstrTaskTagList[i])
-            {
-                l_blInList = true;
-                break;
-            }
-        }
-        if(!l_blInList)
-        {
-            m_qstrTaskTagList.append(a_qstrTaskTag);
-            m_EGoalColorTagList.append(a_EGoalColorTag);
-        }
-    }
-
-    QList<QString> m_qstrTaskTagList;
-    QList<CGraphicsWidget::gColor> m_EGoalColorTagList;
-};
-
-struct STimeSeg
-{
-    bool IsEmpty()\
-    {\
-        return m_CStartClockList.isEmpty();\
-    }
-    QList<int> m_CStartClockList;
-    QList<int> m_CEndClockList;
-    QList<STaskList *> m_CTaskListList;
-};
 
 class CPlanWidget : public CGraphicsWidget
 {
     Q_OBJECT
 
 public:
+    enum EPlanPageFlag{PPF_BEGIN, PPF_END, PPF_SPECIFY};
     CPlanWidget(CGraphicsWidget* a_pParent);
     virtual ~CPlanWidget();
     void Clear();
     void ResetWidget();
-    STimeSeg* ReplaceTimeSeg(STimeSeg* a_pOld, STimeSeg* a_pNew);
-    void DeleteTimeSeg(STimeSeg* a_pDelTimeSeg);
     void RenderToImg(QImage* a_pImg);
     void RenderToSvg(QSvgGenerator *a_pSVG);
+    void SetTimePage(GREENSCHEDULE::ETimePage a_ETimePage);
+    void SetPlanPage(int a_iPageNO);
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -71,10 +40,11 @@ public slots:
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
     void SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, int a_iTaskId);
     void SLOT_WidgetUpdateProc();
+    void SLOT_SetPageNOProc(CPageNOWidget* a_pSelPage);
+    void SLOT_ShowPlanInProgressProc();
+    void SLOT_ShowPlanHistoryProc();
 
 private:
-    QList<QDate *> m_CDateList;
-    QList<STimeSeg *> m_CTimeSegList;
     CPlan* m_pPlan;
     int m_iHeightPerTimeLine; //= m_iTimeSegHeight + m_iDateTagHeight
     int m_iTimeSegHeight;
@@ -82,10 +52,18 @@ private:
     int m_iClockTagWidth;
     int m_iDateTagWidth;
     int m_iDateTagHeight;
+    int m_iTimeLineStartY;
     QBrush m_CBackground;
 
     QFont m_CTaskTagFont;
     QPen m_CTaskTagPen;
+
+    GREENSCHEDULE::ETimePage m_ETimePage;
+    EPlanPageFlag m_EPlanPageFlag;
+    int m_iDaysPerPage, m_iTotalPages, m_iPageNo;
+    CWidgetList* m_pPageList;
+    CTextWidget* m_pPageListTitle;
+    CPageNOWidget* m_pCurrPage;
 };
 
 #endif // CPLANWIDGET_H
