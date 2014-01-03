@@ -32,11 +32,21 @@ CPlanWidget::CPlanWidget(CGraphicsWidget *a_pParent)
     m_pPageListTitle->SetWidgetUnderline(false);
     m_pPageListTitle->SetFontSize(8);
     m_pPageListTitle->SetTextColor(CGraphicsWidget::indigo);
+
     m_pPageList->SetHeaderWidget(m_pPageListTitle);
     m_pPageList->setPos(10, 485);
     m_pCurrPage = NULL;
 
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
+
+    QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourList(m_ETimePage);
+    m_iTotalPages = qCeil((qreal)l_pPlanTimeHourList.length() / (qreal)m_iDaysPerPage);
+    if(m_iTotalPages <= 0)
+    {
+        m_iTotalPages = 1;
+    }
+    m_pPageListTitle->SetText(QString("%1 Page(s) In Progress").arg(m_iTotalPages));
+
 }
 
 CPlanWidget::~CPlanWidget()
@@ -76,9 +86,26 @@ void CPlanWidget::RenderToSvg(QSvgGenerator* a_pSVG)
 
 void CPlanWidget::SetTimePage(GREENSCHEDULE::ETimePage a_ETimePage)
 {
-    m_ETimePage = a_ETimePage;
+    if(m_ETimePage != a_ETimePage)
+    {
+        m_ETimePage = a_ETimePage;
+        QString l_qstrTimePage = "In Progress";
+        if(GREENSCHEDULE::HISTORY == m_ETimePage)
+        {
+            QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::HISTORY);
+            m_iTotalPages = qCeil((qreal)l_pPlanTimeHourList.length() / (qreal)m_iDaysPerPage);
+            l_qstrTimePage = "In History";
+        }
+        else
+        {
+            QList<CPlanTimeHour *>& l_pPlanTimeHourList = m_pPlan->GetPlanTimeHourList(GREENSCHEDULE::INPROGRESS);
+            m_iTotalPages = qCeil((qreal)l_pPlanTimeHourList.length() / (qreal)m_iDaysPerPage);
+        }
 
-    update(this->boundingRect());
+        m_pPageListTitle->SetText(QString("%1 Page(s) %2").arg(m_iTotalPages).arg(l_qstrTimePage));
+
+        update(this->boundingRect());
+    }
 }
 
 void CPlanWidget::SetPlanPage(int a_iPageNO)
@@ -136,9 +163,13 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
     l_CPenInProgress.setWidth(3);
     l_CPenInProgress.setCapStyle(Qt::RoundCap);
     QPen l_CPenHistory = l_CPenInProgress;
-    l_CPenHistory.setColor(QColor(CGraphicsWidget::gray));
+    l_CPenHistory.setColor(QColor(Qt::darkGray));
 
     l_COldPen.setColor(QColor(Qt::black));
+    if(GREENSCHEDULE::HISTORY == m_ETimePage)
+    {
+        l_COldPen.setColor(QColor(CGraphicsWidget::gray));
+    }
     l_COldFont.setFamily("STLiti");
     l_COldFont.setBold(true);
 
@@ -172,8 +203,18 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
 
         CPlanTimeHour* l_pPlanTimeHour = l_pPlanTimeHourList[i + l_iBase];
         //date tag
+        if(QDate::currentDate() == l_pPlanTimeHour->Date())
+        {
+            QPen l_CTmpPen = l_COldPen;
+            l_CTmpPen.setColor(Qt::yellow);
+            painter->setPen(l_CTmpPen);
+        }
         painter->drawText(5, i * m_iHeightPerTimeLine + m_iTimeLineStartY, m_iDateTagWidth, m_iDateTagHeight,\
                           Qt::AlignLeft, l_pPlanTimeHour->Date().toString("- yyyy.MM.dd dddd -"));
+        if(QDate::currentDate() == l_pPlanTimeHour->Date())
+        {
+            painter->setPen(l_COldPen);
+        }
 
         //hour segments
         int x = 10;
@@ -235,7 +276,6 @@ void CPlanWidget::PlanTimeHourPaint(QPainter *painter)
     if(m_iTotalPages != m_pPageList->ListLength())
     {
         m_pPageList->ResetWidget();
-        m_pPageListTitle->SetText(QString("%1 Pages").arg(m_iTotalPages));
         for(int i=0; i<m_iTotalPages; i++)
         {
             CPageNOWidget* l_pNewPageNO = new CPageNOWidget(m_pPageList);
@@ -382,14 +422,22 @@ void CPlanWidget::SLOT_GoalTaskRecieve(QPointF a_CMouseScenePos, int a_iGoalId, 
             {
                 CPlanGoal* l_pPlanGoal = m_pPlan->GetPlanGoalById(a_iGoalId);
                 const STask* l_pPlanGoalTask = l_pPlanGoal->GetTaskById(a_iTaskId);
-                l_pPlanTimeHour->AssignTaskToTimeSeg(l_pTimeSegHourAssign, a_iGoalId,\
-                                                     l_pPlanGoal->GetGoalName(),\
-                                                     l_pPlanGoalTask->m_iTaskId,\
-                                                     l_pPlanGoalTask->m_qstrTaskTag,\
-                                                     l_pPlanGoal->GetGoalColor());
+                if(GREENSCHEDULE::INPROGRESS == l_pTimeSegHourAssign->m_ETimePage)
+                {
+                    l_pPlanTimeHour->AssignTaskToTimeSeg(l_pTimeSegHourAssign, a_iGoalId,\
+                                                         l_pPlanGoal->GetGoalName(),\
+                                                         l_pPlanGoalTask->m_iTaskId,\
+                                                         l_pPlanGoalTask->m_qstrTaskTag,\
+                                                         l_pPlanGoal->GetGoalColor());
 
-                update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine + m_iTimeLineStartY, this->boundingRect().width(),\
-                              m_iHeightPerTimeLine));
+                    update(QRectF(0, l_iDateIdx * m_iHeightPerTimeLine + m_iTimeLineStartY, this->boundingRect().width(),\
+                                  m_iHeightPerTimeLine));
+                    emit this->SIGNAL_PlanChanged();
+                }
+                else
+                {
+                    emit this->SIGNAL_ShowInMessageBox("Tasks cannot be assigned to historical time.");
+                }
             }
         }
     }

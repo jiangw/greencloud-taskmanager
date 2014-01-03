@@ -54,8 +54,8 @@ void CColorTagWidget::InitSelector()
 
     for(int i=0; i<l_iSteps; i++)
     {
-//        CColorTagWidget* l_pColorTag = new CColorTagWidget(m_iWidgetHeight / 2,\
-//                                                           m_iWidgetHeight / 2, this);
+/*        CColorTagWidget* l_pColorTag = new CColorTagWidget(m_iWidgetHeight / 2,\
+                                                           m_iWidgetHeight / 2, this); */
         int l_iSize = m_iWidgetHeight - l_iStepLen * (i + 1);
         if(l_iSize < m_iWidgetHeight / 2)
         {

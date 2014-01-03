@@ -407,3 +407,20 @@ void CMonthWidget::RightButtonClicked(QPointF a_CMousePos)
         }
     }
 }
+
+void CMonthWidget::SLOT_SetYearProc(int a_iYear)
+{
+    m_iYear = a_iYear;
+    if(m_iYear == QDate::currentDate().year())
+    { //if the year is current year, current month will be shown
+        m_iShowMonth = QDate::currentDate().month();
+        m_iZeroMonth = m_iShowMonth - 1;
+    }
+    else
+    { //use default setting of showing the first month
+        m_iShowMonth = 1;
+        m_iZeroMonth = 0;
+    }
+    m_pDateLabel->SetText(QString("- %1.%2 -").arg(m_iYear).arg(m_iShowMonth));
+    update(this->boundingRect());
+}

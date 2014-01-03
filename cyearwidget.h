@@ -11,6 +11,8 @@ class CYearWidget : public CGraphicsWidget
 public:
     CYearWidget(CGraphicsWidget* a_pParent);
     const QList<int>* GetSelYears(){return &m_pSelYears;}
+    void SetDurationLength(int a_iYearNumber);
+    void EnableMultiSelection(bool a_blMultiSel);
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -22,8 +24,14 @@ public:
 protected:
     void LeftButtonClicked(QPointF a_CMousePos);
 
+signals:
+    void SIGNAL_YearSelected(int a_iYear);
+
 private:
     int m_iStartYear;
+    int m_iDurationLength;
+    int m_iLineLenPerYear;
+    bool m_blMultiSel;
     QList<int> m_pSelYears;
 };
 

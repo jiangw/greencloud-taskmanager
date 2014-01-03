@@ -37,6 +37,9 @@ protected:
     void LeftButtonClicked(QPointF a_CMousePos);
     void RightButtonClicked(QPointF a_CMousePos);
 
+public slots:
+    void SLOT_SetYearProc(int a_iYear);
+
 signals:
     void SIGNAL_DaySel(QDate a_CSelDate); //emit this signal when a day is selected
     void SIGNAL_DayDesel(QDate a_CDeselDate); //emit this signal when a day is deselected,

@@ -44,6 +44,9 @@ public slots:
     void SLOT_ShowPlanInProgressProc();
     void SLOT_ShowPlanHistoryProc();
 
+signals:
+    void SIGNAL_PlanChanged();
+
 private:
     CPlan* m_pPlan;
     int m_iHeightPerTimeLine; //= m_iTimeSegHeight + m_iDateTagHeight

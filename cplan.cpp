@@ -574,6 +574,11 @@ void CPlan::SLOT_UpdateTimePage()
     emit this->SIGNAL_PlanWidgetUpdate();
 }
 
+void CPlan::SLOT_EnablePlanSave()
+{
+    m_blSaveFlag = true;
+}
+
 void CPlan::ClearPlan()
 {
     this->ClearPlanGoalFactory();

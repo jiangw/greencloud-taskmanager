@@ -57,6 +57,8 @@ public slots:
 
     void SLOT_UpdateTimePage();
 
+    void SLOT_EnablePlanSave();
+
 signals:
     void SIGNAL_HourSelMaskRequestFinished();
     void SIGNAL_PlanWidgetUpdate();

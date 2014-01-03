@@ -21,6 +21,8 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
                                      this);
     m_pSvgWidgetOK = new CSvgWidget(":/icon/ok", m_iControllerWidth, m_iControllerHeight,\
                                     this);
+    m_pSvgWidgetBack = new CSvgWidget(":/icon/back", m_iControllerWidth, m_iControllerHeight,\
+                                      this);
     m_pColorTag = new CColorTagWidget(m_iControllerWidth, m_iControllerHeight, this);
     m_pColorTag->InitSelector();
 
@@ -35,6 +37,8 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
             this, SLOT(SLOT_DeletGoalVerify()));
     connect(m_pSvgWidgetOK, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_OKProc()));
+    connect(m_pSvgWidgetBack, SIGNAL(SIGNAL_LeftButtonClicked()),\
+            this, SLOT(SLOT_CancelEditVerify()));
     connect(m_pColorTag, SIGNAL(SIGNAL_ColorChanged(CGraphicsWidget::gColor)),\
             this, SLOT(SLOT_ColorTagChangeProc(CGraphicsWidget::gColor)));
 
@@ -50,9 +54,9 @@ CGoalWidget::CGoalWidget(CGraphicsWidget *a_pParent)
 
     this->InitBoundingRect(this->WidgetWidth(), this->WidgetHeight());
     this->SetGoalWidgetMode(VIEW);
-    this->SetGoalColorTag(m_pColorTag->GetColor());
 
     m_CPlanGoal.SetGoalId(-1); //set goal as invalid
+    m_CPlanGoal.SetGoalColor(m_pColorTag->GetColor());
     m_iTaskIdGen = -1;
     m_blSimpleView = true;
 }
@@ -94,8 +98,9 @@ void CGoalWidget::SetGoalData(const CPlanGoal *a_pPlanGoal, bool a_blSimpleView)
 
 void CGoalWidget::SetGoalColorTag(CGraphicsWidget::gColor a_EColorTag)
 {
-    m_CPlanGoal.SetGoalColor(a_EColorTag);
-    update(this->boundingRect());
+    m_pColorTag->SetColor(a_EColorTag);
+    this->update(m_iControllerWidth, m_iControllerHeight / 2, this->GoalLabelWidth(),\
+                 this->GoalLabelHeight());
 }
 
 void CGoalWidget::AddTaskWidget(CTaskWidget *a_pTaskWidget)
@@ -133,6 +138,7 @@ void CGoalWidget::PlanGoalSubmit()
         l_pWidgetListHead = l_pWidgetListHead->m_pNext;
     }
     //turn to VIEW mode
+    m_blSimpleView = false;
     this->SetGoalWidgetMode(VIEW);
 
     emit this->SIGNAL_PlanGoalSubmit(&m_CPlanGoal);
@@ -154,7 +160,6 @@ void CGoalWidget::ResetWidget()
     m_pGoalNameLabel->ResetWidget();
     m_CPlanGoal.SetGoalId(-1);
     m_CPlanGoal.ClearTaskList();
-    this->SetGoalColorTag(m_pColorTag->GetColor());
 
     this->UpdateBoundingRect();
 }
@@ -195,7 +200,7 @@ void CGoalWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setPen(QPen(QBrush(Qt::black), 3));
 
-    painter->fillPath(l_CPath, QBrush(m_CPlanGoal.GetGoalColor()));
+    painter->fillPath(l_CPath, QBrush(QColor((QRgb)m_pColorTag->GetColor())));
     painter->drawEllipse(l_CRect);
 
     painter->restore();
@@ -265,6 +270,41 @@ void CGoalWidget::SLOT_OKProc()
     this->SetTaskModeBatch(CTaskWidget::VIEW); */
 }
 
+void CGoalWidget::SLOT_CancelEditVerify()
+{
+    //check for changes
+    if(this->IsGoalChanged())
+    {
+        CMessageWidget* l_pMsgBox = new CMessageWidget(this->scene());
+        l_pMsgBox->SetMsgType(CMessageWidget::MS_YESNO);
+        l_pMsgBox->SetInfo("The goal has been modified:");
+        l_pMsgBox->SetQuestion("Do you want to discard unsaved changes?");
+        l_pMsgBox->SetMsgBoxWidth(400);
+        l_pMsgBox->SetMsgBoxPos(this->pos().x(),\
+                                this->pos().y() + m_iControllerHeight + this->GoalLabelHeight());
+        connect(l_pMsgBox, SIGNAL(SIGNAL_Ok()), this, SLOT(SLOT_BackProc()));
+    }
+    else
+    {
+        this->SLOT_BackProc();
+    }
+}
+
+void CGoalWidget::SLOT_BackProc()
+{
+    if(m_CPlanGoal.GetGoalId() == -1)
+    {
+        m_EMode = VIEW;
+        this->setVisible(false);
+    }
+    else
+    {
+        this->GoalDataRecover();
+        m_blSimpleView = false;
+        this->SetGoalWidgetMode(VIEW);
+    }
+}
+
 void CGoalWidget::SLOT_AddTaskWidgetProc()
 {
     CTaskWidget* l_pTaskWidget = new CTaskWidget(++m_iTaskIdGen, NULL);
@@ -280,13 +320,15 @@ void CGoalWidget::SLOT_GoalLabelSizeChangeProc()
 {
     m_pGoalNameLabel->setPos(m_iControllerWidth + this->GoalLabelWidth() / 4,\
                              m_iControllerHeight / 2 + this->GoalLabelHeight() / 4);
+    m_pSvgWidgetBack->setPos(m_iControllerWidth + this->GoalLabelWidth(), 0);
     this->UpdateBoundingRect();
 
 }
 
 void CGoalWidget::SLOT_ColorTagChangeProc(CGraphicsWidget::gColor a_EColor)
 {
-    m_CPlanGoal.SetGoalColor(a_EColor);
+    Q_UNUSED(a_EColor)
+
     this->update(m_iControllerWidth, m_iControllerHeight / 2, this->GoalLabelWidth(),\
                  this->GoalLabelHeight());
 }
@@ -388,6 +430,7 @@ void CGoalWidget::UpdateGoalWidget()
             m_pSvgWidgetDel->setVisible(true);
         }
         m_pSvgWidgetOK->setVisible(false);
+        m_pSvgWidgetBack->setVisible(false);
         m_pColorTag->setVisible(false);
         this->SetLabelHeaderForTaskWidgetList("Task List");
         this->SetTaskModeBatch(CTaskWidget::VIEW);
@@ -397,6 +440,7 @@ void CGoalWidget::UpdateGoalWidget()
         m_pSvgWidgetEdit->setVisible(false);
         m_pSvgWidgetDel->setVisible(false);
         m_pSvgWidgetOK->setVisible(true);
+        m_pSvgWidgetBack->setVisible(true);
         m_pColorTag->setVisible(true);
         m_pColorTag->SelectorSwitch(true);
         this->SetAddTaskBtnForTaskWidgetList();
@@ -417,4 +461,56 @@ int CGoalWidget::GoalLabelWidth()
 int CGoalWidget::GoalLabelHeight()
 {
     return m_pGoalNameLabel->boundingRect().height() * 2;
+}
+
+bool CGoalWidget::IsGoalChanged()
+{
+    bool l_blGoalChanged = false;
+    if(m_CPlanGoal.GetGoalName() != m_pGoalNameLabel->GetText())
+    {
+        l_blGoalChanged = true;
+    }
+    if(!l_blGoalChanged)
+    {
+        if(m_CPlanGoal.GetGoalColor() != (QRgb)m_pColorTag->GetColor())
+        {
+            l_blGoalChanged = true;
+        }
+    }
+    if(!l_blGoalChanged)
+    {
+        if(m_pTaskWidgetList->ListLength() != m_CPlanGoal.TaskNumber())
+        {
+            l_blGoalChanged = true;
+        }
+        if(!l_blGoalChanged)
+        {
+            CWidgetNode* l_pWidgetIter = m_pTaskWidgetList->GetWidgetList();
+            while(l_pWidgetIter)
+            {
+                CTaskWidget* l_pTaskWidget = (CTaskWidget *)l_pWidgetIter->m_pWidget;
+                const STask* l_pOldTask = m_CPlanGoal.GetTaskById(l_pTaskWidget->GetTaskId());
+                if(NULL == l_pOldTask)
+                {
+                    l_blGoalChanged = true;
+                    break;
+                }
+                if(l_pTaskWidget->GetTaskTag() != l_pOldTask->m_qstrTaskTag\
+                        || l_pTaskWidget->GetTaskDescription() != l_pOldTask->m_qstrDescription)
+                {
+                    l_blGoalChanged = true;
+                    break;
+                }
+                l_pWidgetIter = l_pWidgetIter->m_pNext;
+            }
+        }
+    }
+
+    return l_blGoalChanged;
+}
+
+void CGoalWidget::GoalDataRecover()
+{
+    m_pTaskWidgetList->ResetWidget();
+    this->SetGoalData(&m_CPlanGoal);
 }

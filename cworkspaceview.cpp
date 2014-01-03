@@ -5,6 +5,7 @@ CWorkSpaceView::CWorkSpaceView(CWorkSpace *a_pWorkSpace, QWidget *a_pParent) :
 {
     m_pWorkSpace = a_pWorkSpace;
     m_pPlanWidget = NULL;
+    m_pYearWidget = NULL;
     m_pMonthWidget = NULL;
     m_pDayWidget = NULL;
     m_pGoalTagWidgetList = NULL;
@@ -89,11 +90,21 @@ bool CWorkSpaceView::ExportWorkSpace2Svg(QString a_qstrSvgFileName)
 
 void CWorkSpaceView::InitWorkSpace()
 {
+    if(NULL == m_pYearWidget)
+    {
+        m_pYearWidget = new CYearWidget(NULL);
+        m_pYearWidget->SetDurationLength(18);
+        m_pYearWidget->EnableMultiSelection(false);
+        m_pWorkSpace->addItem(m_pYearWidget);
+    }
+
     if(NULL == m_pMonthWidget)
     {
         m_pMonthWidget = new CMonthWidget(NULL);
         m_pMonthWidget->EnableMultiSelection(false);
         m_pWorkSpace->addItem(m_pMonthWidget);
+        connect(m_pYearWidget, SIGNAL(SIGNAL_YearSelected(int)),\
+                m_pMonthWidget, SLOT(SLOT_SetYearProc(int)));
     }
 
     if(NULL == m_pDayWidget)
@@ -120,6 +131,8 @@ void CWorkSpaceView::InitWorkSpace()
                 m_pPlanWidget, SLOT(SLOT_WidgetUpdateProc()));
         connect(m_pPlanWidget, SIGNAL(SIGNAL_ShowInMessageBox(QString)),\
                 this, SLOT(SLOT_ShowMsgBoxProc(QString)));
+        connect(m_pPlanWidget, SIGNAL(SIGNAL_PlanChanged()),\
+                CPlan::GetPlan(), SLOT(SLOT_EnablePlanSave()));
     }
 
     //add widget list for storing goal widgets
@@ -136,8 +149,6 @@ void CWorkSpaceView::InitWorkSpace()
         m_pGoalTagWidgetList->SetHeaderWidget(l_pAddGoalBtn);
         connect(l_pAddGoalBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
                 this, SLOT(SLOT_AddGoalProc()));
-//        connect(l_pAddGoalBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
-//                this, SLOT(SLOT_AddGoalWidgetToWidgetListProc()));
 
         QList<CPlanGoal *>& l_CPlanGoalList = CPlan::GetPlan()->GetPlanGoalList();
         for(int i=0; i<l_CPlanGoalList.length(); i++)
@@ -185,13 +196,16 @@ void CWorkSpaceView::InitWorkSpace()
 
     if(NULL == m_pShowPlanInProgress)
     {
-        m_pShowPlanInProgress = new CButtonWidget("On Going", NULL);
+        m_pShowPlanInProgress = new CButtonWidget("OnGoing", NULL);
         m_pWorkSpace->addItem(m_pShowPlanInProgress);
         connect(m_pShowPlanInProgress, SIGNAL(SIGNAL_ButtonTriggered()),\
                 m_pPlanWidget, SLOT(SLOT_ShowPlanInProgressProc()));
     }
 
-    m_pMonthWidget->setPos(-270, -280);
+    m_pYearWidget->setPos(-270, -300);
+    m_pMonthWidget->setPos(m_pYearWidget->pos().x(),\
+                           m_pYearWidget->pos().y() + m_pYearWidget->WidgetHeight()\
+                           + GREENSCHEDULE::g_iItemIntervalY);
     m_pDayWidget->setPos(-240, m_pMonthWidget->pos().y()\
                          + m_pMonthWidget->boundingRect().height()\
                          + GREENSCHEDULE::g_iItemIntervalY);

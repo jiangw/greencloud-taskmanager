@@ -67,6 +67,7 @@ private:
 
     CWorkSpace* m_pWorkSpace;
     CPlanWidget* m_pPlanWidget;
+    CYearWidget* m_pYearWidget;
     CMonthWidget* m_pMonthWidget;
     CDayWidget* m_pDayWidget;
     CWidgetList* m_pGoalTagWidgetList;

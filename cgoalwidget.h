@@ -47,6 +47,8 @@ public slots:
     void SLOT_DeletGoalVerify();
     void SLOT_DeleteProc();
     void SLOT_OKProc();
+    void SLOT_CancelEditVerify();
+    void SLOT_BackProc();
     void SLOT_AddTaskWidgetProc();
     void SLOT_ChildWidgetSizeChangeProc();
     void SLOT_GoalLabelSizeChangeProc();
@@ -65,6 +67,8 @@ signals:
 private:
     int GoalLabelWidth();
     int GoalLabelHeight();
+    bool IsGoalChanged();
+    void GoalDataRecover();
 
     EGoalWidgetMode m_EMode;
 
@@ -76,6 +80,7 @@ private:
     CSvgWidget* m_pSvgWidgetEdit; //svg widget for Edit action
     CSvgWidget* m_pSvgWidgetDel; //svg widget for Delete action
     CSvgWidget* m_pSvgWidgetOK; //svg widget for OK action
+    CSvgWidget* m_pSvgWidgetBack; //svg widget for Back action
     CColorTagWidget* m_pColorTag; //widget for setting goal's color tag
 
     void SetTaskModeBatch(CTaskWidget::ETaskMode a_ETaskMode);
